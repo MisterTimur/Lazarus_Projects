@@ -2,10 +2,26 @@ unit Unit3; {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, OpenGLContext, Forms, Controls, Graphics,
-  Dialogs,windows;
+  Dialogs, ExtCtrls,windows, Types,Gl,Glu;
 
 type { TForm3 }  TForm3 = class(TForm)
     OpenGLControl1: TOpenGLControl;
+    Timer1: TTimer;
+    Timer2: TTimer;
+    Timer3: TTimer;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure OpenGLControl1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure OpenGLControl1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure OpenGLControl1MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure OpenGLControl1Resize(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Timer2Timer(Sender: TObject);
+    procedure Timer3Timer(Sender: TObject);
   private
 
   public
@@ -397,6 +413,7 @@ TYPE  TPLO=CLASS(TVER)
   Destructor  destroy;override;
 end;
 TYPE TPLOS=CLASS
+Kol2:RLON;// ??????? нууд узнать что это такое
 KOLP:RLON;// Количество плоскостей в игровом мире
 KOlD:RLON;// Количество удаленных плоскостей в игровом мире
 DELP :Array[1..MaxKOlPloInMir] of TPLO;// Удаленные плоскости
@@ -725,6 +742,8 @@ begin
   IEle.Del:=True;
   for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
   for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
+  if KolD+1>MinKolDelEles then
+  ERR(' TELES.AddD(iELE:TELE) KolD+1>MinKolDelEles' );
   DELE[KolD+1]:=iEle;
   KolD:=KolD+1;
 end;
@@ -923,7 +942,7 @@ var F:Longint;Ex:Boolean;
 begin
 Ex:=False;
 //------------------------------------------------------------------------------
-if KolD>MinKolDelObs then begin Ex:=True;
+if KolD>MinKolDelObjs then begin Ex:=True;
 iObj.Nom:=DelO[1].NOM;
 OBJS[iObj.Nom]:=iObj;
 DelO[1].Free;
@@ -953,8 +972,323 @@ end;
 {%EndRegion}
 
 
+Function LanVis(x,z:RSIN):RSIN;
+var REz:Rsin;
+begin
+LanVis:=X*z/10;
+end;
+TYPE  TLAN=CLASS(TOBJ)
+constructor Create(iCS3:RCS3);// Констурктор
+End;
+Constructor TLAN.Create(iCS3:RCS3);// Конструктор
+var
+fx,fz,x1,z1:Longint;lS,KKK:RSIN;PL:TPLO;L:RCS3;
+VER:Array[-RL..RL,-RL..RL] of TVER;// Вершины
+begin
+inherited Create(iCS3);
+
+lS:=0.5/RL;// Создаю вершины ландшафта
+for fz:=-RL to RL do
+for fx:=-RL to RL do begin
+
+VER[fx,Fz]:=V(fx*lS,LanVis(fx*lS+ics3.x,fz*lS+ics3.z),fz*lS);
+VER[fx,Fz].COL.R:=100;//Random(255);
+VER[fx,Fz].COL.G:=random(255);
+VER[fx,Fz].COL.B:=100;//Random(255);
+VER[fx,Fz].COL.A:=255;
+
+end;
+
+for fz:=-RL to RL-1 do // Создаю плоскости ландшафта
+for fx:=-RL to RL-1 do begin
+PL:=P(VER[fx,fz],VER[fx,fz+1],VER[fx+1,fz+1],VER[fx+1,fz],self);
+PL.MAR:=True;
+PL.LOC:=SerRCS3(VER[fx,fz].LOC,VER[fx+1,fz+1].Loc);
+end;
+
+Mar:=True;
+O_MATH;
+O_INIC;
+O_SWAP;
+MirObjs.addO(self);
+
+end;
 
 
+function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
+var F,K2:Longint;
+begin
+   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
+   while Clos=false do begin
+     sleep(300);MirObjs.Ras;
+     // ========================================================================
+     with MirVers do for f:=1 to KOlV do
+     if   not Vers[f].DEL then
+     with Vers[f] do begin
+     ECOO1[f]:=ECR;
+     ECOL1[f]:=Col;
+     end;
+     // ========================================================================
+     K2:=0;sleep(300);
+     with MirPlos do for f:=1 to KolP do
+     if   not Plos[f].DEL then
+     with Plos[f] do begin
+     K2:=K2+1;
+     EPlo1[K2].VERS[1]:=Vers[1].Nom;
+     EPlo1[K2].VERS[2]:=Vers[2].Nom;
+     EPlo1[K2].VERS[3]:=Vers[3].Nom;
+     EPlo1[K2].VERS[4]:=Vers[3].Nom;
+     EPlo1[K2].VERS[5]:=Vers[4].Nom;
+     EPlo1[K2].VERS[6]:=Vers[1].Nom;
+     end;
+     MirPLos.Kol2:=K2;sleep(300);
+     // ========================================================================
+     with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
+     with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
+     with MirPlos do Move(EPlo1,EPlo2,(Kol2+0)*SizeOf(RPLO));
+     // ========================================================================
+   end;
+   result:=0;
+end;
+
+function  IntToCol(iCol:LongWord):RCOL;// Переводит Число в цвет
+var
+Rez:RCol;
+Col:LongWord;
+B:Array[0..3] of Byte absolute Col;
+begin
+Col:=iCol;
+Rez.R:=b[0];
+Rez.G:=b[1];
+Rez.B:=b[2];
+Rez.A:=b[3];
+IntToCol:=Rez;
+end;
+procedure Ploskost(iVer1,iVer2,iVer3,iVer4:RCS3;C:RCOL);
+begin
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_TRIANGLES);
+
+glVertex3f(iVer1.x,iVer1.y,iVer1.z);
+glVertex3f(iVer2.x,iVer2.y,iVer2.z);
+glVertex3f(iVer3.x,iVer3.y,iVer3.z);
+glVertex3f(iVer3.x,iVer3.y,iVer3.z);
+glVertex3f(iVer4.x,iVer4.y,iVer4.z);
+glVertex3f(iVer1.x,iVer1.y,iVer1.z);
+
+glEnd();
+end;
+function  OpredelitCoo(x,y:Longint;iVer1,iVer2,iVer3,iVer4:RCS3;g:Longint):RCS3;
+var
+Rez:RCS3;
+iVer0,iVer12,iVer23,iVer34,iVer41:RCS3;
+Rc:LongWord=0;
+begin
+iVer0:=SerRCS3(iVer1,iVer3);
+if (g>0) then begin
+// Разбиваю на 4 плоскости
+iVer12:=SerRCS3(iVer1,iVer2);
+iVer23:=SerRCS3(iVer2,iVer3);
+iVer34:=SerRCS3(iVer3,iVer4);
+iVer41:=SerRCS3(iVer4,iVer1);
+// РИсую 4 плоскости
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+ploskost(iVer1 ,iVer12,iVer0 ,iVer41,IntToCol(1000));
+ploskost(iVer12,iVer2 ,iVer23,iVer0 ,IntToCol(2000));
+ploskost(iVer0 ,iVer23,iVer3 ,iVer34,IntToCol(3000));
+ploskost(iVer41,iVer0 ,iVer34,iVer4 ,IntToCol(4000));
+// читаю цвет плоскости
+glReadPixels(X,Y, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@Rc);
+// смотря в какую плоскость попали
+if (Rc=1000) then Rez:=OpredelitCoo(X,Y,iVer1 ,iVer12,iVer0 ,iVer41,g-1) else
+if (Rc=2000) then Rez:=OpredelitCoo(X,y,iVer12,iVer2 ,iVer23,iVer0 ,g-1) else
+if (Rc=3000) then Rez:=OpredelitCoo(X,y,iVer0 ,iVer23,iVer3 ,iVer34,g-1) else
+if (Rc=4000) then Rez:=OpredelitCoo(X,y,iVer41,iVer0 ,iVer34,iVer4 ,g-1) else Rez:=iVer0;
+end else Rez:=iVer0;
+OpredelitCoo:=Rez;
+end;
+procedure OpredelitCoo(iPlo:Tplo);// Определяет координату нажатой мышки
+var iVer1,iVer2,iVer3,iVer4:RCS3;
+begin
+if Iplo<>Nil Then begin
+iver1:=iPlo.VERS[1].ECR;
+iver2:=iPlo.VERS[2].ECR;
+iver3:=iPlo.VERS[3].ECR;
+iver4:=iPlo.VERS[4].ECR;
+
+        CaP3:=OpredelitCoo(
+               MouD.X,
+               form3.ClientHeight-MouD.Z,
+               iver1,
+	       iver2,
+	       iver3,
+	       iver4,
+	       16
+	       );CaP3.Y:=CaP3.Y;
+end;
+end;
+
+procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
+var
+x,z:RINT;
+begin
+Timer1.enabled:=false;// Отключаем запускатор
+
+  GFon:=CreRCol(150,150,250,255);// Формируем цвет фона
+  MirVers:=TVERS.Create;// Создаем списки вершин
+  MirPlos:=TPLOS.Create;// Создаем списки плоскостей
+  MirEles:=TELES.Create;// Создаем списки элементов
+  MirObjs:=TOBJS.Create;// Создаем списки Обьектов
+  //for x:=-3 to 3 do
+  //for z:=-3 to 3 do
+  //Tlan.Create(CreRcS3(x,0,z));
+  // Отдельный поток для расчета координат всех вершин
+  HMath:=CreateThread(nil,0,@Math,nil,0,HMathTrId);
+  // OpenGl настройки
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_Blend);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnableClientState(GL_COLOR_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  GlPointSize(3);// размер точек
+  GlLineWidth(3);// рзмер Линий
+  OpenGLControl1Resize(nil);// Начальное вычисление пропрций
+  Timer2.enabled:=true;// Врубаем отрисовку
+  Timer3.enabled:=true;// Врубаем подсчет количества кадров в секунду
+
+end;
+procedure TForm3.Timer2Timer(Sender: TObject);// ОТрисовка
+var Tr:QWord;f:longint;RC:LongWord;P:TPLO;
+begin
+  timer2.Enabled:=false;
+  Tr:=GetTickCount64;
+  //----------------------------------------------------------------------------
+  Cap2:=SerRcs8(cap2,cap3);
+  CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
+  CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
+  RasN:=((Ras3-RasN)/16)+RasN;
+  //----------------------------------------------------------------------------
+  glLoadIdentity();// Сброс матрицы
+  GlpushMatrix();
+  glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
+  glRotateD(CaU2.X,1,0,0);// Поворот по оси X
+  glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
+  glTranslateD(-CaP2.x,-CaP2.y,-CaP2.z);// Координаты камеры
+
+  //----------------------------------------------------------------------------
+  if LBut then Begin
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  GlDisable(GL_Blend);// Выключаю смешивание цветов
+  glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+
+  for f:=1 to MirPlos.KolP do
+  if   not MirPLos.Plos[f].DEL then
+  with MirPLos.Plos[f] do
+  ploskost(
+           VERS[1].ECR,
+           VERS[2].ECR,
+           VERS[3].ECR,
+           VERS[4].ECR,
+           IntToCol(f));
+  RC:=0;
+  glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+  if (RC>0) and (RC<=MirPlos.KolP) then
+  begin P:=MirPlos.PLos[RC];OpredelitCoo(P);end else P:=Nil;
+  GlEnable(GL_Blend);// Включаю смешивание цветов
+  glEnableClientState(GL_COLOR_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  //Per.oCel:=Cap3;
+  LBut:=false;
+  end;
+  //----------------------------------------------------------------------------
+
+  //----------------------------------------------------------------------------
+  glClearColor(GFon.R*(1/255),GFon.G*(1/255),GFon.B*(1/255),GFon.A*(1/255)); // Задаем фон
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);// очистка экрана
+  //----------------------------------------------------------------------------
+
+  glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
+  glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  glDrawElements(GL_TRIANGLES,MirPlos.Kol2*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
+
+  //----------------------------------------------------------------------------
+  OpenGLControl1.SwapBuffers;
+  KolKAdVsek:=KolKAdVsek+1;
+  TR:=GetTickCount64-tr;
+  timer2.Enabled:=true;
+end;
+procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
+begin
+  Caption:=IntToStr(KolKAdVsek)+' '+
+             //FloatToStr(CaU2.X)+' '+
+             //FloatToStr(CaU2.Z)+' '+
+             intToStr(Trunc(Cap2.X))+' '+
+             intToStr(Trunc(Cap2.Y))+' '+
+             IntToStr(Trunc(Cap2.Z))+' '+
+             FloatToStr(RAsN);
+if (KolKAdVsek>33) and (Timer2.interval<50) then Timer2.interval:=Timer2.interval+1;
+if (KolKAdVsek<33) and (Timer2.interval>1 ) then Timer2.interval:=Timer2.interval-1;
+KolKAdVsek:=0;
+end;
+
+procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  halt;
+end;
+procedure TForm3.OpenGLControl1Resize(Sender: TObject);
+begin
+  glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем
+  glMatrixMode(GL_PROJECTION);// Указываем матрицу с котрой будем работать
+  glLoadIdentity;// Сброс в еденичную матрицу
+  gluPerspective(60, OpenGLControl1.Width / OpenGLControl1.Height,0.02,MAxRAsInMir);// Устанвока перспективы (Угол обзора в градусах,Соотношение сторон ,Ближний предел ,дальний предел )
+  glMatrixMode(GL_MODELVIEW);// Выбираем модельную матрицу
+  glLoadIdentity();// сброс в еденичную матрицу
+end;
+procedure TForm3.OpenGLControl1MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  if WheelDelta<0
+  Then BEGIN
+  if RAS3+MAx(abs(RAS3/7),0.0001)<0 then
+     RAS3:=RAS3+Max(abs(RAS3/7),0.0001)
+  end
+  else BEGIN
+  if RAS3-Max(abs(RAS3/7),0.0001)>-MAxRAsInMir then
+     RAS3:=RAS3-Max(abs(RAS3/7),0.0001)
+  end;
+end;
+procedure TForm3.OpenGLControl1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbLeft  then LBut:=false;
+  if Button=mbRight then RBut:=False;
+end;
+procedure TForm3.OpenGLControl1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  MouN.X:=X;
+  MouN.Z:=Y;
+  if RBut Then begin
+  CaU3.X:=CaU1.X+(MouN.Z-MouD.Z);
+  CaU3.Z:=CaU1.Z+(MouN.X-MouD.X);
+  end;
+end;
+procedure TForm3.OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouN.X:=X;
+  MouN.Z:=Y;
+  MouD.X:=X;// Запоминаем предыдущие Запоминаем координаты мышки
+  MouD.Z:=Y;// Запоминаем предыдущие координаты мышки
+  CaU1.X:=CaU2.X;
+  CaU1.Z:=CaU2.Z;
+  if Button=mbLeft  then LBut:=true;
+  if Button=mbRight then RBut:=true;
+end;
 
 end.
 
