@@ -41,15 +41,15 @@
         <UnitName Value="Unit3"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="648"/>
-        <CursorPos X="3" Y="679"/>
-        <FoldState Value=" T4202 T5i3010C1 T76Q65 TCi5A26 T3iR03B piYj807615 pj3mT0J5[K5J047]9fjY064R"/>
+        <TopLine Value="665"/>
+        <CursorPos X="53" Y="729"/>
+        <FoldState Value=" T4202 T5i3010C1A p0-e01 T76Q65 piatMBC]YCi5A26 T3iR03B]PYj80761]aj3mW0J5[K5J047]9fk50651C]TDmD085/"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="13" HistoryIndex="12">
       <Position1>
         <Filename Value="unit3.pas"/>
         <Caret Line="375" Column="30"/>
@@ -82,6 +82,26 @@
         <Filename Value="unit3.pas"/>
         <Caret Line="523" TopLine="542"/>
       </Position8>
+      <Position9>
+        <Filename Value="unit3.pas"/>
+        <Caret Line="722" Column="19" TopLine="678"/>
+      </Position9>
+      <Position10>
+        <Filename Value="unit3.pas"/>
+        <Caret Line="685" Column="29" TopLine="673"/>
+      </Position10>
+      <Position11>
+        <Filename Value="unit3.pas"/>
+        <Caret Line="888" TopLine="734"/>
+      </Position11>
+      <Position12>
+        <Filename Value="unit3.pas"/>
+        <Caret Line="909" TopLine="844"/>
+      </Position12>
+      <Position13>
+        <Filename Value="unit3.pas"/>
+        <Caret Line="723" Column="15" TopLine="651"/>
+      </Position13>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

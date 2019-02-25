@@ -267,6 +267,7 @@ var   {Описание вершины       ===========================}{%Regio
                                                            Reg05:Longint;
 TYPE TVER=CLASS  // Опсиание вершиины
 
+  NAM:RSTR;// Наименование элемента
   SEL:RBOL;// ОБьект выделен для редактора нужно
   IDD:RLON;// Уникальный идентификатор
   NOM:RLON;// Номер в списке отрисовки
@@ -284,12 +285,17 @@ TYPE TVER=CLASS  // Опсиание вершиины
   GOb:TVer;// Обьект в котором находитьсЯ
   Gpl:TVer;// Плоскость над котрой находиться
 
+  COM:RBOL;// Object Create Commplected Обьект готов к отрисовке
   MAR:RBOL;// Маршрутный примитив
   DEL:RBOL;// Вершина в очереди на удаление
   CRE:RBOL;// Вершина создана
 
   OB3:RSIN;// ОБьем элемента
   RAS:RSIN;// Растояние от камеры до вершины
+
+  GMax:RCS3;// Габариты максимальные +x +y +z
+  GMin:RCS3;// Габариты минимальные -x -y -z
+
   Constructor Create(iCS3:RCS3;iEle,iObj:TVER);
 
 end;
@@ -384,10 +390,7 @@ var   {Описание Плоскоси      ===========================}{%Regi
                                                            Reg06:Longint;
 
 TYPE  TPLO=CLASS(TVER)
-  GMax:RCS3;// Габариты максимальные +x +y +z
-  GMin:RCS3;// Габариты минимальные -x -y -z
   VERS:Array[1..4] of TVER;// Вершины из котрых состоит плоскость
-
   Function    P_Viso(iCoo:RCS3):RSIN;// Определить высоту на плоскости
   Procedure   P_Gaba;// Вычислене габаритов
   Constructor Create(iVer1,iVer2,iVer3,iVer4:Tver;iEle,iObj:TVER);// Конструктор
@@ -523,7 +526,7 @@ var   {Описание Элемента      ===========================}{%Regi
 TYPE TELE=CLASS(TVER)
   KolV:RLON;// Количество вершин
   KolE:RLON;// Количество вложеных Элементов
-  EUGL:RCS3;// Углы наклона элемнта
+  EUGL:RCS3;// Углы наклона элемнта относительно родительского элемента
   VERS:Array[1..MaxKolVerInEle] of TVER;// Вершины
   ELES:Array[1..MaxKolEleInEle] of TELE;// Элементы
   function    E(iX,iY,iZ:RSIN;iObj:TEle):TELE;// Создает Элемент
@@ -539,6 +542,20 @@ TYPE TELE=CLASS(TVER)
   Constructor Create(iCS3:RCS3;iEle,iObj:TVER);// Констурктор
   Destructor  Destroy;override;
 end;
+TYPE TELES=CLASS // Описание элементов
+  KOLE :Longint;// Количество Элементов в игровом мире
+  KOLD :Longint;// Количество Элементов котрые нада удалить
+  DELE :Array[1..MaxKOlEleInMir] of TELE;// Список элемента  на удаление очередь
+  ELES :Array[1..MaxKOlEleInMir] of TELE;// Все элемента  игрового мира
+  ECOO1:Array[0..MaxKolEleInMir] of RCS3;// Координаты всех элемента
+  ECOO2:Array[0..MaxKolEleInMir] of RCS3;// Координаты элемента  для отрисовке
+  ECOL1:Array[0..MaxKolEleInMir] of RCOL;// Цвета всех элемента
+  ECOL2:Array[0..MaxKolEleInMir] of RCOL;// Цвета всех элементов  для отрисовки
+  Procedure   AddE(iEle:TEle);// Регестриует новую элемента
+  Procedure   AddD(iEle:TEle);// ОТпарвляет элемент  на удаление
+  Constructor Create;
+end;
+var  MirELEs:TEles;// Все вершины игрового мира здесь зарегестрированы
 
 function    TELE.E(iX,iY,iZ:RSIN;iObj:TEle):TELE;// Добавляет Элемент
 Var Rez:TELE;
@@ -671,18 +688,267 @@ for f:=1 to KolE do ELES[f].free;
 inherited Destroy;
 end;
 
+Procedure   TELES.AddE(iELE:TELE);// Регестриует новую вершину
+var F:Longint;Ex:Boolean;
+begin
+
+  Ex:=False;
+  //------------------------------------------------------------------------------
+
+  // Если в очереди даленных элементов  больше MinKolDelEles
+  // То можно не создавать нвоую элемент а использовать удленную
+  if KolD>MinKolDelEles then begin Ex:=True;
+  iEle.Nom:=DELE[1].NOM;
+  ELES[iEle.Nom]:=iEle;
+  DELE[1].Free;
+  for f:=1 to KolD-1 Do DELE[F]:=DELE[F+1];
+  KOlD:=KolD-1;
+  end;
+
+  //------------------------------------------------------------------------------
+
+  // Если не достточно удаленнх Элементов то просто создаем новую
+  if Not Ex then Begin
+  if KolE+1>MaxKOlEleInMir then
+  ERR(' TELES.AddE(iELE:TELE) KolV+1>MaxKOlEleInMir ');
+  ELES[KolE+1]:=iEle;
+  ElES[KolE+1].NOM:=KolE+1;
+  KolE:=KolE+1;
+  end;
+
+  //------------------------------------------------------------------------------
+
+end;
+Procedure   TELES.AddD(iELE:TELE);// ОТпарвляет Элемент на удаление
+var F:Longint;
+begin
+  IEle.Del:=True;
+  for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
+  for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
+  DELE[KolD+1]:=iEle;
+  KolD:=KolD+1;
+end;
+Constructor TELES.Create;
+begin
+KolE:=0;
+KolD:=0;
+end;
+
+{%EndRegion}
+var   {Описание Обьекта       ===========================}{%Region /FOLD }
+                                                            R122:longint;
+TYPE TOBJ=CLASS(TELE)
+
+  KAdr:RSIN;// Номер кадра для анимации
+  OCEL:RCS3;// Цель куда нужно перпемесчаться
+  OPER:RBOL;// Если это управляемый персонаж А не бот
+  KolP:RLON;// Количество плоскостей
+  KolD:RLON;// Количество Зависимых обьектов
+  PLOS:Array[1..MaxKolPloInObj] of TPLO;// Плоскости
+  DELS:Array[1..MaxKolObjInObj] of TObj;// Зависимые обьекты
+  procedure   O_MATH;// Перевычисление обьекта
+  procedure   O_SREA;// Вычисление Реальных координат
+  procedure   O_SECR;// Высиление экранных координат
+  procedure   O_INIC;// копирование реальных координат в экранные
+  procedure   O_RAST;// Вычисление Растояний от камеры
+  Procedure   O_Gaba;// Вычислене габаритов
+  Procedure   O_MASH(iMah:RSin);// Маштабирование
+  procedure   O_Rabo;Virtual;// Работа
+  procedure   O_SWAP;// прямое изменение координат обьекта на экране
+  Procedure   AddDels(iObj:Tobj);// Добавлет зависимый обьект
+  constructor Create(iCS3:RCS3);// Констурктор
+  Destructor  destroy;override;
+  function    P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
+
+End;
+
+function    TOBJ.P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
+Var Rez:TPLO;
+begin
+Rez:=TPLO.CREATE(iVer1,iVer2,iVer3,iVer4,iEle,Self);
+PLOS[KolP+1]:=Rez;
+KolP:=KolP+1;
+MirPlos.AddP(Rez);
+P:=Rez;
+end;
+
+Procedure   TOBJ.AddDels(iObj:Tobj);// Добавлет зависимый обьект
+begin
+if (KolD+1>MaxKolObjInObj) then
+ERR(' TOBJ.AddDels(iObj:Tobj) (KolD+1>MaxKolObjInObj)');
+Dels[KolD+1]:=iObj;
+KolD:=Kold+1;
+end;
+
+procedure   TOBJ.O_MASH(iMah:RSin);// Маштабирование обьекта
+var f:Longint;
+begin
+for f:=1 to KolV do begin
+VERS[f].LOC.X:=VERS[f].LOC.X*iMah;
+VERS[f].LOC.Y:=VERS[f].LOC.Y*iMah;
+VERS[f].LOC.Z:=VERS[f].LOC.Z*iMah;
+end;
+for f:=1 to KolE do ELES[f].E_MASH(iMah);
+end;
+procedure   TOBJ.O_MATH;// Перевычисление обьекта
+var f:Longint;
+begin
+// Вычилсяю минимальные и максимальные значения вложеных элемнтов
+E_Math;// Получаю Мат      Координаты
+O_SREA;// Получаю Реальные Координаты
+O_SECR;// Получаю Экранные координаты
+O_GABA;// Вычисление габаритов
+for f:=1 to KOlP do PLOS[f].P_GABA;// ВЫчисление габаритов плоскостей
+O_RAST;// ВЫчисление растояний
+end;
+procedure   TOBJ.O_SREA;// Вычисление Реальных координат
+var f:Longint;
+begin
+inherited E_SREA;// Вычисление Реальных координат вершин и вложеных элементов
+For F:=1 to KOlP do With PLOS[f] do REA:=SerRCs3(VERS[1].REA,VERS[3].REA);
+end;
+procedure   TOBJ.O_SECR;// Вычисление Экранных координат
+var f:Longint;
+begin
+inherited E_SECR;
+for f:=1 to KolP do with PLOS[F] do ECR:=SerRCS3(ECR,REA);
+end;
+procedure   TOBJ.O_SWAP;// Вычисление Экранных координат
+begin
+inherited E_SWAP;
+end;
 
 
+procedure   TOBJ.O_INIC;// Вычисление Экранных координат
+var f:Longint;
+begin
+inherited E_INIC;
+for f:=1 to KolP do with PLOS[F] do ECR:=REA;
+end;
+procedure   TOBJ.O_RAST;// Вычисление Растояний от камеры
+var f:Longint;
+begin
+inherited E_RAST;// Вычисление растоний от элементов и вершин
+RAS:=RasRCS3(REA,CaP2);// Вычисление растояний от камеры до обьекта
+// Вычисление растояния от камеры до плоскостей
+for f:=1 to KolP do
+With PLoS[f] do begin
+REA:=SerRCS3(Vers[1].REA,Vers[3].REA);
+RAS:=RasRCS3(REA,CaP2);
+end;
+end;
+
+procedure   TOBJ.O_Rabo;// Работа Обьекта
+begin
+
+end;
+Procedure   TOBJ.O_Gaba;// Вычислене габаритов
+var F:Longint;
+begin
+
+GMax.X:=-GMAxRAsInMir;
+GMax.Y:=-GMAxRAsInMir;
+GMax.Z:=-GMAxRAsInMir;
+GMin.X:= GMAxRAsInMir;
+GMin.Y:= GMAxRAsInMir;
+GMin.Z:= GMAxRAsInMir;
+
+for f:=1 to KolV do begin
+if (GMax.X<VERS[f].REA.x) then GMax.X:=VERS[f].REA.x;
+if (GMax.Y<VERS[f].REA.y) then GMax.Y:=VERS[f].REA.y;
+if (GMax.Z<VERS[f].REA.z) then GMax.Z:=VERS[f].REA.z;
+if (GMin.X>VERS[f].REA.x) then GMin.X:=VERS[f].REA.x;
+if (GMin.Y>VERS[f].REA.y) then GMin.Y:=VERS[f].REA.y;
+if (GMin.Z>VERS[f].REA.z) then GMin.Z:=VERS[f].REA.z;
+end;
+
+if (GMax.X<REA.x+0.01) then GMax.X:=REA.x+0.01;
+if (GMax.Y<REA.y+0.01) then GMax.Y:=REA.y+0.01;
+if (GMax.Z<REA.z+0.01) then GMax.Z:=REA.z+0.01;
+
+if (GMin.X>REA.x-0.01) then GMin.X:=REA.x-0.01;
+if (GMin.Y>REA.y-0.01) then GMin.Y:=REA.y-0.01;
+if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
+
+// Вычисление обьема
+OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
+end;
+
+Constructor TOBJ.Create(iCS3:RCS3);// Конструктор
+begin
+inherited Create(iCS3,Self,Self);
+Kadr:=1;
+OBJ:=Self;
+KolP:=0;
+KolD:=0;
+COM:=False;// Обьект собран и готов к отрисовке и работе
+end;
+Destructor  Tobj.Destroy;
+begin
+inherited Destroy;
+end;
 
 
+TYPE TOBJS=CLASS
+KOLO:Longint;
+KOLD:Longint;
+OBJS:Array[1..MaxKOlVerInMir] of TOBJ;
+DELO:Array[1..MaxKOlVerInMir] of TOBJ;
+Procedure   Ras;
+Function    AddO(iObj:TOBJ):Tobj;
+procedure   AddD(iObj:TOBJ);
+Constructor Create;
+end;
+var  MirObjs:TOBJS;
 
-procedure   TELE.E_DELE;// Удаление элемента
+Procedure   TOBJS.Ras;
+var f:Longint;
+begin
+for f:=1 to KolO do
+OBJS[f].O_Rast;
+end;
+procedure   TOBJS.AddD(iObj:TOBJ);
 Var F:Longint;
 begin
-DEL:=True;
-for f:=1 to KOlV do MirVers.addD(VERS[f]);
-for f:=1 to KolE do ELES[f].E_DELE;
+iOBJ.Del:=true;
+for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
+for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
+for f:=1 to iOBJ.KolE do MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
+for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
+DELO[KolD+1]:=iOBJ;
+KolD:=KolD+1;
 end;
+function    TOBJS.AddO(iOBJ:TOBJ):Tobj;
+var F:Longint;Ex:Boolean;
+begin
+Ex:=False;
+//------------------------------------------------------------------------------
+if KolD>MinKolDelObs then begin Ex:=True;
+iObj.Nom:=DelO[1].NOM;
+OBJS[iObj.Nom]:=iObj;
+DelO[1].Free;
+for f:=1 to KolD-1 Do DelO[F]:=DelO[F+1];
+KOlD:=KolD-1;
+end;
+//------------------------------------------------------------------------------
+if Not Ex then Begin
+if KolO+1>MaxkolObjinMir Then
+ERR(' TOBJS.AddO(iOBJ:TOBJ) KolO+1>MaxkolObjinMir');
+iOBJ.Nom:=KolO+1;
+KolO:=KolO+1;
+OBJS[iOBJ.Nom]:=iOBJ;
+end;
+AddO:=Iobj;
+end;
+Constructor TOBJS.Create;
+begin
+KolO:=0;
+KolD:=0;
+end;
+
+
+
+
 
 {%EndRegion}
 
