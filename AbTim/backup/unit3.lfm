@@ -1,0 +1,17 @@
+object Form3: TForm3
+  Left = 49
+  Height = 430
+  Top = 114
+  Width = 560
+  Caption = 'Form3'
+  ClientHeight = 430
+  ClientWidth = 560
+  LCLVersion = '1.8.4.0'
+  object OpenGLControl1: TOpenGLControl
+    Left = 0
+    Height = 430
+    Top = 0
+    Width = 560
+    Align = alClient
+  end
+end
