@@ -32,6 +32,8 @@ var   {Базовые Константы      ===========================}{%Regi
 procedure I_NewObject;// Создает новый обьект
 procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
 procedure i_DelObject(iObj:pointer);// Удаление обьектов
+procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
+
 
 {%EndRegion}
 implementation {$R *.lfm} uses Unit4;
@@ -39,19 +41,30 @@ const {Базовые Константы      ===========================}{%Regi
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
   MAxRAsInMir=32;//Максимальное растояние в игровом мире от камеры
+
   MaxKolVerInEle=128;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=128;// Максимальное количество Линий в Элементе
   MaxKolPloInObj=256;// Максимальное количество Плоскостей в Элементе
   MaxKolObjInObj=64 ;// Максимальное количество Плоскостей в Элементе
   MaxKolEleInEle=4  ;// Максимальное количество Обьектов в Элементе
+
   MaxKOlVerInMir=1024*64;//Максимальное количество вершин в игровом мире
   MaxKOlPloInMir=1024*64;//Максимальное количество Плоскостей в игровом мире
   MaxKOlEleInMir=1024*64;//Максимальное количество Элементов в игровом мире
   MaxKOlObjInMir=1024*64;//Максимальное количество Обьектов в игровом мире
+
   MinKolDelVers=1024*4;// Минимальный размер очереди на удаление вершин
   MinKolDelPlos=1024*4;// Минимальный размер очереди на удаление плоскотей
   MinKolDelEles=1024*4;// Минимальный размер очереди на удаление элементов
   MinKolDelObjs=1024*4;// Минимальный размер очереди на удаление Обьектов
+
+  MaxKolDelVers=1024*64;// Максимальный размер очереди на удаление вершин
+  MaxKolDelPlos=1024*64;// Максимальный размер очереди на удаление плоскотей
+  MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление элементов
+  MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
+
+  MaxKolSelPris=1024*64 ;// Максимальнео количество выделеных примитивов
+
   SCX= 0;
   SCZ= 0;
   RL = 3;
@@ -324,7 +337,7 @@ end;
 TYPE TVERS=CLASS // Описание вершин
   KOLV :Longint;// Количество вершин в игровом мире
   KOLD :Longint;// Количество вершин котрые нада удалить
-  DELV :Array[1..MaxKOlVerInMir] of TVER;// Список вершин на удаление очередь
+  DELV :Array[1..MaxKolDelVers ] of TVER;// Список вершин на удаление очередь
   VERS :Array[1..MaxKOlVerInMir] of TVER;// Все вершины игрового мира
   ECOO1:Array[0..MaxKolVerInMir] of RCS3;// Координаты всех вершин
   ECOO2:Array[0..MaxKolVerInMir] of RCS3;// Координаты вершин для отрисовке
@@ -397,7 +410,10 @@ begin
 end;
 Procedure   TVERS.AddD(iVer:Tver);// ОТпарвляет вершину на удаление
 begin
+  I_DelSel(iVer);// Снимаю выделение елси оно есть
   IVer.Del:=True;
+  if KolD+1>MaxKolDelVers then
+  ERR(' TVERS.AddD(iVer:Tver) KolD+1>MaxKolDelVers');
   DELV[KolD+1]:=iVer;
   KolD:=KolD+1;
 end;
@@ -533,7 +549,10 @@ begin
 end;
 Procedure   TPLOS.AddD(iPlo:TPlo);
 begin
+  I_DelSel(iPlo);// Снимаю выделение елси оно есть
   IPlo.Del:=True;
+  if KolD+1>MaxKolDelPlos then
+  ERR(' TPLOS.AddD(iPlo:TPlo);  KolD+1>MaxKolDelPlos');
   DELP[KolD+1]:=iPlo;
   KolD:=KolD+1;
 end;
@@ -745,6 +764,7 @@ end;
 Procedure   TELES.AddD(iELE:TELE);// ОТпарвляет Элемент на удаление
 var F:Longint;
 begin
+  I_DelSel(iEle);// Снимаю выделение елси оно есть
   IEle.Del:=True;
   for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
   for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
@@ -935,6 +955,7 @@ end;
 procedure   TOBJS.AddD(iObj:TOBJ);
 Var F:Longint;
 begin
+I_DelSel(iObj);// Снимаю выделение елси оно есть
 iOBJ.Del:=true;
 for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
 for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
@@ -977,8 +998,105 @@ end;
 
 {%EndRegion}
 
-var   {Интерфейс редактора    ===========================}{%Region /FOLD }
+var   {Буфер обмена           ===========================}{%Region /FOLD }
                                                            Reg09:Longint;
+
+TYpe TSels=class // Список выделеных примитивов
+
+KOl:Longint;// Количество выделеных примитивов
+SELS:array [1..MaxKolSelPris]  of Tver;// Списко выделеных примитивов
+
+procedure ADD(iSel:Tver);// Добавляет примитив в списко выделеных
+procedure DEL(iSel:Tver);// Снимает  выделение с примитива
+function  EST(iSel:Tver):Longint;// Возвращет номер в списке выделеных примитиво
+
+function  SELVERS:TSels;// Возвращает Список выделеных Вершин
+function  SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
+function  SELELES:TSels;// Возвращает Список выделеных Элементов
+function  SELOBJS:TSels;// Возвращает Список выделеных Обьект
+constructor Create;
+
+end;
+var MirSels:TSels;// Буфер обмена
+constructor TSels.Create;
+begin
+Kol:=0;
+end;
+procedure TSels.ADD(iSel:Tver);// Добавляет примитив в списко выделеных
+begin
+
+if KOl+1>MaxKolSelPris then // Проверка на переполнение
+ERR(' TSels.ADD(iSel:Tver) KOl+1>MaxKolSel ');
+
+iSel.Sel:=true;// Ставлю фоаг что обьект выделен
+SELS[KOl+1]:=iSel;// Добавляю обьект в списко
+KOl:=KOl+1;// Увеличиваю количество выделеных обьектов
+
+end;
+function  TSels.EST(iSel:Tver):Longint;// Возвращет номер в выделеных
+var f,Rez:Longint;
+begin
+ Rez:=0;
+ while (f<=Kol) and (Rez=0) do
+ if iSel=Sels[f] then Rez:=f else f:=f+1;
+ EST:=Rez;
+end;
+procedure TSels.DEL(iSel:Tver);// Снимает  выделение с примитива
+var Nom,f:Longint;
+begin
+
+  Nom:=EST(iSel);// Нахожу элемент в списке выделеных
+  if Nom<>0 then begin // если он такм есть
+  ISel.Sel:=False;// Снимаю ылаг выделения
+  for f:=Nom to KOl-1 do Sels[f]:=Sels[f+1];
+  Kol:=KOl-1;// Уменьшая количество выделенх примитивов
+  end;
+
+end;
+
+function  TSels.SELVERS:TSels;// Возвращает Список выделеных Вершин
+var Rez:TSels;f:Longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f] is TVER) then REz.Add(SELS[f]);
+ SELVERS:=Rez;
+end;
+function  TSels.SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
+var Rez:TSels;f:longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f] is TPLO) then REz.Add(SELS[f]);
+ SELPLOS:=Rez;
+end;
+function  TSels.SELELES:TSels;// Возвращает Список выделеных Элементов
+var Rez:TSels;longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f] is TELE) then REz.Add(SELS[f]);
+ SELELES:=Rez;
+end;
+function  TSels.SELOBJS:TSels;// Возвращает Список выделеных ОБьектов
+var Rez:TSels;longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f] is TOBJ) then REz.Add(SELS[f]);
+ SELOBJS:=Rez;
+end;
+
+
+{%EndRegion}
+var   {Интерфейс редактора    ===========================}{%Region /FOLD }
+                                                           Reg10:Longint;
+
+
+procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
+begin
+   MirSels.Del(TVer(iPri));
+end;
 
 procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
 var
@@ -1010,6 +1128,7 @@ form4.CheckListBox6.items.delete(form4.CheckListBox6.count-1);
 if MemIndex<form4.CheckListBox6.count then
 form4.CheckListBox6.ItemIndex:=MemIndex;
 end;
+
 procedure I_NewObject;// Создает новый обьект
 Var lObj:TObj;
 begin
@@ -1025,14 +1144,88 @@ MirObjs.AddD(TObj(iObj));// Добавляем обьект в удаляемы�
 I_RefreshSpisokObjects;// Обновляет списко с обьектами
 end;
 
+procedure I_NewElement;// Создает новый Элемента
+Var lEle:TEle;
+begin
+//if I_SelEle=Nil then ERR('I_NewElement I_SelEle=Nil');
+//lEle:=I_SelEle.E(CreRCS3(0,0,0));// Добавляет элемент
+//lEle.Nam:='Element '+IntToStr(lEle.IDD);// Название для ного элемента
+//TObj(I_SelEle.Obj).O_MATH;// перерасчитать ОБьект
+//I_RefreshSpisokElements;// обновить список элементов
+end;
+procedure i_DelElement(iEle:pointer);// Удаление Элемента
+begin
+//MirObjs.AddD(TObj(iObj));// Добавляем обьект в удаляемые
+//I_RefreshSpisokObjects;// Обновляет списко с обьектами
+end;
 
 procedure I_DrVertex(iVer:TVer);// Вывод вершины
 var C:RCol;
 begin
 C:=iVer.Col;
 glColor3ub(C.R,C.G,C.B);
-glBegin(GL_POINTS);
-glVertex3f(iVer.ECR.x,iVer.ECR.y,iVer.ECR.z);
+glBegin(GL_LINES);
+with iVer do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
+glEnd();
+end;
+procedure I_DrPloscost(iPlo:TPlo);// Вывод Плоскости
+var C:RCol;
+begin
+C:=iPlo.Col;
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_LINES);
+with iPlo do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
+glEnd();
+end;
+procedure I_DrElement(iEle:TEle);// Вывод Элемента
+var C:RCol;
+begin
+C:=iEle.Col;
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_LINES);
+with iEle do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
 glEnd();
 end;
 procedure I_DrObject(iObj:TObj);// Вывод ОБьекта
@@ -1059,12 +1252,9 @@ end;
 glEnd();
 end;
 
-
-
-
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }
-                                                           Reg10:Longint;
+                                                           Reg11:Longint;
 function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
 var F,K2:Longint;
 begin
@@ -1103,7 +1293,7 @@ end;
 
 {%EndRegion}
 var   {Нажатие по экрану      ===========================}{%Region /FOLD }
-                                                           Reg11:Longint;
+                                                           Reg12:Longint;
 
 function  IntToCol(iCol:LongWord):RCOL;// Переводит Число в цвет
 var
@@ -1185,7 +1375,8 @@ end;
 
 {%EndRegion}
 var   {Таймеры                ===========================}{%Region /FOLD }
-                                                           Reg12:Longint;
+                                                           Reg13:Longint;
+
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
 x,z:RINT;
@@ -1197,6 +1388,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirPlos:=TPLOS.Create;// Создаем списки плоскостей
   MirEles:=TELES.Create;// Создаем списки элементов
   MirObjs:=TOBJS.Create;// Создаем списки Обьектов
+  MirSels:=TSELS.Create;// Создаем Буфер обмена
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@Math,nil,0,HMathTrId);
   // OpenGl настройки
@@ -1304,7 +1496,7 @@ end;
 
 {%EndRegion}
 var   {События формы          ===========================}{%Region /FOLD }
-                                                           Reg13:Longint;
+                                                           Reg14:Longint;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
@@ -1361,6 +1553,7 @@ begin
 end;
 
 {%EndRegion}
+
 
 end.
 

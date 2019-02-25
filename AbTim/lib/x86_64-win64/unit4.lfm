@@ -254,7 +254,7 @@ object Form4: TForm4
   end
   object PopupMenu4: TPopupMenu
     left = 320
-    top = 76
+    top = 77
     object MenuItem3: TMenuItem
       Caption = 'Добавить.'
     end
