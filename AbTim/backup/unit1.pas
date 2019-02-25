@@ -20,6 +20,7 @@ begin
 
   timer1.Enabled:=false; // Отключаем таймер формы 1
   form3.Visible:=true;// Делаем вимой форму отрисовки
+  form4.Visible:=true;// Инструменты редактирования
   form1.Visible:=false;// Скрываем стартовую форму
   form3.timer1.Enabled:=true;// Запускаем запускатор формы 4
 

@@ -3,7 +3,6 @@ interface
 uses
   Classes, SysUtils, FileUtil, OpenGLContext, Forms, Controls, Graphics,
   Dialogs, ExtCtrls,windows, Types,Gl,Glu;
-
 type { TForm3 }  TForm3 = class(TForm)
     OpenGLControl1: TOpenGLControl;
     Timer1: TTimer;
@@ -28,8 +27,14 @@ type { TForm3 }  TForm3 = class(TForm)
 
   end;
 var Form3: TForm3;
-implementation {$R *.lfm}
+var   {Базовые Константы      ===========================}{%Region /FOLD }
+                                                           Reg00:Longint;
+procedure I_NewObject;// Создает новый обьект
+procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
+procedure i_DelObject(iObj:pointer);// Удаление обьектов
 
+{%EndRegion}
+implementation {$R *.lfm} uses Unit4;
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
@@ -279,6 +284,7 @@ var   {Базовые функции        ===========================}{%Region
       end;
 
 {%EndRegion}
+
 var   {Описание вершины       ===========================}{%Region /FOLD }
                                                            Reg05:Longint;
 TYPE TVER=CLASS  // Опсиание вершиины
@@ -413,8 +419,8 @@ TYPE  TPLO=CLASS(TVER)
   Destructor  destroy;override;
 end;
 TYPE TPLOS=CLASS
-Kol2:RLON;// ??????? нууд узнать что это такое
-KOLP:RLON;// Количество плоскостей в игровом мире
+Kol2:RLON;// Клдичество реально рисуемых плоскостей
+KOLP:RLON;// Количество плоскостей в игровом мире всего
 KOlD:RLON;// Количество удаленных плоскостей в игровом мире
 DELP :Array[1..MaxKOlPloInMir] of TPLO;// Удаленные плоскости
 PLOS :Array[1..MaxKOlPloInMir] of TPLO;// Все плоскости зарег в игровм мире
@@ -755,7 +761,7 @@ end;
 
 {%EndRegion}
 var   {Описание Обьекта       ===========================}{%Region /FOLD }
-                                                            R122:longint;
+                                                           Reg08:Longint;
 TYPE TOBJ=CLASS(TELE)
 
   KAdr:RSIN;// Номер кадра для анимации
@@ -780,6 +786,17 @@ TYPE TOBJ=CLASS(TELE)
   function    P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
 
 End;
+TYPE TOBJS=CLASS
+KOLO:Longint;
+KOLD:Longint;
+OBJS:Array[1..MaxKOlVerInMir] of TOBJ;
+DELO:Array[1..MaxKOlVerInMir] of TOBJ;
+Procedure   Ras;
+Function    AddO(iObj:TOBJ):Tobj;
+procedure   AddD(iObj:TOBJ);
+Constructor Create;
+end;
+var  MirObjs:TOBJS;
 
 function    TOBJ.P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
 Var Rez:TPLO;
@@ -908,17 +925,6 @@ inherited Destroy;
 end;
 
 
-TYPE TOBJS=CLASS
-KOLO:Longint;
-KOLD:Longint;
-OBJS:Array[1..MaxKOlVerInMir] of TOBJ;
-DELO:Array[1..MaxKOlVerInMir] of TOBJ;
-Procedure   Ras;
-Function    AddO(iObj:TOBJ):Tobj;
-procedure   AddD(iObj:TOBJ);
-Constructor Create;
-end;
-var  MirObjs:TOBJS;
 
 Procedure   TOBJS.Ras;
 var f:Longint;
@@ -971,50 +977,94 @@ end;
 
 {%EndRegion}
 
+var   {Интерфейс редактора    ===========================}{%Region /FOLD }
+                                                           Reg09:Longint;
 
-Function LanVis(x,z:RSIN):RSIN;
-var REz:Rsin;
-begin
-LanVis:=X*z/10;
-end;
-TYPE  TLAN=CLASS(TOBJ)
-constructor Create(iCS3:RCS3);// Констурктор
-End;
-Constructor TLAN.Create(iCS3:RCS3);// Конструктор
+procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
 var
-fx,fz,x1,z1:Longint;lS,KKK:RSIN;PL:TPLO;L:RCS3;
-VER:Array[-RL..RL,-RL..RL] of TVER;// Вершины
+f:longint;// лдя циклов
+NomItems:Longint;// Перебирать записи в листбоксе
+MemIndex:Longint;// Запоминаем выделеный обьект
 begin
-inherited Create(iCS3);
-
-lS:=0.5/RL;// Создаю вершины ландшафта
-for fz:=-RL to RL do
-for fx:=-RL to RL do begin
-
-VER[fx,Fz]:=V(fx*lS,LanVis(fx*lS+ics3.x,fz*lS+ics3.z),fz*lS);
-VER[fx,Fz].COL.R:=100;//Random(255);
-VER[fx,Fz].COL.G:=random(255);
-VER[fx,Fz].COL.B:=100;//Random(255);
-VER[fx,Fz].COL.A:=255;
-
+MemIndex:=form4.CheckListBox6.ItemIndex;
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to MirObjs.KolO do
+if Not MirObjs.OBJS[f].DEL then begin // Если обьект не удалён
+NomItems:=NomItems+1;
+if NomItems<form4.CheckListBox6.Items.count then begin
+// Изменяем записи в списке только если обьект в списке изменился
+if form4.CheckListBox6.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
+   begin
+   form4.CheckListBox6.Items[NomItems]:=MirObjs.OBJS[f].NAM;
+   form4.CheckListBox6.Items.Objects[NomItems]:=MirObjs.OBJS[f];
+   end;
+end
+else form4.CheckListBox6.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
 end;
 
-for fz:=-RL to RL-1 do // Создаю плоскости ландшафта
-for fx:=-RL to RL-1 do begin
-PL:=P(VER[fx,fz],VER[fx,fz+1],VER[fx+1,fz+1],VER[fx+1,fz],self);
-PL.MAR:=True;
-PL.LOC:=SerRCS3(VER[fx,fz].LOC,VER[fx+1,fz+1].Loc);
+// Удаляем лишнии записи в конце списка
+while form4.CheckListBox6.count-1>NomItems do
+form4.CheckListBox6.items.delete(form4.CheckListBox6.count-1);
+
+// Востанавливаем выделеный обьект елси он в пределах
+if MemIndex<form4.CheckListBox6.count then
+form4.CheckListBox6.ItemIndex:=MemIndex;
+end;
+procedure I_NewObject;// Создает новый обьект
+Var lObj:TObj;
+begin
+lObj:=TObj.Create(CreRCS3(0,0,0));
+lObj.Nam:='Object '+IntToStr(lObj.IDD);
+lObj.O_MATH;
+MirObjs.AddO(lObj);
+I_RefreshSpisokObjects;
+end;
+procedure i_DelObject(iObj:pointer);// Удаление обьектов
+begin
+MirObjs.AddD(TObj(iObj));// Добавляем обьект в удаляемые
+I_RefreshSpisokObjects;// Обновляет списко с обьектами
 end;
 
-Mar:=True;
-O_MATH;
-O_INIC;
-O_SWAP;
-MirObjs.addO(self);
 
+procedure I_DrVertex(iVer:TVer);// Вывод вершины
+var C:RCol;
+begin
+C:=iVer.Col;
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_POINTS);
+glVertex3f(iVer.ECR.x,iVer.ECR.y,iVer.ECR.z);
+glEnd();
+end;
+procedure I_DrObject(iObj:TObj);// Вывод ОБьекта
+var C:RCol;
+begin
+C:=iObj.Col;
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_LINES);
+with iObj do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
+glEnd();
 end;
 
 
+
+
+{%EndRegion}
+var   {Паралельные процесы    ===========================}{%Region /FOLD }
+                                                           Reg10:Longint;
 function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
 var F,K2:Longint;
 begin
@@ -1050,6 +1100,10 @@ begin
    end;
    result:=0;
 end;
+
+{%EndRegion}
+var   {Нажатие по экрану      ===========================}{%Region /FOLD }
+                                                           Reg11:Longint;
 
 function  IntToCol(iCol:LongWord):RCOL;// Переводит Число в цвет
 var
@@ -1129,6 +1183,10 @@ iver4:=iPlo.VERS[4].ECR;
 end;
 end;
 
+{%EndRegion}
+var   {Таймеры                ===========================}{%Region /FOLD }
+                                                           Reg12:Longint;
+
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
 x,z:RINT;
@@ -1140,9 +1198,6 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirPlos:=TPLOS.Create;// Создаем списки плоскостей
   MirEles:=TELES.Create;// Создаем списки элементов
   MirObjs:=TOBJS.Create;// Создаем списки Обьектов
-  for x:=-3 to 3 do
-  for z:=-3 to 3 do
-  Tlan.Create(CreRcS3(x,0,z));
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@Math,nil,0,HMathTrId);
   // OpenGl настройки
@@ -1151,8 +1206,8 @@ Timer1.enabled:=false;// Отключаем запускатор
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
-  GlPointSize(3);// размер точек
-  GlLineWidth(3);// рзмер Линий
+  GlPointSize(10);// размер точек
+  GlLineWidth(10);// рзмер Линий
   OpenGLControl1Resize(nil);// Начальное вычисление пропрций
   Timer2.enabled:=true;// Врубаем отрисовку
   Timer3.enabled:=true;// Врубаем подсчет количества кадров в секунду
@@ -1161,6 +1216,7 @@ end;
 procedure TForm3.Timer2Timer(Sender: TObject);// ОТрисовка
 var Tr:QWord;f:longint;RC:LongWord;P:TPLO;
 begin
+  begin // Подготовка в отрисовке
   timer2.Enabled:=false;
   Tr:=GetTickCount64;
   //----------------------------------------------------------------------------
@@ -1175,7 +1231,7 @@ begin
   glRotateD(CaU2.X,1,0,0);// Поворот по оси X
   glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
   glTranslateD(-CaP2.x,-CaP2.y,-CaP2.z);// Координаты камеры
-
+  end;
   //----------------------------------------------------------------------------
   if LBut then Begin
   glDisableClientState(GL_COLOR_ARRAY);
@@ -1204,22 +1260,34 @@ begin
   LBut:=false;
   end;
   //----------------------------------------------------------------------------
-
+  Begin // Отрисовка сцены
   //----------------------------------------------------------------------------
   glClearColor(GFon.R*(1/255),GFon.G*(1/255),GFon.B*(1/255),GFon.A*(1/255)); // Задаем фон
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);// очистка экрана
-  //----------------------------------------------------------------------------
-
   glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
   glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glDrawElements(GL_TRIANGLES,MirPlos.Kol2*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
-
+  end;
   //----------------------------------------------------------------------------
+  Begin // Отрисовка редактора
+
+  // Отрисовываю все вершины в игровом мире
+  for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
+  I_DrVertex(MirVers.VERS[f]);
+
+  // Отрисовываю все вершины в игровом мире
+  for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
+  I_DrObject(MirObjs.OBJS[f]);
+
+  end;
+  //----------------------------------------------------------------------------
+  begin // Завершение отрисовки
   OpenGLControl1.SwapBuffers;
   KolKAdVsek:=KolKAdVsek+1;
   TR:=GetTickCount64-tr;
   timer2.Enabled:=true;
+  end;
 end;
 procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
 begin
@@ -1235,6 +1303,9 @@ if (KolKAdVsek<33) and (Timer2.interval>1 ) then Timer2.interval:=Timer2.interva
 KolKAdVsek:=0;
 end;
 
+{%EndRegion}
+var   {События формы          ===========================}{%Region /FOLD }
+                                                           Reg13:Longint;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
@@ -1290,5 +1361,9 @@ begin
   if Button=mbRight then RBut:=true;
 end;
 
+{%EndRegion}
+
 end.
+
+
 
