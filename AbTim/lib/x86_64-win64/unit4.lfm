@@ -226,6 +226,9 @@ object Form4: TForm4
         'Обьекты'
       )
       ItemHeight = 22
+      ItemIndex = 0
+      MultiSelect = True
+      OnClick = CheckListBox6Click
       PopupMenu = PopupMenu6
       TabOrder = 3
       Visible = False

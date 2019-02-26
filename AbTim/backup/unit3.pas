@@ -27,13 +27,13 @@ type { TForm3 }  TForm3 = class(TForm)
 
   end;
 var Form3: TForm3;
-var   {Базовые Константы      ===========================}{%Region /FOLD }
+var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg00:Longint;
 procedure I_NewObject;// Создает новый обьект
 procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
 procedure i_DelObject(iObj:pointer);// Удаление обьектов
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
-
+procedure I_SelSel(iPri:pointer);// Выделение примитива
 
 {%EndRegion}
 implementation {$R *.lfm} uses Unit4;
@@ -352,7 +352,7 @@ var MirVers:Tvers;// Все вершины игрового мира здесь 
 Constructor TVER.Create(iCS3:RCS3;iEle,iObj:TVER);// Создает вершину
 begin
 
-  SEL:=true         ;// При создании новой вершины она автоматически выделена
+  SEL:=false        ;// Не выделен примитив
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке отрисовки
 
@@ -1071,7 +1071,7 @@ begin
  SELPLOS:=Rez;
 end;
 function  TSels.SELELES:TSels;// Возвращает Список выделеных Элементов
-var Rez:TSels;longint;
+var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
@@ -1079,14 +1079,13 @@ begin
  SELELES:=Rez;
 end;
 function  TSels.SELOBJS:TSels;// Возвращает Список выделеных ОБьектов
-var Rez:TSels;longint;
+var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
  if (SELS[f] is TOBJ) then REz.Add(SELS[f]);
  SELOBJS:=Rez;
 end;
-
 
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
@@ -1097,6 +1096,10 @@ procedure I_DelSel(iPri:pointer);// Снимает выделени с прим�
 begin
    MirSels.Del(TVer(iPri));
 end;
+procedure I_SelSel(iPri:pointer);// Выделение примитива
+begin
+   MirSels.Add(TVer(iPri));
+end;
 
 procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
 var
@@ -1104,29 +1107,34 @@ f:longint;// лдя циклов
 NomItems:Longint;// Перебирать записи в листбоксе
 MemIndex:Longint;// Запоминаем выделеный обьект
 begin
-MemIndex:=form4.CheckListBox6.ItemIndex;
+
 NomItems:=0;// Для перебора обье4ктов в списке
 for f:=1 to MirObjs.KolO do
 if Not MirObjs.OBJS[f].DEL then begin // Если обьект не удалён
 NomItems:=NomItems+1;
 if NomItems<form4.CheckListBox6.Items.count then begin
 // Изменяем записи в списке только если обьект в списке изменился
-if form4.CheckListBox6.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
-   begin
+   form4.CheckListBox6.selected[NomItems]:=MirObjs.OBJS[f].Sel;
+   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
    form4.CheckListBox6.Items[NomItems]:=MirObjs.OBJS[f].NAM;
+if form4.CheckListBox6.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
    form4.CheckListBox6.Items.Objects[NomItems]:=MirObjs.OBJS[f];
-   end;
 end
-else form4.CheckListBox6.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
+else
+begin
+
+form4.CheckListBox6.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
+form4.CheckListBox6.selected[form4.CheckListBox6.Count-1]:=MirObjs.OBJS[f].Sel;
+
+end
+
 end;
 
 // Удаляем лишнии записи в конце списка
 while form4.CheckListBox6.count-1>NomItems do
 form4.CheckListBox6.items.delete(form4.CheckListBox6.count-1);
 
-// Востанавливаем выделеный обьект елси он в пределах
-if MemIndex<form4.CheckListBox6.count then
-form4.CheckListBox6.ItemIndex:=MemIndex;
+
 end;
 
 procedure I_NewObject;// Создает новый обьект
@@ -1232,7 +1240,9 @@ procedure I_DrObject(iObj:TObj);// Вывод ОБьекта
 var C:RCol;
 begin
 C:=iObj.Col;
-glColor3ub(C.R,C.G,C.B);
+if iObj.Sel
+Then glColor3ub(Random(255),Random(255),Random(255))
+else glColor3ub(C.R,C.G,C.B);
 glBegin(GL_LINES);
 with iObj do begin
 

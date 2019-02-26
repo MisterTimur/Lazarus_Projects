@@ -1,7 +1,7 @@
 unit Unit4; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, CheckLst, Menus,unit3;
+  StdCtrls, CheckLst, Menus,unit3, Types;
 type
 { TForm4 }
  TForm4 = class(TForm)
@@ -43,6 +43,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure CheckListBox6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
   private
@@ -88,6 +89,14 @@ begin
   CheckListBox6.Visible:=true;
 end;
 
+procedure TForm4.CheckListBox6Click(Sender: TObject);
+var F:Longint;
+begin
+ for f:=1 to CheckListBox6.item.Count-1 do
+ if CheckListBox6.Selected[f]
+ then I_SelSel(CheckListBox6.items.objects[f])
+ else I_DelSel(CheckListBox6.items.objects[f]);
+end;
 procedure TForm4.MenuItem7Click(Sender: TObject);// Добавить обьект
 begin
   I_NewObject;
