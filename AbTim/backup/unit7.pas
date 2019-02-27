@@ -56,48 +56,39 @@ begin
   I_GetUY(iEle,lForm7.Edit6);
   I_GetUZ(iEle,lForm7.Edit7);
 end;
-
 procedure TForm7.MenuItem1Click(Sender: TObject);
 begin
   I_NewPoint(Ele);
   I_RefreshSpisokPOints(Ele,CheckListBox1);
 end;
-
 procedure TForm7.Edit1Change(Sender: TObject);
 begin
     I_SetN(Ele,Edit1);
 end;
-
 procedure TForm7.Edit2Change(Sender: TObject);
 begin
     I_SetX(Ele,Edit2);
 end;
-
 procedure TForm7.Edit3Change(Sender: TObject);
 begin
   I_SetY(Ele,Edit3);
 end;
-
 procedure TForm7.Edit4Change(Sender: TObject);
 begin
   I_SetZ(Ele,Edit4);
 end;
-
 procedure TForm7.Edit5Change(Sender: TObject);
 begin
   I_SetUX(Ele,Edit5);
 end;
-
 procedure TForm7.Edit6Change(Sender: TObject);
 begin
   I_SetUY(Ele,Edit6);
 end;
-
 procedure TForm7.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Ele,Edit7);
 end;
-
 procedure TForm7.MenuItem2Click(Sender: TObject);
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
@@ -105,19 +96,32 @@ begin
    i_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
    I_RefreshSpisokPoints(Ele,CheckListBox1);
 end;
-
 procedure TForm7.MenuItem3Click(Sender: TObject);
 begin
   I_NewElement(Ele);
   I_RefreshSpisokElements(Ele,CheckListBox2);
 end;
-
 procedure TForm7.MenuItem4Click(Sender: TObject);
+var
+  f:Longint;
 begin
+
    if CheckListBox2.itemindex<CheckListBox2.items.count then
-   if CheckListBox2.itemindex>0 then
-   i_DelElement(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefreshSpisokElements(Ele,CheckListBox2);
+   if CheckListBox2.itemindex>0 then begin
+
+   for f:=0 to application.ComponentCount-1 do
+   if (application.Components[f] is tform7) then
+      if I_RodEle((application.Components[f] as tform7).ELE,
+      CheckListBox2.items.objects[CheckListBox2.itemindex]) then
+      (application.Components[f] as tform7).close;
+
+
+
+
+   i_DelObject(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   I_RefreshSpisokObjects(CheckListBox2);
+
+end;
 end;
 
 end.

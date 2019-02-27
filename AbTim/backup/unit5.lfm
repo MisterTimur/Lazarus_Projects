@@ -32,6 +32,8 @@ object Form5: TForm5
       'Objects'
     )
     ItemHeight = 22
+    ItemIndex = 0
+    MultiSelect = True
     OnClick = CheckListBox1Click
     OnDblClick = CheckListBox1DblClick
     PopupMenu = PopupMenu1

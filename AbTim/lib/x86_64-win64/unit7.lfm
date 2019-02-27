@@ -1,7 +1,7 @@
 object Form7: TForm7
-  Left = 267
+  Left = 570
   Height = 381
-  Top = 193
+  Top = 146
   Width = 320
   Caption = 'Form7'
   ClientHeight = 381
@@ -132,9 +132,15 @@ object Form7: TForm7
       Top = 1
       Width = 100
       Align = alLeft
-      ItemHeight = 0
+      Items.Strings = (
+        'V'
+      )
+      ItemHeight = 22
       PopupMenu = PopupMenu1
       TabOrder = 0
+      Data = {
+        0100000000
+      }
     end
     object Splitter2: TSplitter
       Left = 101
@@ -148,9 +154,15 @@ object Form7: TForm7
       Top = 1
       Width = 112
       Align = alClient
-      ItemHeight = 0
+      Items.Strings = (
+        'E'
+      )
+      ItemHeight = 22
       PopupMenu = PopupMenu2
       TabOrder = 2
+      Data = {
+        0100000000
+      }
     end
   end
   object PopupMenu1: TPopupMenu

@@ -102,11 +102,23 @@ begin
   I_RefreshSpisokElements(Ele,CheckListBox2);
 end;
 procedure TForm7.MenuItem4Click(Sender: TObject);
+var
+  f:Longint;
 begin
+
    if CheckListBox2.itemindex<CheckListBox2.items.count then
-   if CheckListBox2.itemindex>0 then
-   i_DelElement(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefreshSpisokElements(Ele,CheckListBox2);
+   if CheckListBox2.itemindex>0 then begin
+
+   for f:=0 to application.ComponentCount-1 do
+   if (application.Components[f] is tform7) then
+      if I_RodEle((application.Components[f] as tform7).ELE,
+      CheckListBox2.items.objects[CheckListBox2.itemindex]) then
+      (application.Components[f] as tform7).close;
+
+   i_DelObject(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   I_RefreshSpisokObjects(CheckListBox2);
+
+end;
 end;
 
 end.

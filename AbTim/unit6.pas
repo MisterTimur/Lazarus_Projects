@@ -102,7 +102,6 @@ begin
  then I_SelSel(CheckListBox1.Items.Objects[f])
  else I_DelSel(CheckListBox1.Items.Objects[f]);
 end;
-
 procedure TForm6.CheckListBox2Click(Sender: TObject);
 var f:Longint;
 begin
@@ -111,11 +110,9 @@ begin
  then I_SelSel(CheckListBox2.Items.Objects[f])
  else I_DelSel(CheckListBox2.Items.Objects[f]);
 end;
-
 procedure TForm6.CheckListBox3Click(Sender: TObject);
 begin
 end;
-
 procedure TForm6.CheckListBox4Click(Sender: TObject);
 var f:Longint;
 begin
@@ -124,14 +121,12 @@ begin
  then I_SelSel(CheckListBox4.Items.Objects[f])
  else I_DelSel(CheckListBox4.Items.Objects[f]);
 end;
-
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then
    U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
 end;
-
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
   I_SetX(Obj,Edit2);
@@ -186,11 +181,30 @@ begin
     I_RefreshSpisokElements(obj,CheckListBox4);
 end;
 procedure TForm6.MenuItem8Click(Sender: TObject);
+var
+  f:Longint;
 begin
+
    if CheckListBox4.itemindex<CheckListBox4.items.count then
-   if CheckListBox4.itemindex>0 then
-   i_DelElement(CheckListBox4.items.objects[CheckListBox4.itemindex]);
-   I_RefreshSpisokElements(obj,CheckListBox4);
+   if CheckListBox4.itemindex>0 then begin
+
+   for f:=0 to application.ComponentCount-1 do
+   if (application.Components[f] is tform7) then begin
+      if I_RodEle((application.Components[f] as tform7).ELE,
+      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
+      (application.Components[f] as tform7).close;
+
+   end else
+   if (application.Components[f] is tform6) then
+      if I_RodEle((application.Components[f] as tform6).OBJ,
+      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
+      (application.Components[f] as tform6).close;
+
+
+   i_DelObject(CheckListBox4.items.objects[CheckListBox4.itemindex]);
+   I_RefreshSpisokObjects(CheckListBox4);
+
+end;
 end;
 
 end.

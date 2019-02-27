@@ -63,6 +63,7 @@ procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
 
+function  I_RodEle(iVer,iEle:Pointer):Boolean;
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
 procedure I_SelSel(iPri:pointer);// Выделение примитива
 
@@ -281,6 +282,19 @@ Rez.B:=trunc((A.B-B.B)*R7)+B.B;
 Rez.A:=trunc((0  -B.A)*R7)+B.A;
 end;
 CelRCol:=Rez;
+end;
+function  IntToCol(iCol:LongWord):RCOL;// Переводит Число в цвет
+var
+Rez:RCol;
+Col:LongWord;
+B:Array[0..3] of Byte absolute Col;
+begin
+Col:=iCol;
+Rez.R:=b[0];
+Rez.G:=b[1];
+Rez.B:=b[2];
+Rez.A:=b[3];
+IntToCol:=Rez;
 end;
 
 
@@ -1374,7 +1388,7 @@ rObj:TObj;
 lPLo:TPlo;
 lSel:TSels;
 begin
-lSel:=MirSels.SELPLOS;
+lSel:=MirSels.SELVERS;
 if lSel.KOl>=4 Then begin
 rObj:=TObj(iObj);
 lPlo:=rObj.P(lSel.SELS[4],
@@ -1424,11 +1438,16 @@ MirObjs.AddO(nObj);
 end;
 procedure I_DelObject(iObj:pointer);// Удаление обьектов
 Var
-dObj:TObj;
+dObj:TObj;f:Longint;
 begin
 dObj:=TObj(iObj);
 I_DelSel(dObj);// Снимаю выделение елси оно есть
 MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
+end;
+
+function  I_RodEle(iVer,iEle:Pointer):Boolean;
+begin
+
 end;
 
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
@@ -1440,57 +1459,35 @@ begin
    MirSels.Add(TVer(iPri));
 end;
 
-procedure I_DrVertex(iVer:TVer);// Вывод вершины
-var C:RCol;
+procedure I_DrVertex (iVer:TVer;iCol:RCol);// Вывод вершины
 begin
-C:=iVer.Col;
-glColor3ub(C.R,C.G,C.B);
-glBegin(GL_LINES);
-with iVer do begin
-
-glVertex3f(GMin.X,GMin.Y,GMin.Z);
-glVertex3f(GMin.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMin.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
-
-glVertex3f(GMin.X,GMin.Y,GMAX.Z);
-glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
-
-end;
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_POINTS);
+glVertex3f(iVer.ECR.X,iVer.ECR.Y,iVer.ECR.Z);
 glEnd();
 end;
-procedure I_DrPloscost(iPlo:TPlo);// Вывод Плоскости
+procedure I_DrPlos   (iPlo:TPlo;iCol:RCol);// Вывод Плоскости
 var C:RCol;
 begin
 C:=iPlo.Col;
-glColor3ub(C.R,C.G,C.B);
+glColor3ub(iCol.R,iCol.G,iCol.B);
 glBegin(GL_LINES);
 with iPlo do begin
 
-glVertex3f(GMin.X,GMin.Y,GMin.Z);
-glVertex3f(GMin.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMin.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
-
-glVertex3f(GMin.X,GMin.Y,GMAX.Z);
-glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
+glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
+glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
+glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
+glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
 
 end;
 glEnd();
 end;
-procedure I_DrElement(iEle:TEle);// Вывод Элемента
+procedure I_DrElement(iEle:TEle;iCol:RCol);// Вывод Элемента
 var C:RCol;
 begin
 C:=iEle.Col;
-glColor3ub(C.R,C.G,C.B);
+glColor3ub(iCol.R,iCol.G,iCol.B);
 glBegin(GL_LINES);
 with iEle do begin
 
@@ -1509,13 +1506,9 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 end;
 glEnd();
 end;
-procedure I_DrObject(iObj:TObj);// Вывод ОБьекта
-var C:RCol;
+procedure I_DrObject (iObj:TObj;iCol:RCol);// Вывод ОБьекта
 begin
-C:=iObj.Col;
-if iObj.Sel
-Then glColor3ub(Random(255),Random(255),Random(255))
-else glColor3ub(C.R,C.G,C.B);
+glColor3ub(iCol.R,iCol.G,iCol.B);
 glBegin(GL_LINES);
 with iObj do begin
 
@@ -1533,6 +1526,70 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 
 end;
 glEnd();
+end;
+
+procedure I_EDITDRAWSEL(ClientHeight:Longint);
+var f,RC:LongWord;
+begin
+//------------------------------------------------------------------------------
+for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
+I_DrVertex(MirVers.VERS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirVers.KolV) then begin end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+//------------------------------------------------------------------------------
+for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
+I_DrPlos(MirPLos.PLOS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirPLos.KolP) then begin end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+//------------------------------------------------------------------------------
+for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
+I_DrElement(MirEles.ELES[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirEles.KolE) then begin end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+//------------------------------------------------------------------------------
+for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
+I_DrObject(MirObjs.OBJS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirObjs.KolO) then begin end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+//------------------------------------------------------------------------------
+end;
+
+procedure I_EDITDRAW;
+var f:Longint;
+Begin // Отрисовка редактора
+
+// Отрисовываю все вершины в игровом мире
+for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
+if Not MirVers.VERS[f].SEL
+then I_DrVertex(MirVers.VERS[f],CreRCol(0,0,0,255))
+else I_DrVertex(MirVers.VERS[f],RanRcol);
+
+// Отрисовываю все Плоскости в игровом мире
+for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
+if Not MirPlos.PLOS[f].SEL
+then I_DrPlos(MirPlos.PLOS[f],CreRCol(0,0,0,255))
+else I_DrPlos(MirPlos.PLOS[f],RanRcol);
+
+// Отрисовываю все элементы  в игровом мире
+for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
+if Not MirEles.ELES[f].SEL
+Then I_DrElement(MirEles.ELES[f],CreRCol(0,0,0,255))
+else I_DrElement(MirEles.ELES[f],RanRcol);
+
+// Отрисовываю все ОБьекты в игровом мире
+for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
+if Not MirObjs.OBJS[f].SEL
+then  I_DrObject(MirObjs.OBJS[f],CreRCol(0,0,0,255))
+else  I_DrObject(MirObjs.OBJS[f],RanRCol)
+
 end;
 
 {%EndRegion}
@@ -1578,19 +1635,6 @@ end;
 var   {Нажатие по экрану      ===========================}{%Region /FOLD }
                                                            Reg12:Longint;
 
-function  IntToCol(iCol:LongWord):RCOL;// Переводит Число в цвет
-var
-Rez:RCol;
-Col:LongWord;
-B:Array[0..3] of Byte absolute Col;
-begin
-Col:=iCol;
-Rez.R:=b[0];
-Rez.G:=b[1];
-Rez.B:=b[2];
-Rez.A:=b[3];
-IntToCol:=Rez;
-end;
 procedure Ploskost(iVer1,iVer2,iVer3,iVer4:RCS3;C:RCOL);
 begin
 glColor3ub(C.R,C.G,C.B);
@@ -1711,9 +1755,9 @@ begin
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
   GlDisable(GL_Blend);// Выключаю смешивание цветов
+  I_EDITDRAWSEL(ClientHeight);// -------------------------------------------
   glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-
   for f:=1 to MirPlos.KolP do
   if   not MirPLos.Plos[f].DEL then
   with MirPLos.Plos[f] do
@@ -1742,18 +1786,7 @@ begin
   glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glDrawElements(GL_TRIANGLES,MirPlos.Kol2*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
-  end;
-  //----------------------------------------------------------------------------
-  Begin // Отрисовка редактора
-
-  // Отрисовываю все вершины в игровом мире
-  for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
-  I_DrVertex(MirVers.VERS[f]);
-
-  // Отрисовываю все вершины в игровом мире
-  for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
-  I_DrObject(MirObjs.OBJS[f]);
-
+  I_EDITDRAW;//-----------------------------------------------------------------
   end;
   //----------------------------------------------------------------------------
   begin // Завершение отрисовки
