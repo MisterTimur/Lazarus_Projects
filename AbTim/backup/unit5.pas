@@ -1,7 +1,7 @@
 unit Unit5;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus,Unit3,unit6,unit7;
+  CheckLst, Menus,Unit3,unit6,unit7,unit8;
 type
 
   { TForm5 }
@@ -42,7 +42,12 @@ begin
 
   f:=0;
   while f<application.ComponentCount do
-       if (application.Components[f] is tform7) then begin
+       if (application.Components[f] is tform8) then begin
+       if I_RodEle((application.Components[f] as tform8).ELE,
+          CheckListBox1.items.objects[CheckListBox1.itemindex]) then
+          (application.Components[f] as tform8).close;
+       end
+  else if (application.Components[f] is tform7) then begin
        if I_RodEle((application.Components[f] as tform7).ELE,
        CheckListBox1.items.objects[CheckListBox1.itemindex]) then
        (application.Components[f] as tform7).close;f:=f+1;

@@ -1320,54 +1320,54 @@ while iLis.count-1>NomItems do
 iLis.items.delete(iLis.count-1);
 end;
 
-procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetN(iVer:Pointer ;iEdit:TEdit);
 begin
 iEdit.Text:=TVEr(iVer).NAM;
 end;
-procedure I_GetX(iVer:Pointer;iEdit:TEdit);
+procedure I_GetX(iVer:Pointer ;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.X);
+iEdit.Text:=InString(TVEr(iVer).LOC.X);
 end;
-procedure I_GetY(iVer:Pointer;iEdit:TEdit);
+procedure I_GetY(iVer:Pointer ;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Y);
+iEdit.Text:=InString(TVEr(iVer).LOC.Y);
 end;
-procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_GetZ(iVer:Pointer ;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Z);
+iEdit.Text:=InString(TVEr(iVer).LOC.Z);
 end;
 procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.X);
+iEdit.Text:=InString(TEle(iEle).EUGL.X);
 end;
 procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Y);
+iEdit.Text:=InString(TEle(iEle).EUGL.Y);
 end;
 procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Z);
+iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 
-procedure I_SetN(iVer:Pointer;iEdit:TEdit);
+procedure I_SetN(iVer:Pointer ;iEdit:TEdit);
 begin
 TVEr(iVer).NAM:=iEdit.Text;
 end;
-procedure I_SetX(iVer:Pointer;iEdit:TEdit);
+procedure I_SetX(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetY(iVer:Pointer;iEdit:TEdit);
+procedure I_SetY(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_SetZ(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
@@ -1572,9 +1572,6 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 end;
 glEnd();
 end;
-
-
-
 procedure X_SEL(P:Pointer);
 var F,I:Longint;
 begin
@@ -1692,7 +1689,6 @@ then  I_DrObject(MirObjs.OBJS[f],CreRCol(0,0,0,255))
 else  I_DrObject(MirObjs.OBJS[f],RanRCol)
 
 end;
-
 
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }

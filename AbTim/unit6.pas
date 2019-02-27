@@ -1,7 +1,7 @@
 unit Unit6; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3,unit7, Types;
+  CheckLst, Menus, StdCtrls,Unit3,unit7,unit8, Types;
 type
 
   { TForm6 }
@@ -39,6 +39,7 @@ type
     Splitter4: TSplitter;
     Timer1: TTimer;
     procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox4DblClick(Sender: TObject);
@@ -106,6 +107,12 @@ end;
 procedure TForm6.CheckListBox1Click(Sender: TObject);
 begin
 
+end;
+procedure TForm6.CheckListBox1DblClick(Sender: TObject);
+begin
+   if CheckListBox1.itemindex<CheckListBox1.items.count then
+   if CheckListBox1.itemindex>0 then
+   U_OpenPoints(CheckListBox1.Items.Objects[CheckListBox1.ItemIndex],Obj);
 end;
 procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
@@ -184,11 +191,19 @@ begin
   I_RefreshSpisokPOints(obj,CheckListBox1);
 end;
 procedure TForm6.MenuItem2Click(Sender: TObject);
+var
+  F:Longint;
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
-   if CheckListBox1.itemindex>0 then
-   i_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+   if CheckListBox1.itemindex>0 then begin
+      for f:=0 to application.ComponentCount-1 do
+      if  (application.Components[f] is tform8) then
+      if ((application.Components[f] as tform8).VER=
+           POinter(CheckListBox1.items.objects[CheckListBox1.itemindex])) then
+         (application.Components[f] as tform8).close;
+   I_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
    I_RefreshSpisokPoints(obj,CheckListBox1);
+   end;
 end;
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
@@ -216,11 +231,15 @@ begin
    if CheckListBox4.itemindex>0 then begin
 
    for f:=0 to application.ComponentCount-1 do
+   if (application.Components[f] is tform8) then begin
+      if I_RodEle((application.Components[f] as tform8).ELE,
+      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
+      (application.Components[f] as tform8).close;
+   end else
    if (application.Components[f] is tform7) then begin
       if I_RodEle((application.Components[f] as tform7).ELE,
       CheckListBox4.items.objects[CheckListBox4.itemindex]) then
       (application.Components[f] as tform7).close;
-
    end else
    if (application.Components[f] is tform6) then
       if I_RodEle((application.Components[f] as tform6).OBJ,
@@ -232,6 +251,7 @@ begin
    I_RefreshSpisokElements(Obj,CheckListBox4);
 
 end;
+
 end;
 end.
 

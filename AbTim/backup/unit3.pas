@@ -1326,27 +1326,27 @@ iEdit.Text:=TVEr(iVer).NAM;
 end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.X);
+iEdit.Text:=InString(TVEr(iVer).LOC.X);
 end;
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Y);
+iEdit.Text:=InString(TVEr(iVer).LOC.Y);
 end;
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Z);
+iEdit.Text:=InString(TVEr(iVer).LOC.Z);
 end;
 procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.X);
+iEdit.Text:=InString(TEle(iEle).EUGL.X);
 end;
 procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Y);
+iEdit.Text:=InString(TEle(iEle).EUGL.Y);
 end;
 procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
 begin
-iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Z);
+iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
@@ -1572,9 +1572,6 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 end;
 glEnd();
 end;
-
-
-
 procedure X_SEL(P:Pointer);
 var F,I:Longint;
 begin
@@ -1692,7 +1689,6 @@ then  I_DrObject(MirObjs.OBJS[f],CreRCol(0,0,0,255))
 else  I_DrObject(MirObjs.OBJS[f],RanRCol)
 
 end;
-
 
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }

@@ -1,11 +1,11 @@
 object Form8: TForm8
-  Left = 316
+  Left = 495
   Height = 372
-  Top = 246
-  Width = 312
+  Top = 382
+  Width = 363
   Caption = 'Form8'
   ClientHeight = 372
-  ClientWidth = 312
+  ClientWidth = 363
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
   Font.Name = 'Consolas'
@@ -16,7 +16,7 @@ object Form8: TForm8
     Left = 0
     Height = 50
     Top = 0
-    Width = 312
+    Width = 363
     Align = alTop
     Caption = 'Panel1'
     TabOrder = 0
@@ -38,6 +38,7 @@ object Form8: TForm8
       Width = 168
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end
@@ -48,6 +49,9 @@ object Form8: TForm8
       Width = 168
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 1
       Text = 'Edit2'
     end
@@ -58,6 +62,9 @@ object Form8: TForm8
       Width = 168
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit3Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 2
       Text = 'Edit3'
     end
@@ -68,6 +75,9 @@ object Form8: TForm8
       Width = 168
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit4Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 3
       Text = 'Edit4'
     end
@@ -82,7 +92,7 @@ object Form8: TForm8
     Left = 175
     Height = 322
     Top = 50
-    Width = 137
+    Width = 188
     Align = alClient
     Caption = 'Panel3'
     TabOrder = 3
