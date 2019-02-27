@@ -103,13 +103,10 @@ procedure TForm6.Edit1Change(Sender: TObject);
 begin
   I_SetN(Obj,Edit1);
 end;
-
-
 procedure TForm6.CheckListBox1Click(Sender: TObject);
 begin
 
 end;
-
 procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
@@ -120,13 +117,6 @@ begin
  else I_DelSel(CheckListBox1.Items.Objects[f]);
 
 end;
-
-
-
-
-
-
-
 procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
@@ -135,15 +125,12 @@ begin
  then I_SelSel(CheckListBox2.Items.Objects[f])
  else I_DelSel(CheckListBox2.Items.Objects[f]);
 end;
-
-
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then
    U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
 end;
-
 procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
@@ -152,33 +139,26 @@ begin
  then I_SelSel(CheckListBox4.Items.Objects[f])
  else I_DelSel(CheckListBox4.Items.Objects[f]);
 end;
-
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
   I_SetX(Obj,Edit2);
 end;
-
 procedure TForm6.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
     if isFloat(TEdit(Sender).text) then
     TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
 end;
-
 procedure TForm6.Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
     if isFloat(TEdit(Sender).text) then
     TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
 end;
-
 procedure TForm6.Edit3Change(Sender: TObject);
 begin
   I_SetY(Obj,Edit3);
 end;
-
-
-
 procedure TForm6.Edit4Change(Sender: TObject);
 begin
   I_SetZ(Obj,Edit4);
@@ -198,9 +178,6 @@ end;
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 end;
-
-
-
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
   I_NewPoint(obj);

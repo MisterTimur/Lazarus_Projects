@@ -1,7 +1,7 @@
 object Form7: TForm7
-  Left = 570
+  Left = 554
   Height = 381
-  Top = 146
+  Top = 145
   Width = 320
   Caption = 'Form7'
   ClientHeight = 381
@@ -52,6 +52,8 @@ object Form7: TForm7
       Align = alTop
       Alignment = taCenter
       OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 1
       Text = 'Edit2'
     end
@@ -63,6 +65,8 @@ object Form7: TForm7
       Align = alTop
       Alignment = taCenter
       OnChange = Edit3Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 2
       Text = 'Edit3'
     end
@@ -74,6 +78,8 @@ object Form7: TForm7
       Align = alTop
       Alignment = taCenter
       OnChange = Edit4Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 3
       Text = 'Edit4'
     end
@@ -85,6 +91,8 @@ object Form7: TForm7
       Align = alTop
       Alignment = taCenter
       OnChange = Edit5Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 4
       Text = 'Edit5'
     end
@@ -96,6 +104,8 @@ object Form7: TForm7
       Align = alTop
       Alignment = taCenter
       OnChange = Edit6Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 5
       Text = 'Edit6'
     end
@@ -161,6 +171,7 @@ object Form7: TForm7
       )
       ItemHeight = 22
       OnClick = CheckListBox2Click
+      OnDblClick = CheckListBox2DblClick
       PopupMenu = PopupMenu2
       TabOrder = 2
       Data = {
@@ -182,7 +193,7 @@ object Form7: TForm7
   end
   object PopupMenu2: TPopupMenu
     left = 216
-    top = 66
+    top = 64
     object MenuItem3: TMenuItem
       Caption = 'Добавить.'
       OnClick = MenuItem3Click

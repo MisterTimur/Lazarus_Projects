@@ -1,7 +1,7 @@
 unit Unit7;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3;
+  CheckLst, Menus, StdCtrls,Unit3, Types;
 type { TForm7 } TForm7 = class(TForm)
     CheckListBox1: TCheckListBox;
     CheckListBox2: TCheckListBox;
@@ -25,8 +25,13 @@ type { TForm7 } TForm7 = class(TForm)
     Splitter2: TSplitter;
     procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox2Click(Sender: TObject);
+    procedure CheckListBox2DblClick(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
+    procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure Edit3Change(Sender: TObject);
     procedure Edit4Change(Sender: TObject);
     procedure Edit5Change(Sender: TObject);
@@ -85,9 +90,27 @@ begin
   then I_SelSel(CheckListBox2.Items.Objects[f])
   else I_DelSel(CheckListBox2.Items.Objects[f]);
 end;
+procedure TForm7.CheckListBox2DblClick(Sender: TObject);
+begin
+   if CheckListBox2.itemindex<CheckListBox2.items.count then
+   if CheckListBox2.itemindex>0 then
+   U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex]);
+end;
 procedure TForm7.Edit2Change(Sender: TObject);
 begin
     I_SetX(Ele,Edit2);
+end;
+procedure TForm7.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+   if isFloat(TEdit(Sender).text) then
+   TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
+end;
+procedure TForm7.Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+   if isFloat(TEdit(Sender).text) then
+   TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
 end;
 procedure TForm7.Edit3Change(Sender: TObject);
 begin

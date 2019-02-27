@@ -65,7 +65,7 @@ procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
 
-function  I_RodEle(iVer,iEle:Pointer):Boolean;
+function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
 procedure I_SelSel(iPri:pointer);// Выделение примитива
 
@@ -74,6 +74,7 @@ function inFloat(s:AnsiString):real;
 function InString(i:REal):ansiString;
 {%EndRegion}
 implementation {$R *.lfm} uses unit5,unit6,unit7;
+
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
@@ -671,6 +672,7 @@ TYPE TELE=CLASS(TVER)
   procedure   E_RAST;// Вычислет растояние от наблюдателя
   procedure   E_MATH;// Вычисление реальных координат
   procedure   E_SWAP;// Вычисление Экранны координат
+  Procedure   E_Gaba;// Вычислене габаритов
   procedure   E_POVO(iCoo,iUgo:RCS3);// Поворот
   Procedure   E_MASH(iMah:RSin);// Маштабирование
   Constructor Create;// Констурктор
@@ -801,6 +803,39 @@ RAS:=RasRCS3(REA,CaP2);
 for f:=1 to KolE do ELES[f].E_RAST;
 for f:=1 to KolV do VERS[f].RAS:=RasRCS3(VERS[f].REA,CaP2);
 end;
+Procedure   TELE.E_Gaba;// Вычислене габаритов
+var F:Longint;
+begin
+for f:=1 to KOLE do ELES[f].E_GABA;
+
+GMax.X:=-GMAxRAsInMir;
+GMax.Y:=-GMAxRAsInMir;
+GMax.Z:=-GMAxRAsInMir;
+GMin.X:= GMAxRAsInMir;
+GMin.Y:= GMAxRAsInMir;
+GMin.Z:= GMAxRAsInMir;
+
+for f:=1 to KolV do begin
+if (GMax.X<VERS[f].REA.x) then GMax.X:=VERS[f].REA.x;
+if (GMax.Y<VERS[f].REA.y) then GMax.Y:=VERS[f].REA.y;
+if (GMax.Z<VERS[f].REA.z) then GMax.Z:=VERS[f].REA.z;
+if (GMin.X>VERS[f].REA.x) then GMin.X:=VERS[f].REA.x;
+if (GMin.Y>VERS[f].REA.y) then GMin.Y:=VERS[f].REA.y;
+if (GMin.Z>VERS[f].REA.z) then GMin.Z:=VERS[f].REA.z;
+end;
+
+if (GMax.X<REA.x+0.01) then GMax.X:=REA.x+0.01;
+if (GMax.Y<REA.y+0.01) then GMax.Y:=REA.y+0.01;
+if (GMax.Z<REA.z+0.01) then GMax.Z:=REA.z+0.01;
+
+if (GMin.X>REA.x-0.01) then GMin.X:=REA.x-0.01;
+if (GMin.Y>REA.y-0.01) then GMin.Y:=REA.y-0.01;
+if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
+
+// Вычисление обьема
+OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
+end;
+
 procedure   TELE.E_MASH(iMah:RSin);// Маштабирование Элемента
 var f:Longint;
 begin
@@ -999,35 +1034,8 @@ begin
 
 end;
 Procedure   TOBJ.O_Gaba;// Вычислене габаритов
-var F:Longint;
 begin
-
-GMax.X:=-GMAxRAsInMir;
-GMax.Y:=-GMAxRAsInMir;
-GMax.Z:=-GMAxRAsInMir;
-GMin.X:= GMAxRAsInMir;
-GMin.Y:= GMAxRAsInMir;
-GMin.Z:= GMAxRAsInMir;
-
-for f:=1 to KolV do begin
-if (GMax.X<VERS[f].REA.x) then GMax.X:=VERS[f].REA.x;
-if (GMax.Y<VERS[f].REA.y) then GMax.Y:=VERS[f].REA.y;
-if (GMax.Z<VERS[f].REA.z) then GMax.Z:=VERS[f].REA.z;
-if (GMin.X>VERS[f].REA.x) then GMin.X:=VERS[f].REA.x;
-if (GMin.Y>VERS[f].REA.y) then GMin.Y:=VERS[f].REA.y;
-if (GMin.Z>VERS[f].REA.z) then GMin.Z:=VERS[f].REA.z;
-end;
-
-if (GMax.X<REA.x+0.01) then GMax.X:=REA.x+0.01;
-if (GMax.Y<REA.y+0.01) then GMax.Y:=REA.y+0.01;
-if (GMax.Z<REA.z+0.01) then GMax.Z:=REA.z+0.01;
-
-if (GMin.X>REA.x-0.01) then GMin.X:=REA.x-0.01;
-if (GMin.Y>REA.y-0.01) then GMin.Y:=REA.y-0.01;
-if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
-
-// Вычисление обьема
-OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
+E_GABA;
 end;
 
 Constructor TOBJ.Create;// Конструктор
@@ -1470,17 +1478,19 @@ I_DelSel(dObj);// Снимаю выделение елси оно есть
 MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
 end;
 
-function  I_RodEle(iVer,iEle:Pointer):Boolean;// Доделать
+function  I_RodEle(iEle,iObj:Pointer):Boolean;// Доделать
 var
 lEle:TEle;
+lObj:TObj;
 Rez:Boolean;
 begin
 Rez:=False;
-lEle:=TEle(iEle);
-if iEle=iVer Then Rez:=True;
-while (lEle.Obj<>lEle) and (Rez=false) do begin
-lEle:=TEle(lEle.OBJ);
-if iEle=iVer Then Rez:=True;
+lEle:=TEle(iEle);// ПРоверяемый обьект
+lObj:=TObj(TEle(iEle).OBJ);// РОдительский обьект
+if iEle=iObj Then Rez:=True;
+while (lObj<>lEle) and (Rez=false) do begin
+lEle:=Tele(lEle.Ele);
+if lEle=TEle(iObj) Then Rez:=True;
 end;
 I_RodEle:=REz;
 end;
@@ -1617,7 +1627,7 @@ I_DrVertex(MirVers.VERS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirVers.KolV) then begin
 MirVers.Vers[RC].Sel:=true;
-X_SEL(MirVers.Vers[RC]);
+X_SEL(MirVers.Vers[RC]);CaP3:=MirVers.Vers[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1637,7 +1647,7 @@ I_DrElement(MirEles.ELES[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirEles.KolE) then begin
 MirEles.Eles[RC].Sel:=true;
-X_SEL(MirEles.Eles[RC]);
+X_SEL(MirEles.Eles[RC]);CaP3:=MirEles.Eles[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1647,7 +1657,7 @@ I_DrObject(MirObjs.OBJS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirObjs.KolO) then begin
 MirObjs.Objs[RC].Sel:=true;
-X_SEL(MirObjs.Objs[RC]);
+X_SEL(MirObjs.Objs[RC]);CaP3:=MirObjs.Objs[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1693,6 +1703,8 @@ begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
      sleep(300);MirObjs.Ras;
+     for f:=1 to MirObjs.KolO do
+     MirObjs.OBJS[f].O_MATH;
      // ========================================================================
      with MirVers do for f:=1 to KOlV do
      if   not Vers[f].DEL then

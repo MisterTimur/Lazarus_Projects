@@ -40,18 +40,19 @@ begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then begin
 
-  for f:=0 to application.ComponentCount-1 do
-  if (application.Components[f] is tform7) then begin
-     if I_RodEle((application.Components[f] as tform7).ELE,
-     CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-     (application.Components[f] as tform7).close;
-
-  end else
-  if (application.Components[f] is tform6) then
-     if I_RodEle((application.Components[f] as tform6).OBJ,
-     CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-     (application.Components[f] as tform6).close;
-
+  f:=0;
+  while f<application.ComponentCount do
+       if (application.Components[f] is tform7) then begin
+       if I_RodEle((application.Components[f] as tform7).ELE,
+       CheckListBox1.items.objects[CheckListBox1.itemindex]) then
+       (application.Components[f] as tform7).close;f:=f+1;
+       end
+  else if (application.Components[f] is tform6) then  begin
+       if I_RodEle((application.Components[f] as tform6).OBJ,
+       CheckListBox1.items.objects[CheckListBox1.itemindex]) then
+       (application.Components[f] as tform6).close;f:=f+1;
+       end
+  else f:=f+1;
 
   i_DelObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
   I_RefreshSpisokObjects(CheckListBox1);
@@ -79,7 +80,6 @@ end;
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   form4.button1.Visible:=true;
-  Timer1.Enabled:=false;
 end;
 end.
 
