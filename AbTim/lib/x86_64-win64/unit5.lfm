@@ -55,9 +55,4 @@ object Form5: TForm5
       OnClick = MenuItem2Click
     end
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    left = 208
-    top = 8
-  end
 end

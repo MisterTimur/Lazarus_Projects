@@ -1,7 +1,7 @@
 unit Unit6; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3,unit7;
+  CheckLst, Menus, StdCtrls,Unit3,unit7, Types;
 type
 
   { TForm6 }
@@ -39,13 +39,18 @@ type
     Splitter4: TSplitter;
     Timer1: TTimer;
     procedure CheckListBox1Click(Sender: TObject);
-    procedure CheckListBox2Click(Sender: TObject);
-    procedure CheckListBox3Click(Sender: TObject);
-    procedure CheckListBox4Click(Sender: TObject);
+    procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox4DblClick(Sender: TObject);
+    procedure CheckListBox4SelectionChange(Sender: TObject; User: boolean);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
+    procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure Edit3Change(Sender: TObject);
+
     procedure Edit4Change(Sender: TObject);
     procedure Edit5Change(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
@@ -59,7 +64,6 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
   private
 
   public
@@ -83,6 +87,9 @@ begin
   I_GetUX(iObj,lForm6.Edit5);
   I_GetUY(iObj,lForm6.Edit6);
   I_GetUZ(iObj,lForm6.Edit7);
+  I_RefreshSpisokPoints(iObj,lForm6.CheckListBox1);
+  I_RefreshSpisokPlos(iObj,lForm6.CheckListBox2);
+  I_RefreshSpisokElements(iObj,lForm6.CheckListBox4);
 end;
 procedure TForm6.MenuItem5Click(Sender: TObject);
 begin
@@ -96,15 +103,31 @@ procedure TForm6.Edit1Change(Sender: TObject);
 begin
   I_SetN(Obj,Edit1);
 end;
+
+
 procedure TForm6.CheckListBox1Click(Sender: TObject);
+begin
+
+end;
+
+procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
+
  For f:=1 to CheckListBox1.Items.Count-1 do
  if CheckListBox1.Selected[f]
  then I_SelSel(CheckListBox1.Items.Objects[f])
  else I_DelSel(CheckListBox1.Items.Objects[f]);
+
 end;
-procedure TForm6.CheckListBox2Click(Sender: TObject);
+
+
+
+
+
+
+
+procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox2.Items.Count-1 do
@@ -112,10 +135,16 @@ begin
  then I_SelSel(CheckListBox2.Items.Objects[f])
  else I_DelSel(CheckListBox2.Items.Objects[f]);
 end;
-procedure TForm6.CheckListBox3Click(Sender: TObject);
+
+
+procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
+   if CheckListBox4.itemindex<CheckListBox4.items.count then
+   if CheckListBox4.itemindex>0 then
+   U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
 end;
-procedure TForm6.CheckListBox4Click(Sender: TObject);
+
+procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox4.Items.Count-1 do
@@ -123,20 +152,33 @@ begin
  then I_SelSel(CheckListBox4.Items.Objects[f])
  else I_DelSel(CheckListBox4.Items.Objects[f]);
 end;
-procedure TForm6.CheckListBox4DblClick(Sender: TObject);
-begin
-   if CheckListBox4.itemindex<CheckListBox4.items.count then
-   if CheckListBox4.itemindex>0 then
-   U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
-end;
+
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
   I_SetX(Obj,Edit2);
 end;
+
+procedure TForm6.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+    if isFloat(TEdit(Sender).text) then
+    TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
+end;
+
+procedure TForm6.Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+    if isFloat(TEdit(Sender).text) then
+    TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
+end;
+
 procedure TForm6.Edit3Change(Sender: TObject);
 begin
   I_SetY(Obj,Edit3);
 end;
+
+
+
 procedure TForm6.Edit4Change(Sender: TObject);
 begin
   I_SetZ(Obj,Edit4);
@@ -155,8 +197,10 @@ begin
 end;
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Timer1.Enabled:=false;
 end;
+
+
+
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
   I_NewPoint(obj);
@@ -211,12 +255,6 @@ begin
    I_RefreshSpisokElements(Obj,CheckListBox4);
 
 end;
-end;
-procedure TForm6.Timer1Timer(Sender: TObject);
-begin
- I_RefreshSpisokPOints  (obj,CheckListBox1);
- I_RefreshSpisokPlos    (obj,CheckListBox4);
- I_RefreshSpisokElements(obj,CheckListBox4);
 end;
 end.
 

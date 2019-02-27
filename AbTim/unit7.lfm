@@ -192,9 +192,4 @@ object Form7: TForm7
       OnClick = MenuItem4Click
     end
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    left = 16
-    top = 8
-  end
 end

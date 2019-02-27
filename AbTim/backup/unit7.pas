@@ -23,7 +23,6 @@ type { TForm7 } TForm7 = class(TForm)
     PopupMenu2: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
-    Timer1: TTimer;
     procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox2Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
@@ -147,9 +146,6 @@ end;
 end;
 procedure TForm7.Timer1Timer(Sender: TObject);
 begin
- I_RefreshSpisokPOints  (Ele,CheckListBox1);
- I_RefreshSpisokElements(Ele,CheckListBox2);
 end;
-
 end.
 

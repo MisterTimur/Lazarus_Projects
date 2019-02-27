@@ -1,7 +1,7 @@
 object Form6: TForm6
-  Left = 333
+  Left = 332
   Height = 379
-  Top = 193
+  Top = 126
   Width = 463
   Caption = 'Form6'
   ClientHeight = 379
@@ -52,6 +52,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 1
       Text = 'Edit2'
     end
@@ -63,6 +65,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit3Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 2
       Text = 'Edit3'
     end
@@ -74,6 +78,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit4Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 3
       Text = 'Edit4'
     end
@@ -85,6 +91,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit5Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 4
       Text = 'Edit5'
     end
@@ -96,6 +104,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit6Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 5
       Text = 'Edit6'
     end
@@ -107,6 +117,8 @@ object Form6: TForm6
       Align = alTop
       Alignment = taCenter
       OnChange = Edit7Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 6
       Text = 'Edit7'
     end
@@ -140,6 +152,7 @@ object Form6: TForm6
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox1Click
+      OnSelectionChange = CheckListBox1SelectionChange
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -158,7 +171,7 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
-      OnClick = CheckListBox2Click
+      OnSelectionChange = CheckListBox2SelectionChange
       PopupMenu = PopupMenu2
       TabOrder = 1
       Data = {
@@ -177,7 +190,6 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
-      OnClick = CheckListBox3Click
       PopupMenu = PopupMenu3
       TabOrder = 2
       Data = {
@@ -214,8 +226,8 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
-      OnClick = CheckListBox4Click
       OnDblClick = CheckListBox4DblClick
+      OnSelectionChange = CheckListBox4SelectionChange
       PopupMenu = PopupMenu4
       TabOrder = 6
       Data = {
@@ -272,8 +284,7 @@ object Form6: TForm6
     end
   end
   object Timer1: TTimer
-    OnTimer = Timer1Timer
-    left = 16
-    top = 8
+    left = 12
+    top = 12
   end
 end

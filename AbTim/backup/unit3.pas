@@ -30,6 +30,8 @@ var Form3: TForm3;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg00:Longint;
 
+GStep:Single=0.1;
+
 procedure I_NewPoint(iEle:Pointer);// Создает Вершины
 procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
 
@@ -67,8 +69,11 @@ function  I_RodEle(iVer,iEle:Pointer):Boolean;
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
 procedure I_SelSel(iPri:pointer);// Выделение примитива
 
+function isFloat(s:AnsiString):Boolean;
+function inFloat(s:AnsiString):real;
+function InString(i:REal):ansiString;
 {%EndRegion}
-implementation {$R *.lfm}
+implementation {$R *.lfm} uses unit5,unit6,unit7;
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
@@ -348,13 +353,35 @@ var   {Базовые функции        ===========================}{%Region
         if C=0 then Rez:=True;
         isFloat:=Rez;
       end;
-      function inFloat(s:AnsiString):RSIN;
+      function inFloat(s:AnsiString):real;
       var f,c:Longint;r:real;Rez:Boolean;
       begin
         r:=0;
         val(s,r,c);
         inFloat:=r;
       end;
+      function InString(i:REal):ansiString;
+      var
+      lStr,REz:Ansistring;
+      T:Boolean;f,Kz:Longint;
+      begin
+      Kz:=0;
+      T:=False;
+      lStr:=FloatToStr(i);
+      for f:=1 to Length(lStr) do
+      begin
+      if (lStr[f]=',') or (lStr[f]='.') then begin
+      T:=true;lStr[f]:='.';
+      end;
+      if KZ<3 then REz:=Rez+lStr[f];
+      if T Then KZ:=KZ+1;
+      end;
+      While (Length(Rez)>1) and (
+      (Rez[Length(Rez)]='0') or (Rez[Length(Rez)]='.')) do
+      delete(rez,Length(Rez),1);
+      InString:=REz;
+      end;
+
 {%EndRegion}
 
 var   {Описание вершины       ===========================}{%Region /FOLD }
@@ -1536,36 +1563,92 @@ end;
 glEnd();
 end;
 
+
+
+procedure X_SEL(P:Pointer);
+var F,I:Longint;
+begin
+for f:=0 to application.ComponentCount-1 do
+
+   if (application.Components[f] is tform7) then begin
+
+   with (application.Components[f] as tform7).CheckListBox1 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+   with (application.Components[f] as tform7).CheckListBox2 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+
+   end else
+   if (application.Components[f] is tform6) then begin
+
+   with (application.Components[f] as tform6).CheckListBox1 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+   with (application.Components[f] as tform6).CheckListBox2 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+   with (application.Components[f] as tform6).CheckListBox4 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+   end else
+   if (application.Components[f] is tform5) then begin
+
+   with (application.Components[f] as tform5).CheckListBox1 do
+   for i:=1 to items.count-1 do
+   if Pointer(items.objects[i])=P then selected[i]:=true;
+
+   end;
+end;
+
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
 var f,RC:LongWord;
 begin
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 I_DrVertex(MirVers.VERS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirVers.KolV) then
+if (RC>0) and (RC<=MirVers.KolV) then begin
 MirVers.Vers[RC].Sel:=true;
+X_SEL(MirVers.Vers[RC]);
+end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
 I_DrPlos(MirPLos.PLOS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirPLos.KolP) then MirPlos.Plos[RC].Sel:=true;
+if (RC>0) and (RC<=MirPLos.KolP) then begin
+MirPlos.Plos[RC].Sel:=true;
+X_SEL(MirPLos.PLos[RC]);
+end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
 I_DrElement(MirEles.ELES[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirEles.KolE) then MirEles.Eles[RC].Sel:=true;
+if (RC>0) and (RC<=MirEles.KolE) then begin
+MirEles.Eles[RC].Sel:=true;
+X_SEL(MirEles.Eles[RC]);
+end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
 I_DrObject(MirObjs.OBJS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirObjs.KolO) then MirObjs.Objs[RC].Sel:=true;
+if (RC>0) and (RC<=MirObjs.KolO) then begin
+MirObjs.Objs[RC].Sel:=true;
+X_SEL(MirObjs.Objs[RC]);
+end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
@@ -1599,6 +1682,7 @@ then  I_DrObject(MirObjs.OBJS[f],CreRCol(0,0,0,255))
 else  I_DrObject(MirObjs.OBJS[f],RanRCol)
 
 end;
+
 
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }

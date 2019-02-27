@@ -12,7 +12,6 @@ type
     MenuItem2: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
-    Timer1: TTimer;
     procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -29,7 +28,6 @@ var
   Form5: TForm5;
 
 implementation {$R *.lfm} { TForm5 }uses unit4;
-
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
   I_NewObject;
@@ -61,12 +59,9 @@ begin
   end;
 
 end;
-
 procedure TForm5.Timer1Timer(Sender: TObject);
 begin
-   I_RefreshSpisokObjects(CheckListBox1);
 end;
-
 procedure TForm5.CheckListBox1Click(Sender: TObject);
 var F:Longint;
 begin
@@ -81,12 +76,10 @@ begin
   if CheckListBox1.itemindex>0 then
   U_OpenObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
 end;
-
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   form4.button1.Visible:=true;
   Timer1.Enabled:=false;
 end;
-
 end.
 
