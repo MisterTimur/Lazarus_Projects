@@ -1,0 +1,267 @@
+object Form6: TForm6
+  Left = 343
+  Height = 379
+  Top = 112
+  Width = 463
+  Caption = 'Form6'
+  ClientHeight = 379
+  ClientWidth = 463
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -19
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 463
+    Align = alTop
+    Caption = 'Оьект'
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 329
+    Top = 50
+    Width = 107
+    Align = alLeft
+    Caption = 'Panel2'
+    ClientHeight = 329
+    ClientWidth = 107
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 30
+      Top = 1
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit1Change
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+    object Edit2: TEdit
+      Left = 1
+      Height = 30
+      Top = 31
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit2Change
+      TabOrder = 1
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 1
+      Height = 30
+      Top = 61
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit3Change
+      TabOrder = 2
+      Text = 'Edit3'
+    end
+    object Edit4: TEdit
+      Left = 1
+      Height = 30
+      Top = 91
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit4Change
+      TabOrder = 3
+      Text = 'Edit4'
+    end
+    object Edit5: TEdit
+      Left = 1
+      Height = 30
+      Top = 121
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit5Change
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 30
+      Top = 151
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit6Change
+      TabOrder = 5
+      Text = 'Edit6'
+    end
+    object Edit7: TEdit
+      Left = 1
+      Height = 30
+      Top = 181
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit7Change
+      TabOrder = 6
+      Text = 'Edit7'
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 107
+    Height = 329
+    Top = 50
+    Width = 5
+  end
+  object Panel3: TPanel
+    Left = 112
+    Height = 329
+    Top = 50
+    Width = 351
+    Align = alClient
+    Caption = 'Panel3'
+    ClientHeight = 329
+    ClientWidth = 351
+    TabOrder = 3
+    object CheckListBox1: TCheckListBox
+      Left = 1
+      Height = 327
+      Top = 1
+      Width = 74
+      Align = alLeft
+      Items.Strings = (
+        'V'
+      )
+      ItemHeight = 22
+      ItemIndex = 0
+      MultiSelect = True
+      PopupMenu = PopupMenu1
+      TabOrder = 0
+      Data = {
+        0100000000
+      }
+    end
+    object CheckListBox2: TCheckListBox
+      Left = 80
+      Height = 327
+      Top = 1
+      Width = 76
+      Align = alLeft
+      Items.Strings = (
+        'P'
+      )
+      ItemHeight = 22
+      ItemIndex = 0
+      MultiSelect = True
+      PopupMenu = PopupMenu2
+      TabOrder = 1
+      Data = {
+        0100000000
+      }
+    end
+    object CheckListBox3: TCheckListBox
+      Left = 161
+      Height = 327
+      Top = 1
+      Width = 79
+      Align = alLeft
+      Items.Strings = (
+        'K'
+      )
+      ItemHeight = 22
+      ItemIndex = 0
+      MultiSelect = True
+      PopupMenu = PopupMenu3
+      TabOrder = 2
+      Data = {
+        0100000000
+      }
+    end
+    object Splitter2: TSplitter
+      Left = 75
+      Height = 327
+      Top = 1
+      Width = 5
+    end
+    object Splitter3: TSplitter
+      Left = 156
+      Height = 327
+      Top = 1
+      Width = 5
+    end
+    object Splitter4: TSplitter
+      Left = 240
+      Height = 327
+      Top = 1
+      Width = 5
+    end
+    object CheckListBox4: TCheckListBox
+      Left = 245
+      Height = 327
+      Top = 1
+      Width = 105
+      Align = alClient
+      Items.Strings = (
+        'E'
+      )
+      ItemHeight = 22
+      ItemIndex = 0
+      MultiSelect = True
+      PopupMenu = PopupMenu4
+      TabOrder = 6
+      Data = {
+        0100000000
+      }
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    left = 136
+    top = 80
+    object MenuItem1: TMenuItem
+      Caption = 'Добавить'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem2Click
+    end
+  end
+  object PopupMenu2: TPopupMenu
+    left = 216
+    top = 80
+    object MenuItem3: TMenuItem
+      Caption = 'Добавть.'
+      OnClick = MenuItem3Click
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem4Click
+    end
+  end
+  object PopupMenu3: TPopupMenu
+    left = 296
+    top = 80
+    object MenuItem5: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem5Click
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Удалить.'
+    end
+  end
+  object PopupMenu4: TPopupMenu
+    left = 392
+    top = 80
+    object MenuItem7: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem7Click
+    end
+    object MenuItem8: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem8Click
+    end
+  end
+end

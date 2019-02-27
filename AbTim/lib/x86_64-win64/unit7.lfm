@@ -1,0 +1,155 @@
+object Form7: TForm7
+  Left = 654
+  Height = 381
+  Top = 75
+  Width = 320
+  Caption = 'Form7'
+  ClientHeight = 381
+  ClientWidth = 320
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -19
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 320
+    Align = alTop
+    Caption = 'Элемент.'
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 331
+    Top = 50
+    Width = 96
+    Align = alLeft
+    Caption = 'Panel2'
+    ClientHeight = 331
+    ClientWidth = 96
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 30
+      Top = 1
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+    object Edit2: TEdit
+      Left = 1
+      Height = 30
+      Top = 31
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 1
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 1
+      Height = 30
+      Top = 61
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 2
+      Text = 'Edit3'
+    end
+    object Edit4: TEdit
+      Left = 1
+      Height = 30
+      Top = 91
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 3
+      Text = 'Edit4'
+    end
+    object Edit5: TEdit
+      Left = 1
+      Height = 30
+      Top = 121
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 30
+      Top = 151
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 5
+      Text = 'Edit6'
+    end
+    object Edit7: TEdit
+      Left = 1
+      Height = 30
+      Top = 181
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 6
+      Text = 'Edit7'
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 96
+    Height = 331
+    Top = 50
+    Width = 5
+  end
+  object Panel3: TPanel
+    Left = 101
+    Height = 331
+    Top = 50
+    Width = 219
+    Align = alClient
+    Caption = 'Panel3'
+    ClientHeight = 331
+    ClientWidth = 219
+    TabOrder = 3
+    object CheckListBox1: TCheckListBox
+      Left = 1
+      Height = 329
+      Top = 1
+      Width = 100
+      Align = alLeft
+      ItemHeight = 0
+      TabOrder = 0
+    end
+    object Splitter2: TSplitter
+      Left = 101
+      Height = 329
+      Top = 1
+      Width = 5
+    end
+    object CheckListBox2: TCheckListBox
+      Left = 106
+      Height = 329
+      Top = 1
+      Width = 112
+      Align = alClient
+      ItemHeight = 0
+      TabOrder = 2
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    left = 117
+    top = 67
+  end
+  object PopupMenu2: TPopupMenu
+    left = 218
+    top = 66
+  end
+end

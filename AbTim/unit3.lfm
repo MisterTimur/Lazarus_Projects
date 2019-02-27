@@ -1,16 +1,16 @@
 object Form3: TForm3
   Left = 135
-  Height = 430
-  Top = 116
+  Height = 411
+  Top = 135
   Width = 560
   Caption = 'Form3'
-  ClientHeight = 430
+  ClientHeight = 411
   ClientWidth = 560
   OnClose = FormClose
   LCLVersion = '1.8.4.0'
   object OpenGLControl1: TOpenGLControl
     Left = 0
-    Height = 430
+    Height = 411
     Top = 0
     Width = 560
     Align = alClient

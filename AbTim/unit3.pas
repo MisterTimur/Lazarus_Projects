@@ -2,7 +2,7 @@ unit Unit3; {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, OpenGLContext, Forms, Controls, Graphics,
-  Dialogs, ExtCtrls,windows, Types,Gl,Glu;
+  Dialogs, StdCtrls, ExtCtrls,windows,CheckLst,Types,Gl,Glu;
 type { TForm3 }  TForm3 = class(TForm)
     OpenGLControl1: TOpenGLControl;
     Timer1: TTimer;
@@ -29,14 +29,45 @@ type { TForm3 }  TForm3 = class(TForm)
 var Form3: TForm3;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg00:Longint;
+
+procedure I_NewPoint(iEle:Pointer);// Создает Вершины
+procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
+
+procedure I_NewPlos(iObj:Pointer);// Создает Плоскости
+procedure I_DelPlos(iPlo:Pointer);// Удаление Плоскости
+
+procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
+procedure I_DelElement(iEle:Pointer);// Удаление Элемента
+
 procedure I_NewObject;// Создает новый обьект
-procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
-procedure i_DelObject(iObj:pointer);// Удаление обьектов
+procedure i_DelObject(iObj:pointer);// Удаление обьекта
+
+procedure I_RefreshSpisokPoints   (iEle:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokPlos     (iObj:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokElements (iEle:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokObjects  (iLis:TCheckListBox);
+
+procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetX(iVer:Pointer;iEdit:TEdit);
+procedure I_GetY(iVer:Pointer;iEdit:TEdit);
+procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
+procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
+procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
+
+procedure I_SetN(iVer:Pointer;iEdit:TEdit);
+procedure I_SetX(iVer:Pointer;iEdit:TEdit);
+procedure I_SetY(iVer:Pointer;iEdit:TEdit);
+procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
+procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
+procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
+
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
 procedure I_SelSel(iPri:pointer);// Выделение примитива
 
 {%EndRegion}
-implementation {$R *.lfm} uses Unit4;
+implementation {$R *.lfm}
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
@@ -45,8 +76,8 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolVerInEle=128;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=128;// Максимальное количество Линий в Элементе
   MaxKolPloInObj=256;// Максимальное количество Плоскостей в Элементе
-  MaxKolObjInObj=64 ;// Максимальное количество Плоскостей в Элементе
-  MaxKolEleInEle=4  ;// Максимальное количество Обьектов в Элементе
+  MaxKolObjInObj=128;// Максимальное количество Плоскостей в Элементе
+  MaxKolEleInEle=128;// Максимальное количество Обьектов в Элементе
 
   MaxKOlVerInMir=1024*64;//Максимальное количество вершин в игровом мире
   MaxKOlPloInMir=1024*64;//Максимальное количество Плоскостей в игровом мире
@@ -295,7 +326,21 @@ var   {Базовые функции        ===========================}{%Region
       GIDD:=GIDD+1;
       NewIdd:=GIDD;
       end;
-
+      function isFloat(s:AnsiString):Boolean;
+      var f,c:Longint;r:real;Rez:Boolean;
+      begin
+        Rez:=False;
+        val(s,r,c);
+        if C=0 then Rez:=True;
+        isFloat:=Rez;
+      end;
+      function inFloat(s:AnsiString):RSIN;
+      var f,c:Longint;r:real;Rez:Boolean;
+      begin
+        r:=0;
+        val(s,r,c);
+        inFloat:=r;
+      end;
 {%EndRegion}
 
 var   {Описание вершины       ===========================}{%Region /FOLD }
@@ -331,7 +376,7 @@ TYPE TVER=CLASS  // Опсиание вершиины
   GMax:RCS3;// Габариты максимальные +x +y +z
   GMin:RCS3;// Габариты минимальные -x -y -z
 
-  Constructor Create(iCS3:RCS3;iEle,iObj:TVER);
+  Constructor Create;
 
 end;
 TYPE TVERS=CLASS // Описание вершин
@@ -349,14 +394,14 @@ TYPE TVERS=CLASS // Описание вершин
 end;
 var MirVers:Tvers;// Все вершины игрового мира здесь зарегестрированы
 
-Constructor TVER.Create(iCS3:RCS3;iEle,iObj:TVER);// Создает вершину
+Constructor TVER.Create;// Создает вершину
 begin
 
   SEL:=false        ;// Не выделен примитив
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке отрисовки
 
-  LOC:=iCS3         ;// ЛОкальная коордианата
+  LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
   REA:=NilRCS3      ;// Реальная координата
   ECR:=NilRCS3      ;// Экрнная координата
@@ -364,8 +409,8 @@ begin
   COL:=RanRCol      ;// Цвет вершины
   ECO:=RanRCol      ;// Экранный цвет
 
-  OBJ:=iObj         ;// Обьект в котором находиться вершина
-  ELE:=iEle         ;// Элемент в котором находиться вершина
+  OBJ:=Nil          ;// Обьект в котором находиться вершина
+  ELE:=Nil          ;// Элемент в котором находиться вершина
   GOB:=Nil          ;// Обьект над которй находиться вершина
   GPL:=Nil          ;// Плоскость над которй находиться вершина
 
@@ -375,6 +420,8 @@ begin
 
   OB3:=0            ;// ОБьем элемента
   RAS:=GMAxRAsInMir ;// Растояние от камеры до вершины
+
+
 
 end;
 Procedure   TVERS.AddV(iVer:Tver);// Регестриует новую вершину
@@ -431,7 +478,7 @@ TYPE  TPLO=CLASS(TVER)
   VERS:Array[1..4] of TVER;// Вершины из котрых состоит плоскость
   Function    P_Viso(iCoo:RCS3):RSIN;// Определить высоту на плоскости
   Procedure   P_Gaba;// Вычислене габаритов
-  Constructor Create(iVer1,iVer2,iVer3,iVer4:Tver;iEle,iObj:TVER);// Конструктор
+  Constructor Create(iVer1,iVer2,iVer3,iVer4:Tver);// Конструктор
   Destructor  destroy;override;
 end;
 TYPE TPLOS=CLASS
@@ -502,14 +549,15 @@ if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
 // Вычисление обьема
 OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
 end;
-Constructor TPLO.Create(iVer1,iVer2,iVer3,iVer4:Tver;iEle,iObj:TVER);
+Constructor TPLO.Create(iVer1,iVer2,iVer3,iVer4:Tver);
 begin
-inherited  Create(NilRCS3,iEle,iObj);// Вызываю родительский конструктор
+inherited  Create;// Вызываю родительский конструктор
 
 VERS[1]:=iVer1;
 VERS[2]:=iVer2;
 VERS[3]:=iVer3;
 VERS[4]:=iVer4;
+
 
 end;
 Destructor  TPLO.Destroy;
@@ -571,7 +619,7 @@ TYPE TELE=CLASS(TVER)
   EUGL:RCS3;// Углы наклона элемнта относительно родительского элемента
   VERS:Array[1..MaxKolVerInEle] of TVER;// Вершины
   ELES:Array[1..MaxKolEleInEle] of TELE;// Элементы
-  function    E(iX,iY,iZ:RSIN;iObj:TEle):TELE;// Создает Элемент
+  function    E(iX,iY,iZ:RSIN):TELE;// Создает Элемент
   function    V(iX,iY,iZ:RSIN):TVER;// Создает вершину
   procedure   E_SREA;// Вычисление Рефльных координат
   procedure   E_SECR;// Вычисление Экранных координат
@@ -581,7 +629,7 @@ TYPE TELE=CLASS(TVER)
   procedure   E_SWAP;// Вычисление Экранны координат
   procedure   E_POVO(iCoo,iUgo:RCS3);// Поворот
   Procedure   E_MASH(iMah:RSin);// Маштабирование
-  Constructor Create(iCS3:RCS3;iEle,iObj:TVER);// Констурктор
+  Constructor Create;// Констурктор
   Destructor  Destroy;override;
 end;
 TYPE TELES=CLASS // Описание элементов
@@ -599,18 +647,23 @@ TYPE TELES=CLASS // Описание элементов
 end;
 var  MirELEs:TEles;// Все вершины игрового мира здесь зарегестрированы
 
-function    TELE.E(iX,iY,iZ:RSIN;iObj:TEle):TELE;// Добавляет Элемент
+function    TELE.E(iX,iY,iZ:RSIN):TELE;// Добавляет Элемент
 Var Rez:TELE;
 begin
-Rez:=TELE.CREATE(CreRCS3(iX,iY,iZ),Self,iObj);// Создаю экземпляр вершины
+Rez:=TELE.CREATE;// Создаю экземпляр вершины
+Rez.OBJ:=OBJ;
+Rez.ELE:=Self;
 ELES[KolE+1]:=Rez;// Добавляю Верину в список элементов
 KolE:=KolE+1;// Увеличиваю количество  элементов
+MirEles.AddE(Rez);
 E:=Rez;
 end;
 function    TELE.V(iX,iY,iZ:RSIN):TVER;// Добавляет вершину
 Var Rez:TVER;
 begin
-Rez:=TVER.CREATE(CreRCS3(iX,iY,iZ),Self,OBJ);// Создаю экземпляр вершины
+Rez:=TVER.CREATE;// Создаю экземпляр вершины
+Rez.Obj:=Obj;
+Rez.Ele:=Self;
 VERS[KolV+1]:=Rez;// Добавляю Верину в список верши элемента
 KolV:=KolV+1;// Увеличиваю количество вершин в элементе
 MirVers.AddV(Rez);
@@ -717,9 +770,9 @@ VERS[f].LOC.Z:=VERS[f].LOC.Z*iMah;
 end;
 for f:=1 to KolE do ELES[f].E_MASH(iMah);
 end;
-Constructor TELE.Create(iCS3:RCS3;iEle,iObj:TVER);
+Constructor TELE.Create;
 begin
-inherited Create(iCS3,iEle,iObj);
+inherited Create;
 KolV:=0;
 KolE:=0;
 end;
@@ -764,7 +817,6 @@ end;
 Procedure   TELES.AddD(iELE:TELE);// ОТпарвляет Элемент на удаление
 var F:Longint;
 begin
-  I_DelSel(iEle);// Снимаю выделение елси оно есть
   IEle.Del:=True;
   for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
   for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
@@ -801,9 +853,9 @@ TYPE TOBJ=CLASS(TELE)
   procedure   O_Rabo;Virtual;// Работа
   procedure   O_SWAP;// прямое изменение координат обьекта на экране
   Procedure   AddDels(iObj:Tobj);// Добавлет зависимый обьект
-  constructor Create(iCS3:RCS3);// Констурктор
+  constructor Create;// Констурктор
   Destructor  destroy;override;
-  function    P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
+  function    P(iVer1,iVer2,iVer3,iVer4:TVER):TPLO;// Добавляет плоскость
 
 End;
 TYPE TOBJS=CLASS
@@ -818,10 +870,12 @@ Constructor Create;
 end;
 var  MirObjs:TOBJS;
 
-function    TOBJ.P(iVer1,iVer2,iVer3,iVer4:TVER;iEle:Tele):TPLO;// Добавляет плоскость
+function    TOBJ.P(iVer1,iVer2,iVer3,iVer4:TVER):TPLO;// Добавляет плоскость
 Var Rez:TPLO;
 begin
-Rez:=TPLO.CREATE(iVer1,iVer2,iVer3,iVer4,iEle,Self);
+Rez:=TPLO.CREATE(iVer1,iVer2,iVer3,iVer4);
+Rez.Obj:=Obj;
+Rez.Ele:=Self;
 PLOS[KolP+1]:=Rez;
 KolP:=KolP+1;
 MirPlos.AddP(Rez);
@@ -873,6 +927,7 @@ procedure   TOBJ.O_SWAP;// Вычисление Экранных координ�
 begin
 inherited E_SWAP;
 end;
+
 
 
 procedure   TOBJ.O_INIC;// Вычисление Экранных координат
@@ -930,13 +985,15 @@ if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
 OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
 end;
 
-Constructor TOBJ.Create(iCS3:RCS3);// Конструктор
+Constructor TOBJ.Create;// Конструктор
 begin
-inherited Create(iCS3,Self,Self);
+inherited Create;
 Kadr:=1;
 OBJ:=Self;
 KolP:=0;
 KolD:=0;
+OBJ:=Self;
+ELE:=Self;
 COM:=False;// Обьект собран и готов к отрисовке и работе
 end;
 Destructor  Tobj.Destroy;
@@ -955,7 +1012,6 @@ end;
 procedure   TOBJS.AddD(iObj:TOBJ);
 Var F:Longint;
 begin
-I_DelSel(iObj);// Снимаю выделение елси оно есть
 iOBJ.Del:=true;
 for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
 for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
@@ -1023,13 +1079,16 @@ begin
 Kol:=0;
 end;
 procedure TSels.ADD(iSel:Tver);// Добавляет примитив в списко выделеных
+var
+F:Longint;
 begin
 
 if KOl+1>MaxKolSelPris then // Проверка на переполнение
 ERR(' TSels.ADD(iSel:Tver) KOl+1>MaxKolSel ');
-
+Del(iSel);
+for f:=Kol downto 1 do SELS[f+1]:=SELS[f];
 iSel.Sel:=true;// Ставлю фоаг что обьект выделен
-SELS[KOl+1]:=iSel;// Добавляю обьект в списко
+SELS[1]:=iSel;// Добавляю обьект в списко
 KOl:=KOl+1;// Увеличиваю количество выделеных обьектов
 
 end;
@@ -1087,10 +1146,285 @@ begin
  SELOBJS:=Rez;
 end;
 
+
+
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg10:Longint;
 
+procedure I_RefreshSpisokObjects (iLis:TCheckListBox);// Список с обьекта
+var
+f:longint;// лдя циклов
+NomItems:Longint;// Перебирать записи в листбоксе
+begin
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to MirObjs.KolO do
+if Not MirObjs.OBJS[f].DEL then begin // Если обьект не удалён
+NomItems:=NomItems+1;
+if NomItems<iLis.Items.count then begin
+// Изменяем записи в списке только если обьект в списке изменился
+   iLis.selected[NomItems]:=MirObjs.OBJS[f].Sel;
+   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
+   iLis.Items[NomItems]:=MirObjs.OBJS[f].NAM;
+if iLis.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
+   iLis.Items.Objects[NomItems]:=MirObjs.OBJS[f];
+end
+else
+begin
+iLis.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
+iLis.selected[iLis.Count-1]:=MirObjs.OBJS[f].Sel;
+end
+
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+
+
+end;
+procedure I_RefreshSpisokPoints  (iEle:POinter;iLis:TCheckListBox);
+var
+f:longint;// Для циклов
+rEle:TEle;
+NomItems:Longint;
+begin
+rEle:=TEle(iEle);
+NomItems:=0;// Для перебора Вершин в списке
+for f:=1 to rEle.KolV do
+if Not rEle.VERS[f].DEL then begin // Если Вершина не удалён
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rEle.VERS[f].Sel;
+     iLis.Items[NomItems]:=rEle.VERS[f].NAM;
+     iLis.Items.Objects[NomItems]:=rEle.VERS[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rEle.VERS[f].Nam,rEle.VERS[f]);
+     iLis.selected[iLis.Count-1]:=rEle.VERS[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefreshSpisokPlos    (iObj:POinter;iLis:TCheckListBox);
+var
+f:longint;// Для циклов
+rObj:TObj;
+NomItems:Longint;
+begin
+rObj:=TObj(iObj);
+NomItems:=0;// Для перебора Плоскостей в списке
+for f:=1 to rObj.KolP do
+if Not rObj.PLOS[f].DEL then begin // Если рлоскостей не удалён
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rObj.PLOS[f].Sel;
+     iLis.Items[NomItems]:=rObj.PLOS[f].NAM;
+     iLis.Items.Objects[NomItems]:=rObj.PLOS[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rObj.PLOS[f].Nam,rObj.PLOS[f]);
+     iLis.selected[iLis.Count-1]:=rObj.PLOS[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefreshSpisokElements(iEle:POinter;iLis:TCheckListBox);
+var
+f:longint;// Для циклов
+rEle:TEle;
+NomItems:Longint;
+begin
+rEle:=TEle(iEle);
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to rEle.KolE do
+if Not rEle.ELES[f].DEL then begin // Если обьект не удалён  begin
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rEle.ELES[f].Sel;
+     iLis.Items[NomItems]:=rEle.ELES[f].NAM;
+     iLis.Items.Objects[NomItems]:=rEle.ELES[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rEle.ELES[f].Nam,rEle.ELES[f]);
+     iLis.selected[iLis.Count-1]:=rEle.ELES[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+
+procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=TVEr(iVer).NAM;
+end;
+procedure I_GetX(iVer:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TVEr(iVer).LOC.X);
+end;
+procedure I_GetY(iVer:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Y);
+end;
+procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TVEr(iVer).LOC.Z);
+end;
+procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TEle(iEle).EUGL.X);
+end;
+procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Y);
+end;
+procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
+begin
+iEdit.Text:=FloatToStr(TEle(iEle).EUGL.Z);
+end;
+
+procedure I_SetN(iVer:Pointer;iEdit:TEdit);
+begin
+TVEr(iVer).NAM:=iEdit.Text;
+end;
+procedure I_SetX(iVer:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
+TObj(TVEr(iVer).OBJ).O_MATH;
+end;
+end;
+procedure I_SetY(iVer:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
+TObj(TVEr(iVer).OBJ).O_MATH;
+end;
+end;
+procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
+TObj(TVEr(iVer).OBJ).O_MATH;
+end;
+end;
+procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
+TObj(TVEr(iEle).OBJ).O_MATH;
+end;
+end;
+procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
+TObj(TVEr(iEle).OBJ).O_MATH;
+end;
+end;
+procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then begin
+TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
+TObj(TVEr(iEle).OBJ).O_MATH;
+end;
+end;
+
+procedure I_NewPoint(iEle:Pointer);// Создает Вершины
+Var
+rEle:TEle;
+lVer:TVer;
+begin
+rEle:=TEle(iEle);
+lVer:=rEle.V(0,0,0);
+lVer.Nam:='V '+IntToStr(lVer.IDD);
+TObj(lVer.Obj).O_MATH;
+end;
+procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
+var
+dVer:TVer;
+begin
+dVer:=TVer(iVer);
+I_DelSel(dVer);// Снимаю выделение елси оно есть
+MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
+end;
+
+procedure I_NewPlos(iObj:Pointer);// Создает Вершины
+Var
+rObj:TObj;
+lPLo:TPlo;
+lSel:TSels;
+begin
+lSel:=MirSels.SELVERS;
+if lSel.KOl>=4 Then begin
+rObj:=TObj(iObj);
+lPlo:=rObj.P(lSel.SELS[4],
+             lSel.SELS[3],
+             lSel.SELS[2],
+             lSel.SELS[1]);
+lPlo.Nam:='P '+IntToStr(lPlo.IDD);
+TObj(lPlo.Obj).O_MATH;
+end;
+lSel.free;
+end;
+procedure I_DelPLos(iPlo:Pointer);// Удаление Вершины
+var
+dPlo:TPlo;
+begin
+dPlo:=TPlo(iPlo);
+I_DelSel(dPlo);// Снимаю выделение елси оно есть
+MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
+end;
+
+procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
+Var
+rEle:TEle;
+lEle:TEle;
+begin
+rEle:=TEle(iEle);
+lEle:=rEle.E(0,0,0);
+lEle.Nam:='E '+IntToStr(lEle.IDD);
+TObj(lEle.Obj).O_MATH;
+end;
+procedure I_DelElement(iEle:Pointer);// Удаление Элементов
+var
+dEle:TEle;
+begin
+dEle:=TEle(iEle);
+I_DelSel(dEle);// Снимаю выделение елси оно есть
+MirEles.AddD(dEle);// Добавляем Элемент в удаляемые
+end;
+
+procedure I_NewObject;// Создает новый обьект
+Var nObj:TObj;
+begin
+nObj:=TObj.Create;
+nObj.Nam:='Object '+IntToStr(nObj.IDD);
+nObj.O_MATH;
+MirObjs.AddO(nObj);
+end;
+procedure I_DelObject(iObj:pointer);// Удаление обьектов
+Var
+dObj:TObj;
+begin
+dObj:=TObj(iObj);
+I_DelSel(dObj);// Снимаю выделение елси оно есть
+MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
+end;
 
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
 begin
@@ -1099,72 +1433,6 @@ end;
 procedure I_SelSel(iPri:pointer);// Выделение примитива
 begin
    MirSels.Add(TVer(iPri));
-end;
-
-procedure I_RefreshSpisokObjects;// Обновляет списко с обьектами
-var
-f:longint;// лдя циклов
-NomItems:Longint;// Перебирать записи в листбоксе
-MemIndex:Longint;// Запоминаем выделеный обьект
-begin
-
-NomItems:=0;// Для перебора обье4ктов в списке
-for f:=1 to MirObjs.KolO do
-if Not MirObjs.OBJS[f].DEL then begin // Если обьект не удалён
-NomItems:=NomItems+1;
-if NomItems<form4.CheckListBox6.Items.count then begin
-// Изменяем записи в списке только если обьект в списке изменился
-   form4.CheckListBox6.selected[NomItems]:=MirObjs.OBJS[f].Sel;
-   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
-   form4.CheckListBox6.Items[NomItems]:=MirObjs.OBJS[f].NAM;
-if form4.CheckListBox6.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
-   form4.CheckListBox6.Items.Objects[NomItems]:=MirObjs.OBJS[f];
-end
-else
-begin
-
-form4.CheckListBox6.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
-form4.CheckListBox6.selected[form4.CheckListBox6.Count-1]:=MirObjs.OBJS[f].Sel;
-
-end
-
-end;
-
-// Удаляем лишнии записи в конце списка
-while form4.CheckListBox6.count-1>NomItems do
-form4.CheckListBox6.items.delete(form4.CheckListBox6.count-1);
-
-
-end;
-
-procedure I_NewObject;// Создает новый обьект
-Var lObj:TObj;
-begin
-lObj:=TObj.Create(CreRCS3(0,0,0));
-lObj.Nam:='Object '+IntToStr(lObj.IDD);
-lObj.O_MATH;
-MirObjs.AddO(lObj);
-I_RefreshSpisokObjects;
-end;
-procedure i_DelObject(iObj:pointer);// Удаление обьектов
-begin
-MirObjs.AddD(TObj(iObj));// Добавляем обьект в удаляемые
-I_RefreshSpisokObjects;// Обновляет списко с обьектами
-end;
-
-procedure I_NewElement;// Создает новый Элемента
-Var lEle:TEle;
-begin
-//if I_SelEle=Nil then ERR('I_NewElement I_SelEle=Nil');
-//lEle:=I_SelEle.E(CreRCS3(0,0,0));// Добавляет элемент
-//lEle.Nam:='Element '+IntToStr(lEle.IDD);// Название для ного элемента
-//TObj(I_SelEle.Obj).O_MATH;// перерасчитать ОБьект
-//I_RefreshSpisokElements;// обновить список элементов
-end;
-procedure i_DelElement(iEle:pointer);// Удаление Элемента
-begin
-//MirObjs.AddD(TObj(iObj));// Добавляем обьект в удаляемые
-//I_RefreshSpisokObjects;// Обновляет списко с обьектами
 end;
 
 procedure I_DrVertex(iVer:TVer);// Вывод вершины

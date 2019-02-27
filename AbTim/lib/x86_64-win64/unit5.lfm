@@ -1,0 +1,57 @@
+object Form5: TForm5
+  Left = 985
+  Height = 380
+  Top = 75
+  Width = 252
+  Caption = 'Form5'
+  ClientHeight = 380
+  ClientWidth = 252
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -19
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 252
+    Align = alTop
+    Caption = 'Список обьектов.'
+    TabOrder = 0
+  end
+  object CheckListBox1: TCheckListBox
+    Left = 0
+    Height = 330
+    Top = 50
+    Width = 252
+    Align = alClient
+    Items.Strings = (
+      'Objects'
+    )
+    ItemHeight = 22
+    ItemIndex = 0
+    MultiSelect = True
+    OnClick = CheckListBox1Click
+    OnDblClick = CheckListBox1DblClick
+    PopupMenu = PopupMenu1
+    TabOrder = 1
+    Data = {
+      0100000000
+    }
+  end
+  object PopupMenu1: TPopupMenu
+    left = 208
+    top = 56
+    object MenuItem1: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem2Click
+    end
+  end
+end
