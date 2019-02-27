@@ -1,16 +1,17 @@
 object Form8: TForm8
-  Left = 495
-  Height = 372
-  Top = 382
+  Left = 503
+  Height = 171
+  Top = 105
   Width = 363
   Caption = 'Form8'
-  ClientHeight = 372
+  ClientHeight = 171
   ClientWidth = 363
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
   Font.Name = 'Consolas'
   Font.Pitch = fpFixed
   Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
@@ -23,12 +24,12 @@ object Form8: TForm8
   end
   object Panel2: TPanel
     Left = 0
-    Height = 322
+    Height = 121
     Top = 50
     Width = 170
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 322
+    ClientHeight = 121
     ClientWidth = 170
     TabOrder = 1
     object Edit1: TEdit
@@ -84,13 +85,13 @@ object Form8: TForm8
   end
   object Splitter1: TSplitter
     Left = 170
-    Height = 322
+    Height = 121
     Top = 50
     Width = 5
   end
   object Panel3: TPanel
     Left = 175
-    Height = 322
+    Height = 121
     Top = 50
     Width = 188
     Align = alClient

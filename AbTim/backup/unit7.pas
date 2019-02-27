@@ -1,7 +1,7 @@
 unit Unit7;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3, Types;
+  CheckLst, Menus, StdCtrls,Unit3,unit8, Types;
 type { TForm7 } TForm7 = class(TForm)
     CheckListBox1: TCheckListBox;
     CheckListBox2: TCheckListBox;
@@ -24,8 +24,11 @@ type { TForm7 } TForm7 = class(TForm)
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox1DblClick(Sender: TObject);
+    procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2Click(Sender: TObject);
     procedure CheckListBox2DblClick(Sender: TObject);
+    procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -75,20 +78,27 @@ begin
     I_SetN(Ele,Edit1);
 end;
 procedure TForm7.CheckListBox1Click(Sender: TObject);
- var f:Longint;
 begin
- For  f:=1 to CheckListBox1.Items.Count-1 do
- if   CheckListBox1.Selected[f]
- then I_SelSel(CheckListBox1.Items.Objects[f])
- else I_DelSel(CheckListBox1.Items.Objects[f]);
 end;
-procedure TForm7.CheckListBox2Click(Sender: TObject);
+
+procedure TForm7.CheckListBox1DblClick(Sender: TObject);
+begin
+   if CheckListBox1.itemindex<CheckListBox1.items.count then
+   if CheckListBox1.itemindex>0 then
+   U_OpenPoints(CheckListBox1.Items.Objects[CheckListBox1.ItemIndex],Ele);
+end;
+
+procedure TForm7.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
-  For f:=1 to CheckListBox2.Items.Count-1 do
-  if CheckListBox2.Selected[f]
-  then I_SelSel(CheckListBox2.Items.Objects[f])
-  else I_DelSel(CheckListBox2.Items.Objects[f]);
+For  f:=1 to CheckListBox1.Items.Count-1 do
+if   CheckListBox1.Selected[f]
+then I_SelSel(CheckListBox1.Items.Objects[f])
+else I_DelSel(CheckListBox1.Items.Objects[f]);
+end;
+
+procedure TForm7.CheckListBox2Click(Sender: TObject);
+begin
 end;
 procedure TForm7.CheckListBox2DblClick(Sender: TObject);
 begin
@@ -96,6 +106,16 @@ begin
    if CheckListBox2.itemindex>0 then
    U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex]);
 end;
+
+procedure TForm7.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
+  var f:Longint;
+begin
+  For f:=1 to CheckListBox2.Items.Count-1 do
+  if CheckListBox2.Selected[f]
+  then I_SelSel(CheckListBox2.Items.Objects[f])
+  else I_DelSel(CheckListBox2.Items.Objects[f]);
+end;
+
 procedure TForm7.Edit2Change(Sender: TObject);
 begin
     I_SetX(Ele,Edit2);
@@ -171,4 +191,30 @@ procedure TForm7.Timer1Timer(Sender: TObject);
 begin
 end;
 end.
+
+
+{
+O(ИМЯ) // Создает обьект с таким именем елси его нету
+E(ИМЯ) // Создает вложеные элемент если его нету
+P(Имя) // Создает плоскость с заданым именем
+V(Имя) // Создает вершину с заданым именем
+N(ИМЯ) // Задает Имя
+U // Углы наклона
+X(Значение) // Назначет координату по
+Y(Значение)
+Z(Значение)
+V // Идет координата
+X(Значение) // Назначет координату по X
+Y(Значение)
+Z(Значение)
+C // Означет что идет цвет
+R(Значение)
+G(Значение)
+B(Значение)
+A(Значение)
+}
+
+
+
+
 

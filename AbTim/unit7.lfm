@@ -1,10 +1,10 @@
 object Form7: TForm7
-  Left = 473
-  Height = 381
-  Top = 21
+  Left = 677
+  Height = 261
+  Top = 70
   Width = 320
   Caption = 'Form7'
-  ClientHeight = 381
+  ClientHeight = 261
   ClientWidth = 320
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
@@ -25,12 +25,12 @@ object Form7: TForm7
   end
   object Panel2: TPanel
     Left = 0
-    Height = 331
+    Height = 211
     Top = 50
     Width = 96
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 331
+    ClientHeight = 211
     ClientWidth = 96
     TabOrder = 1
     object Edit1: TEdit
@@ -123,23 +123,23 @@ object Form7: TForm7
   end
   object Splitter1: TSplitter
     Left = 96
-    Height = 331
+    Height = 211
     Top = 50
     Width = 5
   end
   object Panel3: TPanel
     Left = 101
-    Height = 331
+    Height = 211
     Top = 50
     Width = 219
     Align = alClient
     Caption = 'Panel3'
-    ClientHeight = 331
+    ClientHeight = 211
     ClientWidth = 219
     TabOrder = 3
     object CheckListBox1: TCheckListBox
       Left = 1
-      Height = 329
+      Height = 209
       Top = 1
       Width = 100
       Align = alLeft
@@ -148,6 +148,8 @@ object Form7: TForm7
       )
       ItemHeight = 22
       OnClick = CheckListBox1Click
+      OnDblClick = CheckListBox1DblClick
+      OnSelectionChange = CheckListBox1SelectionChange
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -156,13 +158,13 @@ object Form7: TForm7
     end
     object Splitter2: TSplitter
       Left = 101
-      Height = 329
+      Height = 209
       Top = 1
       Width = 5
     end
     object CheckListBox2: TCheckListBox
       Left = 106
-      Height = 329
+      Height = 209
       Top = 1
       Width = 112
       Align = alClient
@@ -172,6 +174,7 @@ object Form7: TForm7
       ItemHeight = 22
       OnClick = CheckListBox2Click
       OnDblClick = CheckListBox2DblClick
+      OnSelectionChange = CheckListBox2SelectionChange
       PopupMenu = PopupMenu2
       TabOrder = 2
       Data = {

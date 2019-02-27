@@ -1,10 +1,10 @@
 object Form6: TForm6
-  Left = 283
-  Height = 379
-  Top = 121
+  Left = 373
+  Height = 352
+  Top = 151
   Width = 463
   Caption = 'Form6'
-  ClientHeight = 379
+  ClientHeight = 352
   ClientWidth = 463
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
@@ -25,12 +25,12 @@ object Form6: TForm6
   end
   object Panel2: TPanel
     Left = 0
-    Height = 329
+    Height = 302
     Top = 50
     Width = 107
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 329
+    ClientHeight = 302
     ClientWidth = 107
     TabOrder = 1
     object Edit1: TEdit
@@ -122,26 +122,49 @@ object Form6: TForm6
       TabOrder = 6
       Text = 'Edit7'
     end
+    object Edit8: TEdit
+      Left = 1
+      Height = 30
+      Top = 211
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit8Change
+      OnDblClick = Edit8DblClick
+      TabOrder = 7
+      Text = 'Edit8'
+    end
+    object Edit9: TEdit
+      Left = 1
+      Height = 30
+      Top = 241
+      Width = 105
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit9Change
+      TabOrder = 8
+      Text = 'Edit9'
+    end
   end
   object Splitter1: TSplitter
     Left = 107
-    Height = 329
+    Height = 302
     Top = 50
     Width = 5
   end
   object Panel3: TPanel
     Left = 112
-    Height = 329
+    Height = 302
     Top = 50
     Width = 351
     Align = alClient
     Caption = 'Panel3'
-    ClientHeight = 329
+    ClientHeight = 302
     ClientWidth = 351
     TabOrder = 3
     object CheckListBox1: TCheckListBox
       Left = 1
-      Height = 327
+      Height = 300
       Top = 1
       Width = 74
       Align = alLeft
@@ -162,7 +185,7 @@ object Form6: TForm6
     end
     object CheckListBox2: TCheckListBox
       Left = 80
-      Height = 327
+      Height = 300
       Top = 1
       Width = 76
       Align = alLeft
@@ -181,7 +204,7 @@ object Form6: TForm6
     end
     object CheckListBox3: TCheckListBox
       Left = 161
-      Height = 327
+      Height = 300
       Top = 1
       Width = 79
       Align = alLeft
@@ -199,25 +222,25 @@ object Form6: TForm6
     end
     object Splitter2: TSplitter
       Left = 75
-      Height = 327
+      Height = 300
       Top = 1
       Width = 5
     end
     object Splitter3: TSplitter
       Left = 156
-      Height = 327
+      Height = 300
       Top = 1
       Width = 5
     end
     object Splitter4: TSplitter
       Left = 240
-      Height = 327
+      Height = 300
       Top = 1
       Width = 5
     end
     object CheckListBox4: TCheckListBox
       Left = 245
-      Height = 327
+      Height = 300
       Top = 1
       Width = 105
       Align = alClient
@@ -286,6 +309,33 @@ object Form6: TForm6
   end
   object Timer1: TTimer
     left = 12
+    top = 12
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 48
     top = 12
   end
 end

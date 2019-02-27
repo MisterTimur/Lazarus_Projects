@@ -53,6 +53,8 @@ procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_GetCol(iVer:Pointer;iEdit:TEdit);
+procedure I_GetAlp(iVer:Pointer;iEdit:TEdit);
 procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
 procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
@@ -61,6 +63,8 @@ procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_SetCol(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetAlp(iVer:Pointer ;iEdit:TEdit);
 procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
@@ -1320,22 +1324,33 @@ while iLis.count-1>NomItems do
 iLis.items.delete(iLis.count-1);
 end;
 
-procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetN(iVer:Pointer ;iEdit:TEdit);
 begin
 iEdit.Text:=TVEr(iVer).NAM;
 end;
-procedure I_GetX(iVer:Pointer;iEdit:TEdit);
+procedure I_GetX(iVer:Pointer ;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.X);
 end;
-procedure I_GetY(iVer:Pointer;iEdit:TEdit);
+procedure I_GetY(iVer:Pointer ;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Y);
 end;
-procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_GetZ(iVer:Pointer ;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Z);
 end;
+
+procedure I_GetCol(iVer:Pointer ;iEdit:TEdit);
+begin
+//iEdit.Text:=InString(ColToInt(TVEr(iVer).COL));
+end;
+procedure I_GetAlp(iVer:Pointer ;iEdit:TEdit);
+begin
+iEdit.Text:=InString(IntToStr(TVEr(iVer).Col.A);
+end;
+
+
 procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TEle(iEle).EUGL.X);
@@ -1349,30 +1364,40 @@ begin
 iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 
-procedure I_SetN(iVer:Pointer;iEdit:TEdit);
+procedure I_SetN(iVer:Pointer ;iEdit:TEdit);
 begin
 TVEr(iVer).NAM:=iEdit.Text;
 end;
-procedure I_SetX(iVer:Pointer;iEdit:TEdit);
+procedure I_SetX(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetY(iVer:Pointer;iEdit:TEdit);
+procedure I_SetY(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
+procedure I_SetZ(iVer:Pointer ;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
+end;
+procedure I_SetCol(iVer:Pointer ;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+TVEr(iVer).COL:=IntToCol(trunc(inFloat(iEdit.Text)));
+end;
+procedure I_SetAlp(iVer:Pointer ;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
 end;
 procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
 begin
@@ -1521,7 +1546,10 @@ with iPlo do begin
 
 glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
 glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
+glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
 glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
+glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
+glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
 glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
 glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
 
@@ -1972,6 +2000,7 @@ end;
 
 
 end.
+
 
 
 

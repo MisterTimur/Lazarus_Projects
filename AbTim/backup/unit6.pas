@@ -11,6 +11,7 @@ type
     CheckListBox2: TCheckListBox;
     CheckListBox3: TCheckListBox;
     CheckListBox4: TCheckListBox;
+    ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -18,6 +19,8 @@ type
     Edit5: TEdit;
     Edit6: TEdit;
     Edit7: TEdit;
+    Edit8: TEdit;
+    Edit9: TEdit;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -56,6 +59,9 @@ type
     procedure Edit5Change(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
     procedure Edit7Change(Sender: TObject);
+    procedure Edit8Change(Sender: TObject);
+    procedure Edit8DblClick(Sender: TObject);
+    procedure Edit9Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
@@ -182,6 +188,25 @@ procedure TForm6.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Obj,Edit7);
 end;
+
+procedure TForm6.Edit8Change(Sender: TObject);
+begin
+  I_SetCol(Obj,Edit8);
+end;
+
+procedure TForm6.Edit8DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  edit8.Color:=ColorDialog1.Color;
+  edit8.Text:=intToStr(ColorDialog1.Color);
+  end;
+end;
+
+procedure TForm6.Edit9Change(Sender: TObject);
+begin
+ I_SetAlp(Obj,Edit9);// Устанавливает прозрачность
+end;
+
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 end;

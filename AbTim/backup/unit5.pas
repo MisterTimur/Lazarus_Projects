@@ -45,7 +45,7 @@ begin
        if (application.Components[f] is tform8) then begin
        if I_RodEle((application.Components[f] as tform8).ELE,
           CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-          (application.Components[f] as tform8).close;
+          (application.Components[f] as tform8).close;f:=f+1;
        end
   else if (application.Components[f] is tform7) then begin
        if I_RodEle((application.Components[f] as tform7).ELE,

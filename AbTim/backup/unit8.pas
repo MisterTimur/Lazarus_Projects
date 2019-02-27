@@ -52,28 +52,23 @@ procedure TForm8.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
 begin
   TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
 end;
-
 procedure TForm8.Edit1Change(Sender: TObject);
 begin
 
 end;
-
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);
 end;
-
 procedure TForm8.Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
    TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
 end;
-
 procedure TForm8.Edit3Change(Sender: TObject);
 begin
   I_SetY(Ver,Edit3);
 end;
-
 procedure TForm8.Edit4Change(Sender: TObject);
 begin
   I_SetZ(Ver,Edit4);
