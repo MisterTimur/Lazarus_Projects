@@ -381,6 +381,7 @@ var   {Базовые функции        ===========================}{%Region
       if KZ<3 then REz:=Rez+lStr[f];
       if T Then KZ:=KZ+1;
       end;
+      if T then
       While (Length(Rez)>1) and (
       (Rez[Length(Rez)]='0') or (Rez[Length(Rez)]='.')) do
       delete(rez,Length(Rez),1);

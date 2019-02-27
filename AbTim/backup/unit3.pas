@@ -1347,7 +1347,7 @@ begin
 end;
 procedure I_GetAlp(iVer:Pointer ;iEdit:TEdit);
 begin
-iEdit.Text:=InString(IntToStr(TVEr(iVer).Col.A);
+iEdit.Text:=InString(TVEr(iVer).Col.A);
 end;
 
 

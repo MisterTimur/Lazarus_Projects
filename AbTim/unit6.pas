@@ -91,7 +91,7 @@ begin
   I_GetX(iObj,lForm6.Edit2);
   I_GetY(iObj,lForm6.Edit3);
   I_GetZ(iObj,lForm6.Edit4);
-  I_GetCol(iObj,lForm6.Edit9);
+  I_GetCol(iObj,lForm6.Edit8);
   I_GetAlp(iObj,lForm6.Edit9);
   I_GetUX(iObj,lForm6.Edit5);
   I_GetUY(iObj,lForm6.Edit6);

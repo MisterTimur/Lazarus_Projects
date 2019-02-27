@@ -1,11 +1,11 @@
 object Form4: TForm4
-  Left = 55
-  Height = 86
-  Top = 532
-  Width = 1026
+  Left = 150
+  Height = 58
+  Top = 216
+  Width = 758
   Caption = 'Form4'
-  ClientHeight = 86
-  ClientWidth = 1026
+  ClientHeight = 58
+  ClientWidth = 758
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
   Font.Name = 'Consolas'
@@ -14,9 +14,9 @@ object Form4: TForm4
   FormStyle = fsStayOnTop
   LCLVersion = '1.8.4.0'
   object Button1: TButton
-    Left = 808
+    Left = 568
     Height = 28
-    Top = 32
+    Top = 16
     Width = 181
     Caption = 'Обьекты.'
     OnClick = Button1Click

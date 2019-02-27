@@ -91,6 +91,8 @@ begin
   I_GetX(iObj,lForm6.Edit2);
   I_GetY(iObj,lForm6.Edit3);
   I_GetZ(iObj,lForm6.Edit4);
+  I_GetCol(iObj,lForm6.Edit8);
+  I_GetAlp(iObj,lForm6.Edit9);
   I_GetUX(iObj,lForm6.Edit5);
   I_GetUY(iObj,lForm6.Edit6);
   I_GetUZ(iObj,lForm6.Edit7);
@@ -188,12 +190,10 @@ procedure TForm6.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Obj,Edit7);
 end;
-
 procedure TForm6.Edit8Change(Sender: TObject);
 begin
   I_SetCol(Obj,Edit8);
 end;
-
 procedure TForm6.Edit8DblClick(Sender: TObject);
 begin
   if ColorDialog1.Execute then begin
@@ -201,12 +201,10 @@ begin
   edit8.Text:=intToStr(ColorDialog1.Color);
   end;
 end;
-
 procedure TForm6.Edit9Change(Sender: TObject);
 begin
  I_SetAlp(Obj,Edit9);// Устанавливает прозрачность
 end;
-
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 end;

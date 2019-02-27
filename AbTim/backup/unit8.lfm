@@ -1,10 +1,10 @@
 object Form8: TForm8
-  Left = 503
-  Height = 171
-  Top = 105
+  Left = 456
+  Height = 263
+  Top = 174
   Width = 363
   Caption = 'Form8'
-  ClientHeight = 171
+  ClientHeight = 263
   ClientWidth = 363
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
@@ -24,12 +24,12 @@ object Form8: TForm8
   end
   object Panel2: TPanel
     Left = 0
-    Height = 121
+    Height = 213
     Top = 50
     Width = 170
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 121
+    ClientHeight = 213
     ClientWidth = 170
     TabOrder = 1
     object Edit1: TEdit
@@ -82,20 +82,70 @@ object Form8: TForm8
       TabOrder = 3
       Text = 'Edit4'
     end
+    object Edit5: TEdit
+      Left = 1
+      Height = 30
+      Top = 121
+      Width = 168
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit5Change
+      OnDblClick = Edit5DblClick
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 30
+      Top = 151
+      Width = 168
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit6Change
+      TabOrder = 5
+      Text = 'Edit6'
+    end
   end
   object Splitter1: TSplitter
     Left = 170
-    Height = 121
+    Height = 213
     Top = 50
     Width = 5
   end
   object Panel3: TPanel
     Left = 175
-    Height = 121
+    Height = 213
     Top = 50
     Width = 188
     Align = alClient
     Caption = 'Panel3'
     TabOrder = 3
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 16
+    top = 8
   end
 end
