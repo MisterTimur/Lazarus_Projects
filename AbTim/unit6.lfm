@@ -1,7 +1,7 @@
 object Form6: TForm6
-  Left = 154
+  Left = 333
   Height = 379
-  Top = 111
+  Top = 193
   Width = 463
   Caption = 'Form6'
   ClientHeight = 379
@@ -12,6 +12,7 @@ object Form6: TForm6
   Font.Pitch = fpFixed
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
+  OnClose = FormClose
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
@@ -255,6 +256,7 @@ object Form6: TForm6
     end
     object MenuItem6: TMenuItem
       Caption = 'Удалить.'
+      OnClick = MenuItem6Click
     end
   end
   object PopupMenu4: TPopupMenu
@@ -268,5 +270,10 @@ object Form6: TForm6
       Caption = 'Удалить.'
       OnClick = MenuItem8Click
     end
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 16
+    top = 8
   end
 end

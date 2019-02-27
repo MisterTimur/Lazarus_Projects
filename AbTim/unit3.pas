@@ -1165,8 +1165,6 @@ begin
  SELOBJS:=Rez;
 end;
 
-
-
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg10:Longint;
@@ -1446,8 +1444,18 @@ MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
 end;
 
 function  I_RodEle(iVer,iEle:Pointer):Boolean;// Доделать
+var
+lEle:TEle;
+Rez:Boolean;
 begin
-
+Rez:=False;
+lEle:=TEle(iEle);
+if iEle=iVer Then Rez:=True;
+while (lEle.Obj<>lEle) and (Rez=false) do begin
+lEle:=TEle(lEle.OBJ);
+if iEle=iVer Then Rez:=True;
+end;
+I_RodEle:=REz;
 end;
 
 procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
@@ -1531,37 +1539,39 @@ end;
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
 var f,RC:LongWord;
 begin
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 I_DrVertex(MirVers.VERS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirVers.KolV) then begin end;
+if (RC>0) and (RC<=MirVers.KolV) then
+MirVers.Vers[RC].Sel:=true;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
 I_DrPlos(MirPLos.PLOS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirPLos.KolP) then begin end;
+if (RC>0) and (RC<=MirPLos.KolP) then MirPlos.Plos[RC].Sel:=true;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
 I_DrElement(MirEles.ELES[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirEles.KolE) then begin end;
+if (RC>0) and (RC<=MirEles.KolE) then MirEles.Eles[RC].Sel:=true;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
 I_DrObject(MirObjs.OBJS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirObjs.KolO) then begin end;
+if (RC>0) and (RC<=MirObjs.KolO) then MirObjs.Objs[RC].Sel:=true;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 end;
-
 procedure I_EDITDRAW;
 var f:Longint;
 Begin // Отрисовка редактора

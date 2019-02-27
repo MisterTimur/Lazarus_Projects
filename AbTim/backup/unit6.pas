@@ -38,6 +38,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Splitter4: TSplitter;
+    Timer1: TTimer;
     procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox2Click(Sender: TObject);
     procedure CheckListBox3Click(Sender: TObject);
@@ -50,13 +51,16 @@ type
     procedure Edit5Change(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
     procedure Edit7Change(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
 
   public
@@ -66,8 +70,7 @@ type
 var
   Form6: TForm6;
 procedure U_OpenObject(iObj:Pointer);
-implementation {$R *.lfm}
-
+implementation {$R *.lfm}{ TForm6 }
 procedure U_OpenObject(iObj:Pointer);
 var lForm6:TForm6;
 begin
@@ -82,10 +85,11 @@ begin
   I_GetUY(iObj,lForm6.Edit6);
   I_GetUZ(iObj,lForm6.Edit7);
 end;
-
-{ TForm6 }
-
 procedure TForm6.MenuItem5Click(Sender: TObject);
+begin
+
+end;
+procedure TForm6.MenuItem6Click(Sender: TObject);
 begin
 
 end;
@@ -93,7 +97,6 @@ procedure TForm6.Edit1Change(Sender: TObject);
 begin
   I_SetN(Obj,Edit1);
 end;
-
 procedure TForm6.CheckListBox1Click(Sender: TObject);
 var f:Longint;
 begin
@@ -151,6 +154,10 @@ procedure TForm6.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Obj,Edit7);
 end;
+procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  Timer1.Enabled:=false;
+end;
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
   I_NewPoint(obj);
@@ -189,8 +196,6 @@ begin
    if CheckListBox4.itemindex>0 then begin
 
    for f:=0 to application.ComponentCount-1 do
-   if (application.Components[f] = self) then
-   else
    if (application.Components[f] is tform7) then begin
       if I_RodEle((application.Components[f] as tform7).ELE,
       CheckListBox4.items.objects[CheckListBox4.itemindex]) then
@@ -204,10 +209,15 @@ begin
 
 
    i_DelObject(CheckListBox4.items.objects[CheckListBox4.itemindex]);
-   I_RefreshSpisokObjects(CheckListBox4);
+   I_RefreshSpisokElements(Obj,CheckListBox4);
 
 end;
 end;
-
+procedure TForm6.Timer1Timer(Sender: TObject);
+begin
+ I_RefreshSpisokPOints  (obj,CheckListBox1);
+ I_RefreshSpisokPlos    (obj,CheckListBox4);
+ I_RefreshSpisokElements(obj,CheckListBox4);
+end;
 end.
 

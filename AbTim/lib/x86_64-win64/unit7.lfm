@@ -12,6 +12,7 @@ object Form7: TForm7
   Font.Pitch = fpFixed
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
+  OnClose = FormClose
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
@@ -136,6 +137,7 @@ object Form7: TForm7
         'V'
       )
       ItemHeight = 22
+      OnClick = CheckListBox1Click
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -158,6 +160,7 @@ object Form7: TForm7
         'E'
       )
       ItemHeight = 22
+      OnClick = CheckListBox2Click
       PopupMenu = PopupMenu2
       TabOrder = 2
       Data = {
@@ -188,5 +191,10 @@ object Form7: TForm7
       Caption = 'Удалить.'
       OnClick = MenuItem4Click
     end
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 16
+    top = 8
   end
 end

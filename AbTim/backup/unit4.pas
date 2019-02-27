@@ -32,7 +32,8 @@ implementation
 
 procedure TForm4.Button1Click(Sender: TObject);
 begin
-  form5.visible:=not form5.visible;
+  Tform5.create(application).show;
+  button1.Visible:=false;
 end;
 
 end.

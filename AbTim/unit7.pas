@@ -23,6 +23,9 @@ type { TForm7 } TForm7 = class(TForm)
     PopupMenu2: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    Timer1: TTimer;
+    procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox2Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit3Change(Sender: TObject);
@@ -30,10 +33,12 @@ type { TForm7 } TForm7 = class(TForm)
     procedure Edit5Change(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
     procedure Edit7Change(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
 
   public
@@ -65,6 +70,22 @@ procedure TForm7.Edit1Change(Sender: TObject);
 begin
     I_SetN(Ele,Edit1);
 end;
+procedure TForm7.CheckListBox1Click(Sender: TObject);
+ var f:Longint;
+begin
+ For  f:=1 to CheckListBox1.Items.Count-1 do
+ if   CheckListBox1.Selected[f]
+ then I_SelSel(CheckListBox1.Items.Objects[f])
+ else I_DelSel(CheckListBox1.Items.Objects[f]);
+end;
+procedure TForm7.CheckListBox2Click(Sender: TObject);
+var f:Longint;
+begin
+  For f:=1 to CheckListBox2.Items.Count-1 do
+  if CheckListBox2.Selected[f]
+  then I_SelSel(CheckListBox2.Items.Objects[f])
+  else I_DelSel(CheckListBox2.Items.Objects[f]);
+end;
 procedure TForm7.Edit2Change(Sender: TObject);
 begin
     I_SetX(Ele,Edit2);
@@ -88,6 +109,10 @@ end;
 procedure TForm7.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Ele,Edit7);
+end;
+procedure TForm7.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  Timer1.Enabled:=False;
 end;
 procedure TForm7.MenuItem2Click(Sender: TObject);
 begin
@@ -120,6 +145,10 @@ begin
 
 end;
 end;
-
+procedure TForm7.Timer1Timer(Sender: TObject);
+begin
+ I_RefreshSpisokPOints  (Ele,CheckListBox1);
+ I_RefreshSpisokElements(Ele,CheckListBox2);
+end;
 end.
 
