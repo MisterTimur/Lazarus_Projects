@@ -1,7 +1,7 @@
 unit Unit6; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3;
+  CheckLst, Menus, StdCtrls,Unit3,unit7;
 
 type
 
@@ -38,6 +38,11 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Splitter4: TSplitter;
+    procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox2Click(Sender: TObject);
+    procedure CheckListBox3Click(Sender: TObject);
+    procedure CheckListBox4Click(Sender: TObject);
+    procedure CheckListBox4DblClick(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit3Change(Sender: TObject);
@@ -88,6 +93,45 @@ procedure TForm6.Edit1Change(Sender: TObject);
 begin
   I_SetN(Obj,Edit1);
 end;
+
+procedure TForm6.CheckListBox1Click(Sender: TObject);
+var f:Longint;
+begin
+ For f:=1 to CheckListBox1.Items.Count-1 do
+ if CheckListBox1.Selected[f]
+ then I_SelSel(CheckListBox1.Items.Objects[f])
+ else I_DelSel(CheckListBox1.Items.Objects[f]);
+end;
+
+procedure TForm6.CheckListBox2Click(Sender: TObject);
+var f:Longint;
+begin
+ For f:=1 to CheckListBox2.Items.Count-1 do
+ if CheckListBox2.Selected[f]
+ then I_SelSel(CheckListBox2.Items.Objects[f])
+ else I_DelSel(CheckListBox2.Items.Objects[f]);
+end;
+
+procedure TForm6.CheckListBox3Click(Sender: TObject);
+begin
+end;
+
+procedure TForm6.CheckListBox4Click(Sender: TObject);
+var f:Longint;
+begin
+ For f:=1 to CheckListBox4.Items.Count-1 do
+ if CheckListBox4.Selected[f]
+ then I_SelSel(CheckListBox4.Items.Objects[f])
+ else I_DelSel(CheckListBox4.Items.Objects[f]);
+end;
+
+procedure TForm6.CheckListBox4DblClick(Sender: TObject);
+begin
+   if CheckListBox4.itemindex<CheckListBox4.items.count then
+   if CheckListBox4.itemindex>0 then
+   U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
+end;
+
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
   I_SetX(Obj,Edit2);
@@ -124,12 +168,11 @@ begin
    i_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
    I_RefreshSpisokPoints(obj,CheckListBox1);
 end;
-
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
   I_NewPlos(Obj);
+  I_RefreshSpisokPlos(obj,CheckListBox2);
 end;
-
 procedure TForm6.MenuItem4Click(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
@@ -137,7 +180,6 @@ begin
    i_DelPLos(CheckListBox2.items.objects[CheckListBox2.itemindex]);
    I_RefreshSpisokPLos(obj,CheckListBox2);
 end;
-
 procedure TForm6.MenuItem7Click(Sender: TObject);
 begin
     I_NewElement(Obj);

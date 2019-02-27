@@ -1,7 +1,7 @@
 object Form6: TForm6
-  Left = 343
+  Left = 608
   Height = 379
-  Top = 112
+  Top = 103
   Width = 463
   Caption = 'Form6'
   ClientHeight = 379
@@ -138,6 +138,7 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox1Click
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -156,6 +157,7 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox2Click
       PopupMenu = PopupMenu2
       TabOrder = 1
       Data = {
@@ -174,6 +176,7 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox3Click
       PopupMenu = PopupMenu3
       TabOrder = 2
       Data = {
@@ -210,6 +213,8 @@ object Form6: TForm6
       ItemHeight = 22
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox4Click
+      OnDblClick = CheckListBox4DblClick
       PopupMenu = PopupMenu4
       TabOrder = 6
       Data = {

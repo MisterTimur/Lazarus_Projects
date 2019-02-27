@@ -1,7 +1,7 @@
 object Form7: TForm7
-  Left = 654
+  Left = 267
   Height = 381
-  Top = 75
+  Top = 193
   Width = 320
   Caption = 'Form7'
   ClientHeight = 381
@@ -39,6 +39,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end
@@ -49,6 +50,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit2Change
       TabOrder = 1
       Text = 'Edit2'
     end
@@ -59,6 +61,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit3Change
       TabOrder = 2
       Text = 'Edit3'
     end
@@ -69,6 +72,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit4Change
       TabOrder = 3
       Text = 'Edit4'
     end
@@ -79,6 +83,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit5Change
       TabOrder = 4
       Text = 'Edit5'
     end
@@ -89,6 +94,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit6Change
       TabOrder = 5
       Text = 'Edit6'
     end
@@ -99,6 +105,7 @@ object Form7: TForm7
       Width = 94
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit7Change
       TabOrder = 6
       Text = 'Edit7'
     end
@@ -125,8 +132,15 @@ object Form7: TForm7
       Top = 1
       Width = 100
       Align = alLeft
-      ItemHeight = 0
+      Items.Strings = (
+        'V'
+      )
+      ItemHeight = 22
+      PopupMenu = PopupMenu1
       TabOrder = 0
+      Data = {
+        0100000000
+      }
     end
     object Splitter2: TSplitter
       Left = 101
@@ -140,16 +154,39 @@ object Form7: TForm7
       Top = 1
       Width = 112
       Align = alClient
-      ItemHeight = 0
+      Items.Strings = (
+        'E'
+      )
+      ItemHeight = 22
+      PopupMenu = PopupMenu2
       TabOrder = 2
+      Data = {
+        0100000000
+      }
     end
   end
   object PopupMenu1: TPopupMenu
     left = 117
     top = 67
+    object MenuItem1: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem2Click
+    end
   end
   object PopupMenu2: TPopupMenu
-    left = 218
+    left = 216
     top = 66
+    object MenuItem3: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem3Click
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem4Click
+    end
   end
 end

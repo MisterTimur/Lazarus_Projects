@@ -34,7 +34,7 @@ procedure I_NewPoint(iEle:Pointer);// Создает Вершины
 procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
 
 procedure I_NewPlos(iObj:Pointer);// Создает Плоскости
-procedure I_DelPlos(iObj:Pointer);// Удаление Плоскости
+procedure I_DelPlos(iPlo:Pointer);// Удаление Плоскости
 
 procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
 procedure I_DelElement(iEle:Pointer);// Удаление Элемента
@@ -43,7 +43,7 @@ procedure I_NewObject;// Создает новый обьект
 procedure i_DelObject(iObj:pointer);// Удаление обьекта
 
 procedure I_RefreshSpisokPoints   (iEle:POinter;iLis:TCheckListBox);
-procedure I_RefreshSpisokPloskosts(iObj:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokPlos     (iObj:POinter;iLis:TCheckListBox);
 procedure I_RefreshSpisokElements (iEle:POinter;iLis:TCheckListBox);
 procedure I_RefreshSpisokObjects  (iLis:TCheckListBox);
 
@@ -351,6 +351,7 @@ TYPE TVER=CLASS  // Опсиание вершиины
   SEL:RBOL;// ОБьект выделен для редактора нужно
   IDD:RLON;// Уникальный идентификатор
   NOM:RLON;// Номер в списке отрисовки
+  TIP:RLON;// Тип примитива
 
   LOC:RCS3;// ЛОкальная коордианата
   MAT:RCS3;// Используеться для вычисления реальных координат
@@ -397,9 +398,11 @@ var MirVers:Tvers;// Все вершины игрового мира здесь 
 Constructor TVER.Create;// Создает вершину
 begin
 
+  NAM:=''           ;
   SEL:=false        ;// Не выделен примитив
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке отрисовки
+  TIP:=1            ;
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -557,7 +560,7 @@ VERS[1]:=iVer1;
 VERS[2]:=iVer2;
 VERS[3]:=iVer3;
 VERS[4]:=iVer4;
-
+TIP:=2;
 
 end;
 Destructor  TPLO.Destroy;
@@ -775,6 +778,7 @@ begin
 inherited Create;
 KolV:=0;
 KolE:=0;
+TIP:=3;
 end;
 Destructor  TELE.Destroy;
 var F:Longint;
@@ -988,6 +992,7 @@ end;
 Constructor TOBJ.Create;// Конструктор
 begin
 inherited Create;
+TIP:=4;
 Kadr:=1;
 OBJ:=Self;
 KolP:=0;
@@ -1118,7 +1123,7 @@ var Rez:TSels;f:Longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f] is TVER) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=1) then REz.Add(SELS[f]);
  SELVERS:=Rez;
 end;
 function  TSels.SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
@@ -1126,7 +1131,7 @@ var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f] is TPLO) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=2) then REz.Add(SELS[f]);
  SELPLOS:=Rez;
 end;
 function  TSels.SELELES:TSels;// Возвращает Список выделеных Элементов
@@ -1134,7 +1139,7 @@ var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f] is TELE) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=3) then REz.Add(SELS[f]);
  SELELES:=Rez;
 end;
 function  TSels.SELOBJS:TSels;// Возвращает Список выделеных ОБьектов
@@ -1142,7 +1147,7 @@ var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f] is TOBJ) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=4) then REz.Add(SELS[f]);
  SELOBJS:=Rez;
 end;
 
@@ -1152,7 +1157,7 @@ end;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg10:Longint;
 
-procedure I_RefreshSpisokObjects  (iLis:TCheckListBox);// Список с обьекта
+procedure I_RefreshSpisokObjects (iLis:TCheckListBox);// Список с обьекта
 var
 f:longint;// лдя циклов
 NomItems:Longint;// Перебирать записи в листбоксе
@@ -1183,7 +1188,7 @@ iLis.items.delete(iLis.count-1);
 
 
 end;
-procedure I_RefreshSpisokPoints   (iEle:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokPoints  (iEle:POinter;iLis:TCheckListBox);
 var
 f:longint;// Для циклов
 rEle:TEle;
@@ -1211,7 +1216,7 @@ end;
 while iLis.count-1>NomItems do
 iLis.items.delete(iLis.count-1);
 end;
-procedure I_RefreshSpisokPloskosts(iObj:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokPlos    (iObj:POinter;iLis:TCheckListBox);
 var
 f:longint;// Для циклов
 rObj:TObj;
@@ -1239,7 +1244,7 @@ end;
 while iLis.count-1>NomItems do
 iLis.items.delete(iLis.count-1);
 end;
-procedure I_RefreshSpisokElements (iEle:POinter;iLis:TCheckListBox);
+procedure I_RefreshSpisokElements(iEle:POinter;iLis:TCheckListBox);
 var
 f:longint;// Для циклов
 rEle:TEle;
@@ -1369,7 +1374,7 @@ rObj:TObj;
 lPLo:TPlo;
 lSel:TSels;
 begin
-lSel:=MirSels.SELVERS;
+lSel:=MirSels.SELPLOS;
 if lSel.KOl>=4 Then begin
 rObj:=TObj(iObj);
 lPlo:=rObj.P(lSel.SELS[4],
