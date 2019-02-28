@@ -16,8 +16,6 @@ type
     Edit6: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
-    Splitter1: TSplitter;
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -29,11 +27,14 @@ type
     procedure Edit5Change(Sender: TObject);
     procedure Edit5DblClick(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
   private
 
   public
   Ver:Pointer;
   Ele:Pointer;
+  MHeight:Longint;
   end;
 
 var
@@ -83,12 +84,10 @@ procedure TForm8.Edit4Change(Sender: TObject);
 begin
   I_SetZ(Ver,Edit4);
 end;
-
 procedure TForm8.Edit5Change(Sender: TObject);
 begin
    I_SetCol(Ver,Edit5);
 end;
-
 procedure TForm8.Edit5DblClick(Sender: TObject);
 begin
   if ColorDialog1.Execute then begin
@@ -96,13 +95,30 @@ begin
   edit5.Text:=intToStr(ColorDialog1.Color);
   end;
 end;
-
 procedure TForm8.Edit6Change(Sender: TObject);
 begin
   I_SetAlp(Ver,Edit6);// Устанавливает прозрачность
 end;
 
+procedure TForm8.FormCreate(Sender: TObject);
+begin
+  MHeight:=Height;
+  left:=form3.left+form3.Width-width-10;
+  top:=form3.top+form3.height-height-50;
+end;
 
+procedure TForm8.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Top:=Top-(MHeight-height);
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  Top:=Top+MHeight-height;
+  end;
+end;
 
 end.
 

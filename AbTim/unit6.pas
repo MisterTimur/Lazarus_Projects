@@ -63,6 +63,7 @@ type
     procedure Edit8DblClick(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
@@ -71,10 +72,12 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
   private
 
   public
   OBJ:Pointer;
+  MHeight:Longint;
   end;
 
 var
@@ -127,18 +130,14 @@ var f:Longint;
 begin
 
  For f:=1 to CheckListBox1.Items.Count-1 do
- if CheckListBox1.Selected[f]
- then I_SelSel(CheckListBox1.Items.Objects[f])
- else I_DelSel(CheckListBox1.Items.Objects[f]);
+ I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
 
 end;
 procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox2.Items.Count-1 do
- if CheckListBox2.Selected[f]
- then I_SelSel(CheckListBox2.Items.Objects[f])
- else I_DelSel(CheckListBox2.Items.Objects[f]);
+ I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
 end;
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
@@ -150,9 +149,7 @@ procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox4.Items.Count-1 do
- if CheckListBox4.Selected[f]
- then I_SelSel(CheckListBox4.Items.Objects[f])
- else I_DelSel(CheckListBox4.Items.Objects[f]);
+ I_SetSel(CheckListBox4.Items.Objects[f],CheckListBox4.Selected[f])
 end;
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
@@ -208,6 +205,12 @@ end;
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 end;
+procedure TForm6.FormCreate(Sender: TObject);
+begin
+  MHeight:=height;
+  left:=form3.Left+10;
+  top:=form3.top+30;
+end;
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
   I_NewPoint(obj);
@@ -219,11 +222,6 @@ var
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
    if CheckListBox1.itemindex>0 then begin
-      for f:=0 to application.ComponentCount-1 do
-      if  (application.Components[f] is tform8) then
-      if ((application.Components[f] as tform8).VER=
-           POinter(CheckListBox1.items.objects[CheckListBox1.itemindex])) then
-         (application.Components[f] as tform8).close;
    I_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
    I_RefreshSpisokPoints(obj,CheckListBox1);
    end;
@@ -246,35 +244,24 @@ begin
     I_RefreshSpisokElements(obj,CheckListBox4);
 end;
 procedure TForm6.MenuItem8Click(Sender: TObject);
-var
-  f:Longint;
 begin
 
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then begin
-
-   for f:=0 to application.ComponentCount-1 do
-   if (application.Components[f] is tform8) then begin
-      if I_RodEle((application.Components[f] as tform8).ELE,
-      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
-      (application.Components[f] as tform8).close;
-   end else
-   if (application.Components[f] is tform7) then begin
-      if I_RodEle((application.Components[f] as tform7).ELE,
-      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
-      (application.Components[f] as tform7).close;
-   end else
-   if (application.Components[f] is tform6) then
-      if I_RodEle((application.Components[f] as tform6).OBJ,
-      CheckListBox4.items.objects[CheckListBox4.itemindex]) then
-      (application.Components[f] as tform6).close;
-
-
-   i_DelObject(CheckListBox4.items.objects[CheckListBox4.itemindex]);
+   I_DelElement(CheckListBox4.items.objects[CheckListBox4.itemindex]);
    I_RefreshSpisokElements(Obj,CheckListBox4);
+   end;
 
 end;
-
+procedure TForm6.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  end;
 end;
 end.
 

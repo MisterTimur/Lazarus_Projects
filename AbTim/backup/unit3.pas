@@ -70,14 +70,13 @@ procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
-procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
-procedure I_SelSel(iPri:pointer);// Выделение примитива
+procedure I_SetSel(iPri:pointer;iSel:boolean);
 
 function isFloat(s:AnsiString):Boolean;
 function inFloat(s:AnsiString):real;
 function InString(i:REal):ansiString;
 {%EndRegion}
-implementation {$R *.lfm} uses unit5,unit6,unit7;
+implementation {$R *.lfm} uses unit5,unit6,unit7,unit8;
 
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
@@ -381,6 +380,7 @@ var   {Базовые функции        ===========================}{%Region
       if KZ<3 then REz:=Rez+lStr[f];
       if T Then KZ:=KZ+1;
       end;
+      if T then
       While (Length(Rez)>1) and (
       (Rez[Length(Rez)]='0') or (Rez[Length(Rez)]='.')) do
       delete(rez,Length(Rez),1);
@@ -506,7 +506,7 @@ begin
 end;
 Procedure   TVERS.AddD(iVer:Tver);// ОТпарвляет вершину на удаление
 begin
-  I_DelSel(iVer);// Снимаю выделение елси оно есть
+  I_SetSel(iVer,false);// Снимаю выделение елси оно есть
   IVer.Del:=True;
   if KolD+1>MaxKolDelVers then
   ERR(' TVERS.AddD(iVer:Tver) KolD+1>MaxKolDelVers');
@@ -646,7 +646,7 @@ begin
 end;
 Procedure   TPLOS.AddD(iPlo:TPlo);
 begin
-  I_DelSel(iPlo);// Снимаю выделение елси оно есть
+  I_SetSel(iPlo,false);// Снимаю выделение елси оно есть
   IPlo.Del:=True;
   if KolD+1>MaxKolDelPlos then
   ERR(' TPLOS.AddD(iPlo:TPlo);  KolD+1>MaxKolDelPlos');
@@ -901,6 +901,7 @@ end;
 Procedure   TELES.AddD(iELE:TELE);// ОТпарвляет Элемент на удаление
 var F:Longint;
 begin
+  I_SetSel(iEle,false);// Снимаю выделение елси оно есть
   IEle.Del:=True;
   for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
   for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
@@ -1070,6 +1071,7 @@ end;
 procedure   TOBJS.AddD(iObj:TOBJ);
 Var F:Longint;
 begin
+I_SetSel(iObj,false);// Снимаю выделение елси оно есть
 iOBJ.Del:=true;
 for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
 for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
@@ -1389,12 +1391,12 @@ TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetCol(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetCol(iVer:Pointer;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL:=IntToCol(trunc(inFloat(iEdit.Text)));
 end;
-procedure I_SetAlp(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetAlp(iVer:Pointer;iEdit:TEdit);
 begin
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
@@ -1433,10 +1435,15 @@ TObj(lVer.Obj).O_MATH;
 end;
 procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
 var
-dVer:TVer;
+dVer:TVer;F:Longint;
 begin
 dVer:=TVer(iVer);
-I_DelSel(dVer);// Снимаю выделение елси оно есть
+// Удаление форм ---------------------------------------------------------------
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform8) then
+if ((application.Components[f] as tform8).VER=iVer) then
+    (application.Components[f] as tform8).close;
+// удаление в структуре --------------------------------------------------------
 MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
 end;
 
@@ -1463,7 +1470,6 @@ var
 dPlo:TPlo;
 begin
 dPlo:=TPlo(iPlo);
-I_DelSel(dPlo);// Снимаю выделение елси оно есть
 MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
 end;
 
@@ -1479,10 +1485,20 @@ TObj(lEle.Obj).O_MATH;
 end;
 procedure I_DelElement(iEle:Pointer);// Удаление Элементов
 var
-dEle:TEle;
+dEle:TEle;f:Longint;
 begin
 dEle:=TEle(iEle);
-I_DelSel(dEle);// Снимаю выделение елси оно есть
+// удаляем форму редактора   ---------------------------------------------------
+for f:=0 to application.ComponentCount-1 do
+if (application.Components[f] is tform8) then begin // Формы вершин
+   if I_RodEle((application.Components[f] as tform8).ELE,dEle) then
+   (application.Components[f] as tform8).close;
+end else
+if (application.Components[f] is tform7) then begin // Формы элементов
+   if I_RodEle((application.Components[f] as tform7).ELE,dEle) then
+   (application.Components[f] as tform7).close;
+end;
+// удаляем в самой структуре ---------------------------------------------------
 MirEles.AddD(dEle);// Добавляем Элемент в удаляемые
 end;
 
@@ -1499,7 +1515,21 @@ Var
 dObj:TObj;f:Longint;
 begin
 dObj:=TObj(iObj);
-I_DelSel(dObj);// Снимаю выделение елси оно есть
+// Удаление форм ---------------------------------------------------------------
+for f:=0 to application.ComponentCount-1 do
+     if (application.Components[f] is tform8) then begin // Вершины
+     if I_RodEle((application.Components[f] as tform8).ELE,dObj) then
+        (application.Components[f] as tform8).close;
+     end
+else if (application.Components[f] is tform7) then begin // Элементы
+     if I_RodEle((application.Components[f] as tform7).ELE,dObj) then
+     (application.Components[f] as tform7).close;
+     end
+else if (application.Components[f] is tform6) then  begin // обьекты
+     if I_RodEle((application.Components[f] as tform6).OBJ,dObj) then
+     (application.Components[f] as tform6).close;
+     end;
+// Удаление в тсруктуре --------------------------------------------------------
 MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
 end;
 
@@ -1520,14 +1550,50 @@ end;
 I_RodEle:=REz;
 end;
 
-procedure I_DelSel(iPri:pointer);// Снимает выделени с примитива
+
+procedure I_SetSel(iPri:pointer;iSel:Boolean);
+var F,I:Longint;
 begin
-   MirSels.Del(TVer(iPri));
+for f:=0 to application.ComponentCount-1 do
+     if (application.Components[f] is tform7) then begin
+
+      with (application.Components[f] as tform7).CheckListBox1 do
+      for i:=1 to items.count-1 do // Вершины
+      if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+      with (application.Components[f] as tform7).CheckListBox2 do
+      for i:=1 to items.count-1 do // Элементы
+      if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     end
+else if (application.Components[f] is tform6) then begin
+
+     with (application.Components[f] as tform6).CheckListBox1 do
+     for i:=1 to items.count-1 do // Вершины
+     if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     with (application.Components[f] as tform6).CheckListBox2 do
+     for i:=1 to items.count-1 do // Плоскости
+     if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     with (application.Components[f] as tform6).CheckListBox4 do
+     for i:=1 to items.count-1 do // Элементы
+     if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     end
+else if (application.Components[f] is tform5) then begin
+
+     with (application.Components[f] as tform5).CheckListBox1 do
+     for i:=1 to items.count-1 do // Обьекты
+     if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     end;
+
+if iSel
+then MirSels.Add(TVer(iPri))
+else MirSels.Del(TVer(iPri));
 end;
-procedure I_SelSel(iPri:pointer);// Выделение примитива
-begin
-   MirSels.Add(TVer(iPri));
-end;
+
+
 
 procedure I_DrVertex (iVer:TVer;iCol:RCol);// Вывод вершины
 begin
@@ -1600,46 +1666,6 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 end;
 glEnd();
 end;
-procedure X_SEL(P:Pointer);
-var F,I:Longint;
-begin
-for f:=0 to application.ComponentCount-1 do
-
-   if (application.Components[f] is tform7) then begin
-
-   with (application.Components[f] as tform7).CheckListBox1 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-   with (application.Components[f] as tform7).CheckListBox2 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-
-   end else
-   if (application.Components[f] is tform6) then begin
-
-   with (application.Components[f] as tform6).CheckListBox1 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-   with (application.Components[f] as tform6).CheckListBox2 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-   with (application.Components[f] as tform6).CheckListBox4 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-   end else
-   if (application.Components[f] is tform5) then begin
-
-   with (application.Components[f] as tform5).CheckListBox1 do
-   for i:=1 to items.count-1 do
-   if Pointer(items.objects[i])=P then selected[i]:=true;
-
-   end;
-end;
 
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
 var f,RC:LongWord;
@@ -1651,8 +1677,8 @@ for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 I_DrVertex(MirVers.VERS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirVers.KolV) then begin
-MirVers.Vers[RC].Sel:=true;
-X_SEL(MirVers.Vers[RC]);CaP3:=MirVers.Vers[RC].ECR;
+MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel;
+I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);CaP3:=MirVers.Vers[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1661,8 +1687,8 @@ for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
 I_DrPlos(MirPLos.PLOS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirPLos.KolP) then begin
-MirPlos.Plos[RC].Sel:=true;
-X_SEL(MirPLos.PLos[RC]);
+MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
+I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1671,8 +1697,8 @@ for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
 I_DrElement(MirEles.ELES[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirEles.KolE) then begin
-MirEles.Eles[RC].Sel:=true;
-X_SEL(MirEles.Eles[RC]);CaP3:=MirEles.Eles[RC].ECR;
+MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
+I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);CaP3:=MirEles.Eles[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -1681,8 +1707,8 @@ for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
 I_DrObject(MirObjs.OBJS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirObjs.KolO) then begin
-MirObjs.Objs[RC].Sel:=true;
-X_SEL(MirObjs.Objs[RC]);CaP3:=MirObjs.Objs[RC].ECR;
+MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
+I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);CaP3:=MirObjs.Objs[RC].ECR;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);

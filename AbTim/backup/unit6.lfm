@@ -1,41 +1,44 @@
 object Form6: TForm6
-  Left = 301
-  Height = 322
-  Top = 140
-  Width = 463
+  Left = 389
+  Height = 243
+  Top = 109
+  Width = 368
+  BorderStyle = bsSizeToolWin
   Caption = 'Form6'
-  ClientHeight = 322
-  ClientWidth = 463
+  ClientHeight = 243
+  ClientWidth = 368
   Font.CharSet = RUSSIAN_CHARSET
-  Font.Height = -19
+  Font.Height = -13
   Font.Name = 'Consolas'
   Font.Pitch = fpFixed
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   OnClose = FormClose
+  OnCreate = FormCreate
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
-    Height = 50
+    Height = 34
     Top = 0
-    Width = 463
+    Width = 368
     Align = alTop
     Caption = 'Оьект'
     TabOrder = 0
+    OnClick = Panel1Click
   end
   object Panel2: TPanel
     Left = 0
-    Height = 272
-    Top = 50
+    Height = 209
+    Top = 34
     Width = 107
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 272
+    ClientHeight = 209
     ClientWidth = 107
     TabOrder = 1
     object Edit1: TEdit
       Left = 1
-      Height = 30
+      Height = 23
       Top = 1
       Width = 105
       Align = alTop
@@ -46,8 +49,8 @@ object Form6: TForm6
     end
     object Edit2: TEdit
       Left = 1
-      Height = 30
-      Top = 31
+      Height = 23
+      Top = 24
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -59,8 +62,8 @@ object Form6: TForm6
     end
     object Edit3: TEdit
       Left = 1
-      Height = 30
-      Top = 61
+      Height = 23
+      Top = 47
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -72,8 +75,8 @@ object Form6: TForm6
     end
     object Edit4: TEdit
       Left = 1
-      Height = 30
-      Top = 91
+      Height = 23
+      Top = 70
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -85,8 +88,8 @@ object Form6: TForm6
     end
     object Edit5: TEdit
       Left = 1
-      Height = 30
-      Top = 121
+      Height = 23
+      Top = 93
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -98,8 +101,8 @@ object Form6: TForm6
     end
     object Edit6: TEdit
       Left = 1
-      Height = 30
-      Top = 151
+      Height = 23
+      Top = 116
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -111,8 +114,8 @@ object Form6: TForm6
     end
     object Edit7: TEdit
       Left = 1
-      Height = 30
-      Top = 181
+      Height = 23
+      Top = 139
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -124,8 +127,8 @@ object Form6: TForm6
     end
     object Edit8: TEdit
       Left = 1
-      Height = 30
-      Top = 211
+      Height = 23
+      Top = 162
       Width = 105
       Align = alTop
       Alignment = taCenter
@@ -136,42 +139,44 @@ object Form6: TForm6
     end
     object Edit9: TEdit
       Left = 1
-      Height = 30
-      Top = 241
+      Height = 23
+      Top = 185
       Width = 105
       Align = alTop
       Alignment = taCenter
       OnChange = Edit9Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 8
       Text = 'Edit9'
     end
   end
   object Splitter1: TSplitter
     Left = 107
-    Height = 272
-    Top = 50
+    Height = 209
+    Top = 34
     Width = 5
   end
   object Panel3: TPanel
     Left = 112
-    Height = 272
-    Top = 50
-    Width = 351
+    Height = 209
+    Top = 34
+    Width = 256
     Align = alClient
     Caption = 'Panel3'
-    ClientHeight = 272
-    ClientWidth = 351
+    ClientHeight = 209
+    ClientWidth = 256
     TabOrder = 3
     object CheckListBox1: TCheckListBox
       Left = 1
-      Height = 270
+      Height = 207
       Top = 1
-      Width = 74
+      Width = 58
       Align = alLeft
       Items.Strings = (
         'V'
       )
-      ItemHeight = 22
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox1Click
@@ -184,15 +189,15 @@ object Form6: TForm6
       }
     end
     object CheckListBox2: TCheckListBox
-      Left = 80
-      Height = 270
+      Left = 64
+      Height = 207
       Top = 1
-      Width = 76
+      Width = 61
       Align = alLeft
       Items.Strings = (
         'P'
       )
-      ItemHeight = 22
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnSelectionChange = CheckListBox2SelectionChange
@@ -203,15 +208,15 @@ object Form6: TForm6
       }
     end
     object CheckListBox3: TCheckListBox
-      Left = 161
-      Height = 270
+      Left = 130
+      Height = 207
       Top = 1
-      Width = 79
+      Width = 58
       Align = alLeft
       Items.Strings = (
         'K'
       )
-      ItemHeight = 22
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       PopupMenu = PopupMenu3
@@ -221,33 +226,33 @@ object Form6: TForm6
       }
     end
     object Splitter2: TSplitter
-      Left = 75
-      Height = 270
+      Left = 59
+      Height = 207
       Top = 1
       Width = 5
     end
     object Splitter3: TSplitter
-      Left = 156
-      Height = 270
+      Left = 125
+      Height = 207
       Top = 1
       Width = 5
     end
     object Splitter4: TSplitter
-      Left = 240
-      Height = 270
+      Left = 188
+      Height = 207
       Top = 1
       Width = 5
     end
     object CheckListBox4: TCheckListBox
-      Left = 245
-      Height = 270
+      Left = 193
+      Height = 207
       Top = 1
-      Width = 105
+      Width = 62
       Align = alClient
       Items.Strings = (
         'E'
       )
-      ItemHeight = 22
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnDblClick = CheckListBox4DblClick
@@ -260,7 +265,7 @@ object Form6: TForm6
     end
   end
   object PopupMenu1: TPopupMenu
-    left = 136
+    left = 120
     top = 80
     object MenuItem1: TMenuItem
       Caption = 'Добавить'
@@ -272,7 +277,7 @@ object Form6: TForm6
     end
   end
   object PopupMenu2: TPopupMenu
-    left = 216
+    left = 184
     top = 80
     object MenuItem3: TMenuItem
       Caption = 'Добавть.'
@@ -284,7 +289,7 @@ object Form6: TForm6
     end
   end
   object PopupMenu3: TPopupMenu
-    left = 296
+    left = 248
     top = 80
     object MenuItem5: TMenuItem
       Caption = 'Добавить.'
@@ -296,7 +301,7 @@ object Form6: TForm6
     end
   end
   object PopupMenu4: TPopupMenu
-    left = 392
+    left = 312
     top = 80
     object MenuItem7: TMenuItem
       Caption = 'Добавить.'
@@ -308,8 +313,8 @@ object Form6: TForm6
     end
   end
   object Timer1: TTimer
-    left = 12
-    top = 12
+    left = 8
+    top = 8
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -335,7 +340,7 @@ object Form6: TForm6
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 48
-    top = 12
+    left = 40
+    top = 8
   end
 end

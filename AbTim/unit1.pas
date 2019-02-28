@@ -3,6 +3,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls,unit3,unit4;
 type { TForm1 } TForm1 = class(TForm)
+    Bevel1: TBevel;
     Label1: TLabel;
     Timer1: TTimer;
     procedure Timer1Timer(Sender: TObject);

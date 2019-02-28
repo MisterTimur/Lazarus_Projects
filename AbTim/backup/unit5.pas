@@ -15,13 +15,16 @@ type
     procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
+    procedure Panel1DblClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
 
   public
-
+  mHeight:longint;
   end;
 
 var
@@ -39,30 +42,23 @@ begin
 
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then begin
-
-  f:=0;
-  while f<application.ComponentCount do
-       if (application.Components[f] is tform8) then begin
-       if I_RodEle((application.Components[f] as tform8).ELE,
-          CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-          (application.Components[f] as tform8).close;f:=f+1;
-       end
-  else if (application.Components[f] is tform7) then begin
-       if I_RodEle((application.Components[f] as tform7).ELE,
-       CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-       (application.Components[f] as tform7).close;f:=f+1;
-       end
-  else if (application.Components[f] is tform6) then  begin
-       if I_RodEle((application.Components[f] as tform6).OBJ,
-       CheckListBox1.items.objects[CheckListBox1.itemindex]) then
-       (application.Components[f] as tform6).close;f:=f+1;
-       end
-  else f:=f+1;
-
   i_DelObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
   I_RefreshSpisokObjects(CheckListBox1);
-
   end;
+
+end;
+procedure TForm5.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  end;
+end;
+procedure TForm5.Panel1DblClick(Sender: TObject);
+begin
 
 end;
 procedure TForm5.Timer1Timer(Sender: TObject);
@@ -72,9 +68,7 @@ procedure TForm5.CheckListBox1Click(Sender: TObject);
 var F:Longint;
 begin
  for f:=1 to CheckListBox1.items.Count-1 do
- if CheckListBox1.Selected[f]
- then I_SelSel(CheckListBox1.items.objects[f])
- else I_DelSel(CheckListBox1.items.objects[f]);
+ I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
 procedure TForm5.CheckListBox1DblClick(Sender: TObject);
 begin
@@ -84,7 +78,13 @@ begin
 end;
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  form4.button1.Visible:=true;
+  form4.MenuItem5.Enabled:=true;
+end;
+procedure TForm5.FormCreate(Sender: TObject);
+begin
+  mHeight:=Height;
+  left:=form3.left+form3.width-width-10;
+  top :=form3.top+30;
 end;
 end.
 

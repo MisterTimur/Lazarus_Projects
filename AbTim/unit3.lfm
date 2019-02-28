@@ -1,18 +1,19 @@
 object Form3: TForm3
-  Left = 135
-  Height = 411
-  Top = 135
-  Width = 560
+  Left = 248
+  Height = 600
+  Top = 35
+  Width = 800
   Caption = 'Form3'
-  ClientHeight = 411
-  ClientWidth = 560
+  ClientHeight = 600
+  ClientWidth = 800
   OnClose = FormClose
+  Position = poScreenCenter
   LCLVersion = '1.8.4.0'
   object OpenGLControl1: TOpenGLControl
     Left = 0
-    Height = 411
+    Height = 600
     Top = 0
-    Width = 560
+    Width = 800
     Align = alClient
     OnMouseDown = OpenGLControl1MouseDown
     OnMouseMove = OpenGLControl1MouseMove

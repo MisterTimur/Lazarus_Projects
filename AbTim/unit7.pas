@@ -47,15 +47,18 @@ type { TForm7 } TForm7 = class(TForm)
     procedure Edit8DblClick(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
 
   public
   Ele:Pointer;
+  MHeight:Longint;
   end;
 var  Form7: TForm7;
 procedure U_OpenElement(iEle:Pointer);
@@ -75,6 +78,8 @@ begin
   I_GetUX(iEle,lForm7.Edit5);
   I_GetUY(iEle,lForm7.Edit6);
   I_GetUZ(iEle,lForm7.Edit7);
+  I_RefreshSpisokPoints(iEle,lForm7.CheckListBox1);
+  I_RefreshSpisokElements(iEle,lForm7.CheckListBox2);
 end;
 procedure TForm7.MenuItem1Click(Sender: TObject);
 begin
@@ -98,9 +103,7 @@ procedure TForm7.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
 For  f:=1 to CheckListBox1.Items.Count-1 do
-if   CheckListBox1.Selected[f]
-then I_SelSel(CheckListBox1.Items.Objects[f])
-else I_DelSel(CheckListBox1.Items.Objects[f]);
+I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
 end;
 procedure TForm7.CheckListBox2Click(Sender: TObject);
 begin
@@ -115,9 +118,7 @@ procedure TForm7.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
   var f:Longint;
 begin
   For f:=1 to CheckListBox2.Items.Count-1 do
-  if CheckListBox2.Selected[f]
-  then I_SelSel(CheckListBox2.Items.Objects[f])
-  else I_DelSel(CheckListBox2.Items.Objects[f]);
+  I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f]);
 end;
 procedure TForm7.Edit2Change(Sender: TObject);
 begin
@@ -155,6 +156,9 @@ procedure TForm7.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Ele,Edit7);
 end;
+
+
+
 procedure TForm7.Edit8Change(Sender: TObject);
 begin
   I_SetCol(Ele,Edit8);
@@ -176,6 +180,12 @@ procedure TForm7.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 
 end;
+procedure TForm7.FormCreate(Sender: TObject);
+begin
+  MHeight:=Height;
+  left:=form3.left+10;
+  top:=form3.top+form3.height-height-10;
+end;
 procedure TForm7.MenuItem2Click(Sender: TObject);
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
@@ -189,51 +199,31 @@ begin
   I_RefreshSpisokElements(Ele,CheckListBox2);
 end;
 procedure TForm7.MenuItem4Click(Sender: TObject);
-var
-  f:Longint;
 begin
 
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then begin
-
-   for f:=0 to application.ComponentCount-1 do
-   if (application.Components[f] is tform7) then
-      if I_RodEle((application.Components[f] as tform7).ELE,
-      CheckListBox2.items.objects[CheckListBox2.itemindex]) then
-      (application.Components[f] as tform7).close;
-
-   i_DelObject(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefreshSpisokObjects(CheckListBox2);
+   i_DelElement(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   I_RefreshSpisokElements(Ele,CheckListBox2);
+   end;
 
 end;
+procedure TForm7.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Top:=Top-(MHeight-height);
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  Top:=Top+MHeight-height;
+  end;
 end;
 procedure TForm7.Timer1Timer(Sender: TObject);
 begin
 end;
 end.
-
-
-{
-O(ИМЯ) // Создает обьект с таким именем елси его нету
-E(ИМЯ) // Создает вложеные элемент если его нету
-P(Имя) // Создает плоскость с заданым именем
-V(Имя) // Создает вершину с заданым именем
-N(ИМЯ) // Задает Имя
-U // Углы наклона
-X(Значение) // Назначет координату по
-Y(Значение)
-Z(Значение)
-V // Идет координата
-X(Значение) // Назначет координату по X
-Y(Значение)
-Z(Значение)
-C // Означет что идет цвет
-R(Значение)
-G(Значение)
-B(Значение)
-A(Значение)
-}
-
 
 
 

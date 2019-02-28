@@ -1,8 +1,9 @@
 unit Unit1; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls,unit3;
+  ExtCtrls,unit3,unit4;
 type { TForm1 } TForm1 = class(TForm)
+    Bevel1: TBevel;
     Label1: TLabel;
     Timer1: TTimer;
     procedure Timer1Timer(Sender: TObject);
@@ -20,6 +21,7 @@ begin
 
   timer1.Enabled:=false; // Отключаем таймер формы 1
   form3.Visible:=true;// Делаем вимой форму отрисовки
+  form4.Visible:=true;// Делаем вимой форму отрисовки
   form1.Visible:=false;// Скрываем стартовую форму
   form3.timer1.Enabled:=true;// Запускаем запускатор формы 4
 

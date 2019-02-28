@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 361
+  Left = 520
   Height = 44
-  Top = 223
+  Top = 404
   Width = 224
   BorderStyle = bsNone
   Caption = 'Form1'
   ClientHeight = 44
   ClientWidth = 224
-  Color = clSilver
+  Color = 8454143
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -19
   Font.Name = 'Consolas'
@@ -15,17 +15,25 @@ object Form1: TForm1
   Font.Quality = fqDraft
   Position = poScreenCenter
   LCLVersion = '1.8.4.0'
+  object Bevel1: TBevel
+    Left = 0
+    Height = 44
+    Top = 0
+    Width = 224
+    Align = alClient
+    Shape = bsBottomLine
+  end
   object Label1: TLabel
     Left = 16
     Height = 22
     Top = 8
-    Width = 180
+    Width = 198
     Caption = 'Абдулов Тимур 2019'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
     Font.Height = -19
-    Font.Name = 'Consolas'
-    Font.Pitch = fpFixed
+    Font.Name = 'Arial'
+    Font.Pitch = fpVariable
     Font.Quality = fqDraft
     Font.Style = [fsBold]
     ParentColor = False
