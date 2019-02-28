@@ -1,5 +1,5 @@
 object Form6: TForm6
-  Left = 389
+  Left = 397
   Height = 243
   Top = 109
   Width = 368
@@ -179,7 +179,6 @@ object Form6: TForm6
       ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
-      OnClick = CheckListBox1Click
       OnDblClick = CheckListBox1DblClick
       OnSelectionChange = CheckListBox1SelectionChange
       PopupMenu = PopupMenu1
@@ -312,10 +311,6 @@ object Form6: TForm6
       OnClick = MenuItem8Click
     end
   end
-  object Timer1: TTimer
-    left = 8
-    top = 8
-  end
   object ColorDialog1: TColorDialog
     Color = clBlack
     CustomColors.Strings = (
@@ -340,7 +335,7 @@ object Form6: TForm6
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 40
+    left = 8
     top = 8
   end
 end

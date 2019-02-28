@@ -1,11 +1,11 @@
 object Form5: TForm5
-  Left = 779
-  Height = 244
-  Top = 109
+  Left = 774
+  Height = 243
+  Top = 110
   Width = 129
   BorderStyle = bsSizeToolWin
   Caption = 'Form5'
-  ClientHeight = 244
+  ClientHeight = 243
   ClientWidth = 129
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -29,7 +29,7 @@ object Form5: TForm5
   end
   object CheckListBox1: TCheckListBox
     Left = 0
-    Height = 210
+    Height = 209
     Top = 34
     Width = 129
     Align = alClient
@@ -39,8 +39,8 @@ object Form5: TForm5
     ItemHeight = 15
     ItemIndex = 0
     MultiSelect = True
-    OnClick = CheckListBox1Click
     OnDblClick = CheckListBox1DblClick
+    OnSelectionChange = CheckListBox1SelectionChange
     PopupMenu = PopupMenu1
     TabOrder = 1
     Data = {

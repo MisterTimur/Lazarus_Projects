@@ -1,5 +1,5 @@
 object Form7: TForm7
-  Left = 899
+  Left = 913
   Height = 239
   Top = 111
   Width = 320
@@ -177,7 +177,6 @@ object Form7: TForm7
         'V'
       )
       ItemHeight = 15
-      OnClick = CheckListBox1Click
       OnDblClick = CheckListBox1DblClick
       OnSelectionChange = CheckListBox1SelectionChange
       PopupMenu = PopupMenu1
@@ -202,7 +201,6 @@ object Form7: TForm7
         'E'
       )
       ItemHeight = 15
-      OnClick = CheckListBox2Click
       OnDblClick = CheckListBox2DblClick
       OnSelectionChange = CheckListBox2SelectionChange
       PopupMenu = PopupMenu2
@@ -260,7 +258,7 @@ object Form7: TForm7
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 272
+    left = 8
     top = 8
   end
 end

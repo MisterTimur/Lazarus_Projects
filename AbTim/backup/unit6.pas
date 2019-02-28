@@ -40,8 +40,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Splitter4: TSplitter;
-    Timer1: TTimer;
-    procedure CheckListBox1Click(Sender: TObject);
+
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
@@ -114,10 +113,6 @@ end;
 procedure TForm6.Edit1Change(Sender: TObject);
 begin
   I_SetN(Obj,Edit1);
-end;
-procedure TForm6.CheckListBox1Click(Sender: TObject);
-begin
-
 end;
 procedure TForm6.CheckListBox1DblClick(Sender: TObject);
 begin
@@ -263,5 +258,8 @@ begin
   Height:=panel1.height;
   end;
 end;
+
+
+
 end.
 

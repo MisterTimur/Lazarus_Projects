@@ -1,7 +1,7 @@
 unit Unit5;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus,Unit3,unit6,unit7,unit8;
+  CheckLst, Menus,Unit3,unit6,unit7,unit8, StdCtrls;
 type
 
   { TForm5 }
@@ -12,8 +12,8 @@ type
     MenuItem2: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
-    procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
+    procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
@@ -64,18 +64,21 @@ end;
 procedure TForm5.Timer1Timer(Sender: TObject);
 begin
 end;
-procedure TForm5.CheckListBox1Click(Sender: TObject);
-var F:Longint;
-begin
- for f:=1 to CheckListBox1.items.Count-1 do
- I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
-end;
+
 procedure TForm5.CheckListBox1DblClick(Sender: TObject);
 begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then
   U_OpenObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
 end;
+
+procedure TForm5.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+var F:Longint;
+begin
+ for f:=1 to CheckListBox1.items.Count-1 do
+ I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
+end;
+
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   form4.MenuItem5.Enabled:=true;

@@ -76,7 +76,7 @@ function isFloat(s:AnsiString):Boolean;
 function inFloat(s:AnsiString):real;
 function InString(i:REal):ansiString;
 {%EndRegion}
-implementation {$R *.lfm} uses unit5,unit6,unit7,unit8;
+implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8;
 
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
@@ -105,6 +105,11 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
 
   MaxKolSelPris=1024*64 ;// Максимальнео количество выделеных примитивов
+
+  T_VER=1;// Вршина
+  T_PLO=2;// Плоскость
+  T_ELE=3;// Элементы
+  T_OBJ=4;// Обьекеты
 
   SCX= 0;
   SCZ= 0;
@@ -1446,7 +1451,6 @@ if ((application.Components[f] as tform8).VER=iVer) then
 // удаление в структуре --------------------------------------------------------
 MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
 end;
-
 procedure I_NewPlos(iObj:Pointer);// Создает Вершины
 Var
 rObj:TObj;
@@ -1472,7 +1476,6 @@ begin
 dPlo:=TPlo(iPlo);
 MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
 end;
-
 procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
 Var
 rEle:TEle;
@@ -1501,7 +1504,6 @@ end;
 // удаляем в самой структуре ---------------------------------------------------
 MirEles.AddD(dEle);// Добавляем Элемент в удаляемые
 end;
-
 procedure I_NewObject;// Создает новый обьект
 Var nObj:TObj;
 begin
@@ -1532,6 +1534,46 @@ else if (application.Components[f] is tform6) then  begin // обьекты
 // Удаление в тсруктуре --------------------------------------------------------
 MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
 end;
+procedure I_RefreshActiveElement;
+begin
+with form4 do
+if (ACT=NIL) or (TVER(ACT).del)
+Then begin // Если нету активного элмеента либо он удалён
+edit1.Enabled:=false;
+edit2.Enabled:=false;
+edit3.Enabled:=false;
+edit4.Enabled:=false;
+edit5.Enabled:=false;
+edit6.Enabled:=false;
+edit7.Enabled:=false;
+edit8.Enabled:=false;
+end
+else begin // Если Есть выбраный активный элемент
+
+// Читаюю координатиы
+if(TVer(Act).TIP=T_VER)or(TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
+then begin
+I_GETX(Act,Edit1);edit1.Enabled:=true;
+I_GETY(Act,Edit2);edit2.Enabled:=true;
+I_GETZ(Act,Edit3);edit3.Enabled:=true;
+I_GETCol(Act,Edit7);edit7.Enabled:=true;
+I_GETAlp(Act,Edit8);edit8.Enabled:=true;
+end;
+// Читаюю углы наклона
+if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
+then begin // Включаю углы наклона
+I_GETUX(Act,Edit4);edit4.Enabled:=true;
+I_GETUY(Act,Edit5);edit5.Enabled:=true;
+I_GETUZ(Act,Edit6);edit6.Enabled:=true;
+end
+else begin // Отключаю углы наклона
+I_GETUX(Act,Edit4);edit4.Enabled:=false;
+I_GETUY(Act,Edit5);edit5.Enabled:=false;
+I_GETUZ(Act,Edit6);edit6.Enabled:=false;
+end;
+
+end;
+end;
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;// Доделать
 var
@@ -1549,11 +1591,10 @@ if lEle=TEle(iObj) Then Rez:=True;
 end;
 I_RodEle:=REz;
 end;
-
-
 procedure I_SetSel(iPri:pointer;iSel:Boolean);
 var F,I:Longint;
 begin
+// Выделени примитива на формах ------------------------------------------------
 for f:=0 to application.ComponentCount-1 do
      if (application.Components[f] is tform7) then begin
 
@@ -1587,10 +1628,14 @@ else if (application.Components[f] is tform5) then begin
      if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
 
      end;
-
+// Выделение примитива в стуркутре ---------------------------------------------
 if iSel
 then MirSels.Add(TVer(iPri))
 else MirSels.Del(TVer(iPri));
+// Выборка активного примитива в данный момент времени -------------------------
+if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1];
+I_RefreshActiveElement;
+// -----------------------------------------------------------------------------
 end;
 
 procedure I_DrVertex (iVer:TVer;iCol:RCol);// Вывод вершины
@@ -1664,7 +1709,6 @@ glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
 end;
 glEnd();
 end;
-
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
 var f,RC:LongWord;
 begin
@@ -1969,6 +2013,9 @@ procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
 end;
+
+
+
 procedure TForm3.OpenGLControl1Resize(Sender: TObject);
 begin
   glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем

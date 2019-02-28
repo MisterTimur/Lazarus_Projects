@@ -26,10 +26,10 @@ type { TForm7 } TForm7 = class(TForm)
     PopupMenu2: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
-    procedure CheckListBox1Click(Sender: TObject);
+
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
-    procedure CheckListBox2Click(Sender: TObject);
+
     procedure CheckListBox2DblClick(Sender: TObject);
     procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
     procedure Edit1Change(Sender: TObject);
@@ -90,9 +90,7 @@ procedure TForm7.Edit1Change(Sender: TObject);
 begin
     I_SetN(Ele,Edit1);
 end;
-procedure TForm7.CheckListBox1Click(Sender: TObject);
-begin
-end;
+
 procedure TForm7.CheckListBox1DblClick(Sender: TObject);
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
@@ -105,9 +103,7 @@ begin
 For  f:=1 to CheckListBox1.Items.Count-1 do
 I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
 end;
-procedure TForm7.CheckListBox2Click(Sender: TObject);
-begin
-end;
+
 procedure TForm7.CheckListBox2DblClick(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then

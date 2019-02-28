@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 562
+  Left = 304
   Height = 43
-  Top = 534
-  Width = 616
+  Top = 568
+  Width = 617
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
   ClientHeight = 24
-  ClientWidth = 616
+  ClientWidth = 617
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -16,6 +16,7 @@ object Form4: TForm4
   Menu = MainMenu1
   OnCreate = FormCreate
   LCLVersion = '1.8.4.0'
+  Visible = True
   object Panel1: TPanel
     Left = 0
     Height = 24
@@ -34,6 +35,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit1Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'X'
     end
@@ -62,6 +66,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit2Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'Y'
     end
@@ -90,6 +97,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit3Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'Z'
     end
@@ -118,6 +128,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit4Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'UX'
     end
@@ -146,6 +159,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit5Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'UY'
     end
@@ -174,6 +190,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit6Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'UZ'
     end
@@ -202,6 +221,10 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit7Change
+      OnDblClick = Edit7DblClick
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'Col'
     end
@@ -230,6 +253,9 @@ object Form4: TForm4
       Align = alTop
       Alignment = taCenter
       Enabled = False
+      OnChange = Edit8Change
+      OnMouseWheelDown = Edit1MouseWheelDown
+      OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'Alp'
     end
