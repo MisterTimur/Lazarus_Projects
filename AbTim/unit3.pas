@@ -30,7 +30,9 @@ var Form3: TForm3;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg00:Longint;
 
-GStep:REal=0.1;
+GStep:REal=0.1;// Шаг для Колеса мышки
+G_FileName:Ansistring='';// Имя файла с котрым работаем
+G_Change:Boolean=False;// В проекте есть не сохраненные изменения
 
 procedure I_NewPoint(iEle:Pointer);// Создает Вершины
 procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
@@ -75,6 +77,10 @@ procedure I_SetSel(iPri:pointer;iSel:boolean);
 function isFloat(s:AnsiString):Boolean;
 function inFloat(s:AnsiString):real;
 function InString(i:REal):ansiString;
+
+procedure I_ClearScena;// Очищает Сцену
+procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
+
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8;
 
@@ -1113,14 +1119,234 @@ KolO:=0;
 KolD:=0;
 end;
 
+{%EndRegion}
+var   {Загрузки выгрузки      ===========================}{%Region /FOLD }
+                                                           Reg09:Longint;
 
+Procedure I_Del_Spac(var iPos:Longint;var iStr:Ansistring);
+begin
+while (iStr[iPos]<=' ') and (length(iStr)>=iPos) do inc(iPos);
+end;
+function  I_GetSC(var iPos:Longint;var iStr:Ansistring):Ansistring;
+var Rez:Ansistring;
+begin
+Rez:='';
+I_Del_Spac(iPos,iStr);
+if iStr[iPos]='(' then begin
+  inc(iPos);
+  while (iStr[iPos]<>')') and (length(iStr)>=iPos) do
+  begin REz:=REz+iStr[iPos];inc(iPos);end;
+  if (iStr[iPos]<>')') or (length(iStr)<iPos) Then
+  ERR(' I_GetSC  iStr[iPos]<>'')'' or length(iStr)<iPos ');
+  inc(iPos)
+end else ERR('I_GetSC iStr[iPos]=''('' ');
+I_GetSC:=Rez;
+end;
+Procedure I_TVER_PUT_01(iVer:TVer;var iStr:Ansistring);
+begin
+iStr:=iStr+'V('+iVer.NAM+')';// Сохраняю имя
+iStr:=iStr+'X('+InString(iVer.LOC.X)+')';// Координаты вершины X
+iStr:=iStr+'Y('+InString(iVer.LOC.Y)+')';// Координаты вершины Y
+iStr:=iStr+'Z('+InString(iVer.LOC.Z)+')';// Координаты вершины Z
+iStr:=iStr+'R('+IntToStr(iVer.COL.R)+')';// Цвет Красный
+iStr:=iStr+'G('+IntToStr(iVer.COL.G)+')';// Цвет Зеленый
+iStr:=iStr+'B('+IntToStr(iVer.COL.B)+')';// Цвет Голубой
+iStr:=iStr+'A('+IntToStr(iVer.COL.A)+')';// Прозрачность
+end;
+Procedure I_TPLO_PUT_01(iPlo:TPLo;var iStr:Ansistring);
+begin
+iStr:=iStr+'P('+iPlo.NAM+')';// Сохраняю имя
+
+iStr:=iStr+'R('+IntToStr(iPlo.COL.R)+')';// Цвет Красный
+iStr:=iStr+'G('+IntToStr(iPlo.COL.G)+')';// Цвет Зеленый
+iStr:=iStr+'B('+IntToStr(iPlo.COL.B)+')';// Цвет Голубой
+iStr:=iStr+'A('+IntToStr(iPlo.COL.A)+')';// Прозрачность
+
+iStr:=iStr+'a('+iPlo.VERS[1].NAm+')';// Вершина 1
+iStr:=iStr+'b('+iPlo.VERS[2].NAm+')';// Вершина 2
+iStr:=iStr+'c('+iPlo.VERS[3].NAm+')';// Вершина 3
+iStr:=iStr+'d('+iPlo.VERS[4].NAm+')';// Вершина 4
+
+end;
+Procedure I_TELE_PUT_01(iEle:TEle;var iStr:Ansistring);
+var f:Longint;
+begin
+iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю имя
+
+iStr:=iStr+'X('+InString(iEle.LOC.X)+')';// Координаты вершины X
+iStr:=iStr+'Y('+InString(iEle.LOC.Y)+')';// Координаты вершины Y
+iStr:=iStr+'Z('+InString(iEle.LOC.Z)+')';// Координаты вершины Z
+
+iStr:=iStr+'x('+InString(iEle.EUGL.X)+')';// Углы наклона X
+iStr:=iStr+'y('+InString(iEle.EUGL.Y)+')';// Углы наклона Y
+iStr:=iStr+'z('+InString(iEle.EUGL.Z)+')';// Углы наклона Z
+
+iStr:=iStr+'R('+IntToStr(iEle.COL.R)+')';// Цвет Красный
+iStr:=iStr+'G('+IntToStr(iEle.COL.G)+')';// Цвет Зеленый
+iStr:=iStr+'B('+IntToStr(iEle.COL.B)+')';// Цвет Голубой
+iStr:=iStr+'A('+IntToStr(iEle.COL.A)+')';// Прозрачность
+
+for f:=1 to iEle.KOlV do I_TVER_PUT_01(iEle.Vers[f],iStr);
+for f:=1 to iEle.KOlE do I_TELE_PUT_01(iEle.Eles[f],iStr);
+
+end;
+Procedure I_TOBJ_PUT_01(iObj:TObj;var iStr:Ansistring);
+var f:Longint;
+begin
+iStr:=iStr+'O('+iObj.NAM+')';// Сохраняю имя
+
+iStr:=iStr+'X('+InString(iObj.LOC.X)+')';// Координаты вершины X
+iStr:=iStr+'Y('+InString(iObj.LOC.Y)+')';// Координаты вершины Y
+iStr:=iStr+'Z('+InString(iObj.LOC.Z)+')';// Координаты вершины Z
+
+iStr:=iStr+'x('+InString(iObj.EUGL.X)+')';// Углы наклона X
+iStr:=iStr+'y('+InString(iObj.EUGL.Y)+')';// Углы наклона Y
+iStr:=iStr+'z('+InString(iObj.EUGL.Z)+')';// Углы наклона Z
+
+iStr:=iStr+'R('+IntToStr(iObj.COL.R)+')';// Цвет Красный
+iStr:=iStr+'G('+IntToStr(iObj.COL.G)+')';// Цвет Зеленый
+iStr:=iStr+'B('+IntToStr(iObj.COL.B)+')';// Цвет Голубой
+iStr:=iStr+'A('+IntToStr(iObj.COL.A)+')';// Прозрачность
+
+for f:=1 to iObj.KOlV do I_TVER_PUT_01(iObj.Vers[f],iStr);
+for f:=1 to iObj.KOlE do I_TELE_PUT_01(iObj.Eles[f],iStr);
+for f:=1 to iObj.KOlP do I_TPLO_PUT_01(iObj.Plos[f],iStr);
+
+end;
+
+function  I_GetEl(iVer:TVer):Tele;// возвращает элемент в котором находимся
+var REz:Tele;
+begin
+
+      if iVer=nil then ERR(' I_GetEl iVer=nil  ') else
+      if iVer.TIP=T_VER Then Rez:=TEle(iVer.Ele) else
+      if iVer.TIP=T_PLO Then Rez:=TEle(iVer.Ele) else
+      if iVer.TIP=T_ELE Then Rez:=TEle(iVer) else
+      if iVer.TIP=T_OBJ Then Rez:=TEle(iVer) else
+      ERR(' I_GetEl last else ');
+      I_GetEl:=Rez;
+
+end;
+function  I_GetOb(iVer:TVer):TObj;// возвращает Обьект в котором находимся
+begin
+
+end;
+function  I_GetPl(iVer:TVer):TObj;// возвращает плоскость послед упоминаемую
+begin
+
+end;
+
+function  I_FIN_VER(iVer:Tver;iNam:Ansistring):TVer;// Ищит вершину с заданым иенем
+begin
+end;
+function  I_FIN_PLO(iVer:Tver;iNam:Ansistring):TPlo;// Ищит Плоскость с заданым иенем
+begin
+end;
+function  I_FIN_ELE(iVer:Tver;iNam:Ansistring):TEle;// Ищит Элемент с заданым иенем
+begin
+end;
+function  I_FIN_OBJ(iNam:Ansistring):TObj;// Ищит Обьект с заданым иенем
+begin
+end;
+
+Procedure I_SCENA_GET_01(iVer:TVer;var iStr:Ansistring);
+var
+lPos:Longint;
+lVer:TVer;
+lPlo:TPlo;
+lEle:TEle;
+lObj:Tobj;
+begin
+lPos:=1;
+While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);
+// Созаю елси нету таких элементов если есть назначаю текущим ------
+     if iStr[lPos]='O' Then begin
+     lObj:=I_FIN_OBJ(I_GetSC(lPos,iStr));
+     if lObj=nil
+     then iVer:=MirObjs.AddO(TObj.Create)
+     else iVer:=lObj;
+     iVer.Nam:=I_GetSC(lPos,iStr);
+     end
+else if iStr[lPos]='E' Then begin
+     lEle:=I_FIN_Ele(iVer,I_GetSC(lPos,iStr));
+     if   lEle=nil
+     then iVer:=I_GetEl(iVer).E(0,0,0)
+     else iVer:=lEle;
+     iVer.Nam:=I_GetSC(lPos,iStr);
+     end
+else if iStr[lPos]='P' Then begin
+     lPlo:=I_FIN_Plo(iVer,I_GetSC(lPos,iStr));
+     if   lPlo=nil
+     then iVer:=I_GetOb(iVer).P(iVer,iVer,iVer,iVer)
+     else iVer:=lPlo;
+     iVer.Nam:=I_GetSC(lPos,iStr);
+     end
+else if iStr[lPos]='V' Then begin
+     lVer:=I_FIN_Ver(iVer,I_GetSC(lPos,iStr));
+     if lVer=Nil
+     then iVer:=I_GetEl(iVer).V(0,0,0)
+     else iVer:=lVer;
+     iVer.Nam:=I_GetSC(lPos,iStr)
+     end
+// Имя          ----------------------------------------------------
+else if iStr[lPos]='N' Then begin
+     iVer.NAm:=I_GetSC(lPos,iStr);
+     end
+// Коринаты     ----------------------------------------------------
+else if iStr[lPos]='X' Then begin
+     iVer.LOC.X:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='Y' Then begin
+     iVer.LOC.X:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='Z' Then begin
+     iVer.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
+     end
+// Цвета        ----------------------------------------------------
+else if iStr[lPos]='R' Then begin
+     iVer.COL.R:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='G' Then begin
+     iVer.COL.G:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='B' Then begin
+     iVer.COL.B:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='A' Then begin
+     iVer.COL.A:=StrToInt(I_GetSC(lPos,iStr))
+     end
+// Углы наклона ----------------------------------------------------
+else if iStr[lPos]='x' Then begin
+     I_GetEl(iVer).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='y' Then begin
+     I_GetEl(iVer).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='z' Then begin
+     I_GetEl(iVer).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
+     end
+// Имена вершмин для плоскости -------------------------------------
+else if iStr[lPos]='a' Then begin
+     I_GetPl(iVer).VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='b' Then begin
+     I_GetPl(iVer).VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='c' Then begin
+     I_GetPl(iVer).VERS[3]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='d' Then begin
+      I_GetPl(iVer).VERS[4]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else inc(lPos);
+end
+end;
 
 
 
 {%EndRegion}
-
 var   {Буфер обмена           ===========================}{%Region /FOLD }
-                                                           Reg09:Longint;
+                                                           Reg10:Longint;
 
 TYpe TSels=class // Список выделеных примитивов
 
@@ -1213,7 +1439,7 @@ end;
 
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
-                                                           Reg10:Longint;
+                                                           Reg11:Longint;
 
 procedure I_RefreshSpisokObjects (iLis:TCheckListBox);// Список с обьекта
 var
@@ -1373,10 +1599,12 @@ end;
 
 procedure I_SetN(iVer:Pointer ;iEdit:TEdit);
 begin
+G_Change:=true;
 TVEr(iVer).NAM:=iEdit.Text;
 end;
 procedure I_SetX(iVer:Pointer ;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
@@ -1384,6 +1612,7 @@ end;
 end;
 procedure I_SetY(iVer:Pointer ;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
@@ -1391,6 +1620,7 @@ end;
 end;
 procedure I_SetZ(iVer:Pointer ;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
@@ -1398,16 +1628,19 @@ end;
 end;
 procedure I_SetCol(iVer:Pointer;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL:=IntToCol(trunc(inFloat(iEdit.Text)));
 end;
 procedure I_SetAlp(iVer:Pointer;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
 end;
 procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
 TObj(TVEr(iEle).OBJ).O_MATH;
@@ -1415,6 +1648,7 @@ end;
 end;
 procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iEle).OBJ).O_MATH;
@@ -1422,6 +1656,7 @@ end;
 end;
 procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
 begin
+G_Change:=true;
 if isFloat(iEdit.Text) then begin
 TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
 TObj(TVEr(iEle).OBJ).O_MATH;
@@ -1433,6 +1668,7 @@ Var
 rEle:TEle;
 lVer:TVer;
 begin
+G_Change:=true;
 rEle:=TEle(iEle);
 lVer:=rEle.V(0,0,0);
 lVer.Nam:='V '+IntToStr(lVer.IDD);
@@ -1442,6 +1678,7 @@ procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
 var
 dVer:TVer;F:Longint;
 begin
+G_Change:=true;
 dVer:=TVer(iVer);
 // Удаление форм ---------------------------------------------------------------
 for f:=0 to application.ComponentCount-1 do
@@ -1457,6 +1694,7 @@ rObj:TObj;
 lPLo:TPlo;
 lSel:TSels;
 begin
+G_Change:=true;
 lSel:=MirSels.SELVERS;
 if lSel.KOl>=4 Then begin
 rObj:=TObj(iObj);
@@ -1473,6 +1711,7 @@ procedure I_DelPLos(iPlo:Pointer);// Удаление Вершины
 var
 dPlo:TPlo;
 begin
+G_Change:=true;
 dPlo:=TPlo(iPlo);
 MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
 end;
@@ -1481,6 +1720,7 @@ Var
 rEle:TEle;
 lEle:TEle;
 begin
+G_Change:=true;
 rEle:=TEle(iEle);
 lEle:=rEle.E(0,0,0);
 lEle.Nam:='E '+IntToStr(lEle.IDD);
@@ -1490,6 +1730,7 @@ procedure I_DelElement(iEle:Pointer);// Удаление Элементов
 var
 dEle:TEle;f:Longint;
 begin
+G_Change:=true;
 dEle:=TEle(iEle);
 // удаляем форму редактора   ---------------------------------------------------
 for f:=0 to application.ComponentCount-1 do
@@ -1507,6 +1748,7 @@ end;
 procedure I_NewObject;// Создает новый обьект
 Var nObj:TObj;
 begin
+G_Change:=true;
 nObj:=TObj.Create;
 nObj.Nam:='Object '+IntToStr(nObj.IDD);
 nObj.O_MATH;
@@ -1516,6 +1758,7 @@ procedure I_DelObject(iObj:pointer);// Удаление обьектов
 Var
 dObj:TObj;f:Longint;
 begin
+G_Change:=true;
 dObj:=TObj(iObj);
 // Удаление форм ---------------------------------------------------------------
 for f:=0 to application.ComponentCount-1 do
@@ -1786,9 +2029,22 @@ else  I_DrObject(MirObjs.OBJS[f],RanRCol)
 
 end;
 
+
+procedure I_ClearScena;// Очищает Сцену
+var f:Longint;
+begin
+ G_Change:=true;
+ for f:=1 to MirObjs.KolO do I_DelObject(MirObjs.OBJS[f]);
+ G_FileName:='';
+end;
+procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
+begin
+ G_Change:=false;
+end;
+
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }
-                                                           Reg11:Longint;
+                                                           Reg12:Longint;
 function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
 var F,K2:Longint;
 begin
@@ -1829,7 +2085,7 @@ end;
 
 {%EndRegion}
 var   {Нажатие по экрану      ===========================}{%Region /FOLD }
-                                                           Reg12:Longint;
+                                                           Reg13:Longint;
 
 procedure Ploskost(iVer1,iVer2,iVer3,iVer4:RCS3;C:RCOL);
 begin
@@ -1898,7 +2154,7 @@ end;
 
 {%EndRegion}
 var   {Таймеры                ===========================}{%Region /FOLD }
-                                                           Reg13:Longint;
+                                                           Reg14:Longint;
 
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
@@ -2008,7 +2264,7 @@ end;
 
 {%EndRegion}
 var   {События формы          ===========================}{%Region /FOLD }
-                                                           Reg14:Longint;
+                                                           Reg15:Longint;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;

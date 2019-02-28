@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 304
+  Left = 122
   Height = 43
-  Top = 568
-  Width = 617
+  Top = 459
+  Width = 806
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
   ClientHeight = 24
-  ClientWidth = 617
+  ClientWidth = 806
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -264,6 +264,26 @@ object Form4: TForm4
     left = 752
     object MenuItem1: TMenuItem
       Caption = 'Файл'
+      object MenuItem17: TMenuItem
+        Caption = 'Новый'
+        OnClick = MenuItem17Click
+      end
+      object MenuItem18: TMenuItem
+        Caption = 'Открыть.'
+        OnClick = MenuItem18Click
+      end
+      object MenuItem19: TMenuItem
+        Caption = 'Сохрнаить.'
+        OnClick = MenuItem19Click
+      end
+      object MenuItem20: TMenuItem
+        Caption = 'Сохранить как.'
+        OnClick = MenuItem20Click
+      end
+      object MenuItem21: TMenuItem
+        Caption = 'Выход.'
+        OnClick = MenuItem21Click
+      end
     end
     object MenuItem2: TMenuItem
       Caption = 'Правка'

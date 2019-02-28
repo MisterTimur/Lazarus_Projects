@@ -258,8 +258,5 @@ begin
   Height:=panel1.height;
   end;
 end;
-
-
-
 end.
 

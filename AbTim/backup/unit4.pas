@@ -21,7 +21,12 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
+    MenuItem17: TMenuItem;
+    MenuItem18: TMenuItem;
+    MenuItem19: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem20: TMenuItem;
+    MenuItem21: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -60,6 +65,11 @@ type { TForm4 } TForm4 = class(TForm)
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure MenuItem17Click(Sender: TObject);
+    procedure MenuItem18Click(Sender: TObject);
+    procedure MenuItem19Click(Sender: TObject);
+    procedure MenuItem20Click(Sender: TObject);
+    procedure MenuItem21Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
   private
 
@@ -76,8 +86,78 @@ end;
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   Act:=nil;
-  left:=0;//form3.Left+form3.width-width-30;
-  top:=0;//form3.top+form3.height-height-10;
+  //left:=0;//form3.Left+form3.width-width-30;
+  //top:=0;//form3.top+form3.height-height-10;
+end;
+procedure TForm4.MenuItem17Click(Sender: TObject);// Новый проект
+var lOtv:TModalResult;
+begin
+ if G_Change then begin   // если есть изменения в сцене
+ lOtv:=MessageDlg('Создать новый проект ?', 'Сохраняить текущию сцену',
+               mtConfirmation,[mbYes, mbNo, mbCancel],0);
+ if lOtv = mrNo  then begin I_ClearScena;G_Change:=false; end else
+ if lOtv = mrYes then begin
+ MenuItem19Click(sender);
+ I_ClearScena ;
+ G_Change:=false;
+ end
+ end else I_ClearScena;// если изменения все сохранены
+end;
+procedure TForm4.MenuItem18Click(Sender: TObject);// Открыть сцену
+var lOtv:TModalResult;
+begin
+ if G_Change then begin   // если есть изменения в сцене
+ lOtv:=MessageDlg('Открыть новую сцену', 'Сохраняить текущию сцену ?',
+               mtConfirmation,[mbYes, mbNo, mbCancel],0);
+ if lOtv = mrNo  then begin
+                 I_ClearScena;// Очищаем сцену
+                 // Загружаем новую цсену
+                 G_Change:=false;
+                 end;
+ if lOtv = mrYes then begin
+                 MenuItem19Click(sender);// Сохранение проекта
+                 I_ClearScena;// Очищаем сцену
+                  // Загружаем новую сцену
+                 G_Change:=false;
+                 end;
+ // Отмена действия
+ end else begin // если изменения все сохранены
+   I_ClearScena;// Очищаем сцену
+   // Загружаем новую цсену
+   G_Change:=false;
+ end;
+// Выход -----------------------------------------------------------------------
+end;
+procedure TForm4.MenuItem19Click(Sender: TObject);// Сохраняет сцену
+begin
+  if G_FileName<>'' Then I_SaveScena(G_FileName) else
+  if SaveDialog1.Execute then begin
+     G_FileName:=SaveDialog1.FileName;
+     G_Change:=false;
+  end;
+end;
+procedure TForm4.MenuItem20Click(Sender: TObject);// Сохранить как
+begin
+  if SaveDialog1.Execute then begin
+     G_FileName:=SaveDialog1.FileName;
+     I_SaveScena(G_FileName);
+     G_Change:=false;
+  end;
+end;
+
+procedure TForm4.MenuItem21Click(Sender: TObject);// Выход из программы
+var
+  lOtv:TModalResult;
+begin
+ if G_Change then begin   // если есть изменения в сцене
+ lOtv:=MessageDlg('Закрытие программы', 'Сохраняить текущию сцену',
+               mtConfirmation,[mbYes, mbNo, mbCancel],0);
+ if lOtv = mrNo  then I_ClearScena else
+ if lOtv = mrYes then begin
+ MenuItem19Click(sender);
+ Halt ;
+ end
+ end else Halt;// если изменения все сохранены
 end;
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
@@ -131,4 +211,7 @@ begin
  I_SetAlp(Act,Edit8);
 end;
 end.
+
+
+
 
