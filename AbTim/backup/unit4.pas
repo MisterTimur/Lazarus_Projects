@@ -2,6 +2,7 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   CheckLst, StdCtrls, Menus,UNit5,unit3, Types;
 type { TForm4 } TForm4 = class(TForm)
+    CheckBox1: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -52,6 +53,7 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter5: TSplitter;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
+    procedure CheckBox1Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
@@ -66,6 +68,10 @@ type { TForm4 } TForm4 = class(TForm)
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure MenuItem10Click(Sender: TObject);
+    procedure MenuItem12Click(Sender: TObject);
+    procedure MenuItem13Click(Sender: TObject);
+    procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
@@ -90,6 +96,28 @@ begin
   //left:=0;//form3.Left+form3.width-width-30;
   //top:=0;//form3.top+form3.height-height-10;
 end;
+
+procedure TForm4.MenuItem10Click(Sender: TObject);
+begin
+ MenuItem10.Checked:=not MenuItem10.Checked;
+end;
+
+procedure TForm4.MenuItem12Click(Sender: TObject);
+begin
+   MenuItem12.Checked:=not MenuItem12.Checked;
+end;
+
+procedure TForm4.MenuItem13Click(Sender: TObject);
+begin
+   MenuItem13.Checked:=not MenuItem13.Checked;
+
+end;
+
+procedure TForm4.MenuItem14Click(Sender: TObject);
+begin
+   MenuItem14.Checked:=not MenuItem14.Checked;
+end;
+
 procedure TForm4.MenuItem17Click(Sender: TObject);// Новый проект
 var lOtv:TModalResult;
 begin
@@ -167,6 +195,12 @@ procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
 end;
+
+procedure TForm4.CheckBox1Change(Sender: TObject);
+begin
+ I_Set_MBUT(CheckBox1.Checked);
+end;
+
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
@@ -212,7 +246,7 @@ begin
 end;
 procedure TForm4.Edit8Change(Sender: TObject);
 begin
- I_SetAlp(Act,Edit8);
+ I_SetA(Act,Edit8);
 end;
 end.
 

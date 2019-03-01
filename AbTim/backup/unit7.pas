@@ -186,7 +186,7 @@ begin
 end;
 procedure TForm7.MenuItem3Click(Sender: TObject);
 begin
-  I_NewEle(Ele);
+  I_AddEle(Ele);
   I_RefSpiEles(Ele,CheckListBox2);
 end;
 procedure TForm7.MenuItem4Click(Sender: TObject);
@@ -194,7 +194,7 @@ begin
 
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then begin
-   i_DelElement(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   i_DelEle(CheckListBox2.items.objects[CheckListBox2.itemindex]);
    I_RefSpiEles(Ele,CheckListBox2);
    end;
 

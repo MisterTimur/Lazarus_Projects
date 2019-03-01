@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 402
-  Height = 44
-  Top = 477
-  Width = 615
+  Left = 329
+  Height = 70
+  Top = 434
+  Width = 907
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
-  ClientHeight = 25
-  ClientWidth = 615
+  ClientHeight = 51
+  ClientWidth = 907
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -20,7 +20,7 @@ object Form4: TForm4
   object Panel1: TPanel
     Left = 0
     Height = 25
-    Top = 0
+    Top = 26
     Width = 77
     Align = alLeft
     Caption = 'Panel1'
@@ -45,13 +45,13 @@ object Form4: TForm4
   object Splitter1: TSplitter
     Left = 77
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel2: TPanel
     Left = 82
     Height = 25
-    Top = 0
+    Top = 26
     Width = 78
     Align = alLeft
     Caption = 'Panel2'
@@ -76,13 +76,13 @@ object Form4: TForm4
   object Splitter2: TSplitter
     Left = 160
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel3: TPanel
     Left = 165
     Height = 25
-    Top = 0
+    Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel3'
@@ -107,13 +107,13 @@ object Form4: TForm4
   object Splitter3: TSplitter
     Left = 240
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel4: TPanel
     Left = 245
     Height = 25
-    Top = 0
+    Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel4'
@@ -138,13 +138,13 @@ object Form4: TForm4
   object Splitter4: TSplitter
     Left = 320
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel5: TPanel
     Left = 325
     Height = 25
-    Top = 0
+    Top = 26
     Width = 66
     Align = alLeft
     Caption = 'Panel5'
@@ -169,13 +169,13 @@ object Form4: TForm4
   object Splitter5: TSplitter
     Left = 391
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel6: TPanel
     Left = 396
     Height = 25
-    Top = 0
+    Top = 26
     Width = 68
     Align = alLeft
     Caption = 'Panel6'
@@ -200,13 +200,13 @@ object Form4: TForm4
   object Splitter6: TSplitter
     Left = 464
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel7: TPanel
     Left = 469
     Height = 25
-    Top = 0
+    Top = 26
     Width = 67
     Align = alLeft
     Caption = 'Panel7'
@@ -232,13 +232,13 @@ object Form4: TForm4
   object Splitter7: TSplitter
     Left = 536
     Height = 25
-    Top = 0
+    Top = 26
     Width = 5
   end
   object Panel8: TPanel
     Left = 541
     Height = 25
-    Top = 0
+    Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel8'
@@ -258,6 +258,25 @@ object Form4: TForm4
       OnMouseWheelUp = Edit1MouseWheelUp
       TabOrder = 0
       TextHint = 'Alp'
+    end
+  end
+  object Panel9: TPanel
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 907
+    Align = alTop
+    ClientHeight = 26
+    ClientWidth = 907
+    TabOrder = 15
+    object CheckBox1: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 5
+      Width = 111
+      Caption = 'Перемещаться.'
+      OnChange = CheckBox1Change
+      TabOrder = 0
     end
   end
   object MainMenu1: TMainMenu
@@ -314,15 +333,23 @@ object Form4: TForm4
       end
       object MenuItem10: TMenuItem
         Caption = 'Обьекты'
+        Checked = True
+        OnClick = MenuItem10Click
       end
       object MenuItem12: TMenuItem
         Caption = 'Элементы.'
+        Checked = True
+        OnClick = MenuItem12Click
       end
       object MenuItem13: TMenuItem
         Caption = 'Плоскости'
+        Checked = True
+        OnClick = MenuItem13Click
       end
       object MenuItem14: TMenuItem
         Caption = 'Вершины'
+        Checked = True
+        OnClick = MenuItem14Click
       end
       object MenuItem16: TMenuItem
         Caption = '-'

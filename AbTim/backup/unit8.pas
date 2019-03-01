@@ -97,7 +97,7 @@ begin
 end;
 procedure TForm8.Edit6Change(Sender: TObject);
 begin
-  I_SetAlp(Ver,Edit6);// Устанавливает прозрачность
+  I_SetA(Ver,Edit6);// Устанавливает прозрачность
 end;
 procedure TForm8.FormCreate(Sender: TObject);
 begin

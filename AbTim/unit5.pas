@@ -40,10 +40,9 @@ begin
  lForm5.visible:=true;
  I_RefSpiObjs(lForm5.CheckListBox1);
 end;
-
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
-  I_NewObj;
+  I_AddObj;
   I_RefSpiObjs(CheckListBox1);
 end;
 procedure TForm5.MenuItem2Click(Sender: TObject);

@@ -135,7 +135,7 @@ object Form8: TForm8
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 16
-    top = 120
+    left = 88
+    top = 8
   end
 end

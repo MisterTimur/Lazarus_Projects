@@ -43,7 +43,7 @@ end;
 
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
-  I_NewObj;
+  I_AddObj;
   I_RefSpiObjs(CheckListBox1);
 end;
 procedure TForm5.MenuItem2Click(Sender: TObject);
@@ -52,7 +52,7 @@ begin
 
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then begin
-  i_DelObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+  i_DelObj(CheckListBox1.items.objects[CheckListBox1.itemindex]);
   I_RefSpiObjs(CheckListBox1);
   end;
 

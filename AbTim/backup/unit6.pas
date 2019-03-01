@@ -208,7 +208,7 @@ begin
 end;
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
-  I_NewVer(obj);
+  I_AddVer(obj);
   I_RefSpiVers(obj,CheckListBox1);
 end;
 procedure TForm6.MenuItem2Click(Sender: TObject);
@@ -223,19 +223,19 @@ begin
 end;
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
-  I_NewPlo(Obj);
+  I_AddPlo(Obj);
   I_RefSpiPlos(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem4Click(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
-   i_DelPLos(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   i_DelPLo(CheckListBox2.items.objects[CheckListBox2.itemindex]);
    I_RefSpiPlos(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem7Click(Sender: TObject);
 begin
-    I_NewEle(Obj);
+    I_AddEle(Obj);
     I_RefSpiEles(obj,CheckListBox4);
 end;
 procedure TForm6.MenuItem8Click(Sender: TObject);

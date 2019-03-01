@@ -83,7 +83,7 @@ begin
 end;
 procedure TForm7.MenuItem1Click(Sender: TObject);
 begin
-  I_NewVer(Ele);
+  I_AddVer(Ele);
   I_RefSpiVers(Ele,CheckListBox1);
 end;
 procedure TForm7.Edit1Change(Sender: TObject);
@@ -186,7 +186,7 @@ begin
 end;
 procedure TForm7.MenuItem3Click(Sender: TObject);
 begin
-  I_NewEle(Ele);
+  I_AddEle(Ele);
   I_RefSpiEles(Ele,CheckListBox2);
 end;
 procedure TForm7.MenuItem4Click(Sender: TObject);

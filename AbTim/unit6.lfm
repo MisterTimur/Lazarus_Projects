@@ -1,12 +1,12 @@
 object Form6: TForm6
-  Left = 397
+  Left = 283
   Height = 243
-  Top = 109
-  Width = 368
+  Top = 157
+  Width = 492
   BorderStyle = bsSizeToolWin
   Caption = 'Form6'
   ClientHeight = 243
-  ClientWidth = 368
+  ClientWidth = 492
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -20,7 +20,7 @@ object Form6: TForm6
     Left = 0
     Height = 34
     Top = 0
-    Width = 368
+    Width = 492
     Align = alTop
     Caption = 'Оьект'
     TabOrder = 0
@@ -161,11 +161,11 @@ object Form6: TForm6
     Left = 112
     Height = 209
     Top = 34
-    Width = 256
+    Width = 380
     Align = alClient
     Caption = 'Panel3'
     ClientHeight = 209
-    ClientWidth = 256
+    ClientWidth = 380
     TabOrder = 3
     object CheckListBox1: TCheckListBox
       Left = 1
@@ -246,7 +246,7 @@ object Form6: TForm6
       Left = 193
       Height = 207
       Top = 1
-      Width = 62
+      Width = 186
       Align = alClient
       Items.Strings = (
         'E'

@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 629
+  Left = 329
   Height = 70
-  Top = 576
-  Width = 617
+  Top = 434
+  Width = 907
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
   ClientHeight = 51
-  ClientWidth = 617
+  ClientWidth = 907
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -264,10 +264,20 @@ object Form4: TForm4
     Left = 0
     Height = 26
     Top = 0
-    Width = 617
+    Width = 907
     Align = alTop
-    Caption = 'Panel9'
+    ClientHeight = 26
+    ClientWidth = 907
     TabOrder = 15
+    object CheckBox1: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 5
+      Width = 111
+      Caption = 'Перемещаться.'
+      OnChange = CheckBox1Change
+      TabOrder = 0
+    end
   end
   object MainMenu1: TMainMenu
     left = 752
@@ -323,15 +333,23 @@ object Form4: TForm4
       end
       object MenuItem10: TMenuItem
         Caption = 'Обьекты'
+        Checked = True
+        OnClick = MenuItem10Click
       end
       object MenuItem12: TMenuItem
         Caption = 'Элементы.'
+        Checked = True
+        OnClick = MenuItem12Click
       end
       object MenuItem13: TMenuItem
         Caption = 'Плоскости'
+        Checked = True
+        OnClick = MenuItem13Click
       end
       object MenuItem14: TMenuItem
         Caption = 'Вершины'
+        Checked = True
+        OnClick = MenuItem14Click
       end
       object MenuItem16: TMenuItem
         Caption = '-'
