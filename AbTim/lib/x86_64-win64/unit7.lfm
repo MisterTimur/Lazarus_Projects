@@ -1,7 +1,7 @@
 object Form7: TForm7
-  Left = 913
+  Left = 293
   Height = 239
-  Top = 111
+  Top = 114
   Width = 320
   BorderStyle = bsSizeToolWin
   Caption = 'Form7'
@@ -177,6 +177,8 @@ object Form7: TForm7
         'V'
       )
       ItemHeight = 15
+      ItemIndex = 0
+      MultiSelect = True
       OnDblClick = CheckListBox1DblClick
       OnSelectionChange = CheckListBox1SelectionChange
       PopupMenu = PopupMenu1
@@ -201,6 +203,8 @@ object Form7: TForm7
         'E'
       )
       ItemHeight = 15
+      ItemIndex = 0
+      MultiSelect = True
       OnDblClick = CheckListBox2DblClick
       OnSelectionChange = CheckListBox2SelectionChange
       PopupMenu = PopupMenu2

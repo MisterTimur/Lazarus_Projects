@@ -30,7 +30,17 @@ type
 var
   Form5: TForm5;
 
+procedure U_OpenObjects();
 implementation {$R *.lfm} { TForm5 }uses unit4;
+procedure U_OpenObjects();
+var
+  lForm5:TForm5;
+begin
+ lForm5:=Tform5.create(application);
+ lForm5.visible:=true;
+ I_RefreshSpisokObjects(lForm5.CheckListBox1);
+end;
+
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
   I_NewObject;

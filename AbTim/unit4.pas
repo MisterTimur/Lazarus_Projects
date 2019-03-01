@@ -80,7 +80,7 @@ var Form4: TForm4;
 implementation{$R *.lfm}{ TForm4 }
 procedure TForm4.MenuItem5Click(Sender: TObject);
 begin
-   Tform5.create(application).show;
+   U_OpenObjects();
    MenuItem5.Enabled:=false;
 end;
 procedure TForm4.FormCreate(Sender: TObject);
@@ -108,23 +108,27 @@ var lOtv:TModalResult;
 begin
  if G_Change then begin   // если есть изменения в сцене
  lOtv:=MessageDlg('Открыть новую сцену', 'Сохраняить текущию сцену ?',
-               mtConfirmation,[mbYes, mbNo, mbCancel],0);
- if lOtv = mrNo  then begin
-                 I_ClearScena;// Очищаем сцену
-                 // Загружаем новую цсену
-                 G_Change:=false;
-                 end;
- if lOtv = mrYes then begin
-                 MenuItem19Click(sender);// Сохранение проекта
-                 I_ClearScena;// Очищаем сцену
-                  // Загружаем новую сцену
-                 G_Change:=false;
-                 end;
- // Отмена действия
- end else begin // если изменения все сохранены
-   I_ClearScena;// Очищаем сцену
-   // Загружаем новую цсену
-   G_Change:=false;
+ mtConfirmation,[mbYes, mbNo, mbCancel],0);
+   if lOtv = mrNo  then begin
+                      if OpenDialog1.Execute then begin
+                      G_FileName:=OpenDialog1.FileName;
+                      I_LoadScena(G_FileName);
+                      end;
+   end;
+   if lOtv = mrYes then begin
+                      MenuItem19Click(sender);// Сохранение проекта
+                      if G_Change=false then
+                      if OpenDialog1.Execute then begin
+                      G_FileName:=OpenDialog1.FileName;
+                      I_LoadScena(G_FileName);
+                      end;
+    // Отмена действия
+   end end
+   else begin
+                      if OpenDialog1.Execute then begin
+                      G_FileName:=OpenDialog1.FileName;
+                      I_LoadScena(G_FileName);
+                      end;
  end;
 // Выход -----------------------------------------------------------------------
 end;
@@ -133,7 +137,7 @@ begin
   if G_FileName<>'' Then I_SaveScena(G_FileName) else
   if SaveDialog1.Execute then begin
      G_FileName:=SaveDialog1.FileName;
-     G_Change:=false;
+     I_SaveScena(G_FileName);
   end;
 end;
 procedure TForm4.MenuItem20Click(Sender: TObject);// Сохранить как

@@ -64,21 +64,18 @@ end;
 procedure TForm5.Timer1Timer(Sender: TObject);
 begin
 end;
-
 procedure TForm5.CheckListBox1DblClick(Sender: TObject);
 begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then
   U_OpenObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
 end;
-
 procedure TForm5.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var F:Longint;
 begin
  for f:=1 to CheckListBox1.items.Count-1 do
  I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
-
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   form4.MenuItem5.Enabled:=true;

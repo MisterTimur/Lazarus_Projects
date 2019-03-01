@@ -90,7 +90,6 @@ procedure TForm7.Edit1Change(Sender: TObject);
 begin
     I_SetN(Ele,Edit1);
 end;
-
 procedure TForm7.CheckListBox1DblClick(Sender: TObject);
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
@@ -103,7 +102,6 @@ begin
 For  f:=1 to CheckListBox1.Items.Count-1 do
 I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
 end;
-
 procedure TForm7.CheckListBox2DblClick(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
@@ -152,9 +150,6 @@ procedure TForm7.Edit7Change(Sender: TObject);
 begin
   I_SetUZ(Ele,Edit7);
 end;
-
-
-
 procedure TForm7.Edit8Change(Sender: TObject);
 begin
   I_SetCol(Ele,Edit8);
