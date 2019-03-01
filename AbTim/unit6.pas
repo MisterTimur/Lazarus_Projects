@@ -44,6 +44,7 @@ type
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox3SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox4DblClick(Sender: TObject);
     procedure CheckListBox4SelectionChange(Sender: TObject; User: boolean);
     procedure Edit1Change(Sender: TObject);
@@ -100,15 +101,20 @@ begin
   I_GeUZ(iObj,lForm6.Edit7);
   I_RefSpiVers(iObj,lForm6.CheckListBox1);
   I_RefSpiPlos(iObj,lForm6.CheckListBox2);
+  I_RefSpiLins(iObj,lForm6.CheckListBox3);
   I_RefSpiEles(iObj,lForm6.CheckListBox4);
 end;
 procedure TForm6.MenuItem5Click(Sender: TObject);
 begin
-
+ I_AddPlo(Obj);
+ I_RefSpiPlos(obj,CheckListBox3);
 end;
 procedure TForm6.MenuItem6Click(Sender: TObject);
 begin
-
+   if CheckListBox3.itemindex<CheckListBox3.items.count then
+   if CheckListBox3.itemindex>0 then
+   i_DelPLo(CheckListBox3.items.objects[CheckListBox3.itemindex]);
+   I_RefSpiPlos(obj,CheckListBox3);
 end;
 procedure TForm6.Edit1Change(Sender: TObject);
 begin
@@ -134,6 +140,14 @@ begin
  For f:=1 to CheckListBox2.Items.Count-1 do
  I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
 end;
+
+procedure TForm6.CheckListBox3SelectionChange(Sender: TObject; User: boolean);
+var f:Longint;
+begin
+ For f:=1 to CheckListBox3.Items.Count-1 do
+ I_SetSel(CheckListBox3.Items.Objects[f],CheckListBox3.Selected[f])
+end;
+
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then
@@ -223,15 +237,15 @@ begin
 end;
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
-  I_AddPlo(Obj);
-  I_RefSpiPlos(obj,CheckListBox2);
+  I_AddLin(Obj);
+  I_RefSpiLins(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem4Click(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
-   i_DelPLo(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefSpiPlos(obj,CheckListBox2);
+   i_DelLin(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+   I_RefSpiLins(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem7Click(Sender: TObject);
 begin

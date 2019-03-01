@@ -37,17 +37,20 @@ G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False;// В проекте есть не сохраненные изменения
 
 procedure I_DelVer(iVer:Pointer);// Удаление Вершины
+procedure I_DelLin(iLin:Pointer);// Удаление Линии
 procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
 procedure I_DelEle(iEle:Pointer);// Удаление Элемента
 procedure I_DelObj(iObj:pointer);// Удаление обьекта
 
 function I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
+function I_AddLin(iObj:Pointer):Pointer;// Создает Линии
 function I_AddPlo(iObj:Pointer):Pointer;// Создает Плоскости
 function I_AddEle(iEle:Pointer):Pointer;// Создает новый Элемент
 function I_AddObj:POinter;// Создает новый обьект
 
 
 procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);
+procedure I_RefSpiLins(iObj:POinter;iLis:TCheckListBox);
 procedure I_RefSpiPlos(iObj:POinter;iLis:TCheckListBox);
 procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiObjs(             iLis:TCheckListBox);
@@ -98,27 +101,31 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolObjInObj=128;// Максимальное количество Плоскостей в Элементе
   MaxKolEleInEle=128;// Максимальное количество Обьектов в Элементе
 
-  MaxKOlVerInMir=1024*64;//Максимальное количество вершин в игровом мире
+  MaxKOlVerInMir=1024*64;//Максимальное количество Вершин в игровом мире
+  MaxKOlLinInMir=1024*64;//Максимальное количество Линий в игровом мире
   MaxKOlPloInMir=1024*64;//Максимальное количество Плоскостей в игровом мире
   MaxKOlEleInMir=1024*64;//Максимальное количество Элементов в игровом мире
   MaxKOlObjInMir=1024*64;//Максимальное количество Обьектов в игровом мире
 
-  MinKolDelVers=1024*4;// Минимальный размер очереди на удаление вершин
-  MinKolDelPlos=1024*4;// Минимальный размер очереди на удаление плоскотей
-  MinKolDelEles=1024*4;// Минимальный размер очереди на удаление элементов
+  MinKolDelVers=1024*4;// Минимальный размер очереди на удаление Вершин
+  MinKolDelLins=1024*4;// Минимальный размер очереди на удаление Линий
+  MinKolDelPlos=1024*4;// Минимальный размер очереди на удаление Плоскотей
+  MinKolDelEles=1024*4;// Минимальный размер очереди на удаление Элементов
   MinKolDelObjs=1024*4;// Минимальный размер очереди на удаление Обьектов
 
-  MaxKolDelVers=1024*64;// Максимальный размер очереди на удаление вершин
-  MaxKolDelPlos=1024*64;// Максимальный размер очереди на удаление плоскотей
-  MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление элементов
+  MaxKolDelVers=1024*64;// Максимальный размер очереди на удаление Вершин
+  MaxKolDelLins=1024*64;// Максимальный размер очереди на удаление Линий
+  MaxKolDelPlos=1024*64;// Максимальный размер очереди на удаление Плоскотей
+  MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление Элементов
   MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
 
   MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
   T_VER=1;// Вршина
   T_PLO=2;// Плоскость
-  T_ELE=3;// Элементы
-  T_OBJ=4;// Обьекеты
+  T_LIN=3;// Линия
+  T_ELE=4;// Элементы
+  T_OBJ=5;// Обьекеты
 
 {%EndRegion}
 var   {Базовые типы данных    ===========================}{%Region /FOLD }
@@ -313,19 +320,6 @@ Rez.G:=b[1];
 Rez.B:=b[2];
 Rez.A:=b[3];
 IntToCol:=Rez;
-end;
-function  IntToColRGB(iCol:LongWord):RCOL;// Переводит Число в цвет
-var
-Rez:RCol;
-Col:LongWord;
-B:Array[0..3] of Byte absolute Col;
-begin
-Col:=iCol;
-Rez.R:=b[0];
-Rez.G:=b[1];
-Rez.B:=b[2];
-REz.A:=0;
-IntToColRGB:=Rez;
 end;
 function  ColRGBToInt(iCol:RCOL):LongWord;// Переводит Число в цвет
 var
@@ -583,6 +577,119 @@ KolD:=0;
 end;
 
 {%EndRegion}
+var   {Описание Линии         ===========================}{%Region /FOLD }
+                                                           Reg0L:Longint;
+
+TYPE  TLIN=CLASS(TVER)
+  VERS:Array[1..2] of TVER;// Вершины из котрых состоит Линия
+  Procedure   L_Gaba;// Вычислене габаритов
+  Constructor Create(iVer1,iVer2:TVer);// Конструктор
+  Destructor  destroy;override;
+end;
+TYPE TLINS=CLASS
+Kol2:RLON;// Клдичество реально рисуемых Линий
+KOLL:RLON;// Количество Лиинй в игровом мире всего
+KOlD:RLON;// Количество удаленных Линий в игровом мире
+DELL :Array[1..MaxKOlLinInMir] of TLIN;// Удаленные Линии
+LINS :Array[1..MaxKOlLinInMir] of TLIN;// Все Линии зарег в игровм мире
+ELin1:Array[1..MaxKolLinInMir] of RLIN;// Индексы вершин Линий формируються
+ELin2:Array[1..MaxKolLinInMir] of RLIN;// Индексы вершин Линий для Экрана
+Procedure   AddL(iLin:TLIN);// Регестриует новую Линию
+Procedure   AddD(iLIN:TLIN);// Добавляет Линию в очередь на удаление
+Constructor Create;
+end;
+var MirLins:TLINS;// Все зарагестрированые Линии и удаленые тут
+Procedure   TLIN.L_Gaba;// Вычислене габаритов Линии
+var F:Longint;
+begin
+
+GMax.X:=-GMAxRAsInMir;
+GMax.Y:=-GMAxRAsInMir;
+GMax.Z:=-GMAxRAsInMir;
+GMin.X:= GMAxRAsInMir;
+GMin.Y:= GMAxRAsInMir;
+GMin.Z:= GMAxRAsInMir;
+
+for f:=1 to 2 do begin
+if (GMax.X<VERS[f].REA.x) then GMax.X:=VERS[f].REA.x;
+if (GMax.Y<VERS[f].REA.y) then GMax.Y:=VERS[f].REA.y;
+if (GMax.Z<VERS[f].REA.z) then GMax.Z:=VERS[f].REA.z;
+if (GMin.X>VERS[f].REA.x) then GMin.X:=VERS[f].REA.x;
+if (GMin.Y>VERS[f].REA.y) then GMin.Y:=VERS[f].REA.y;
+if (GMin.Z>VERS[f].REA.z) then GMin.Z:=VERS[f].REA.z;
+end;
+
+if (GMax.X<REA.x+0.01) then GMax.X:=REA.x+0.01;
+if (GMax.Y<REA.y+0.01) then GMax.Y:=REA.y+0.01;
+if (GMax.Z<REA.z+0.01) then GMax.Z:=REA.z+0.01;
+
+if (GMin.X>REA.x-0.01) then GMin.X:=REA.x-0.01;
+if (GMin.Y>REA.y-0.01) then GMin.Y:=REA.y-0.01;
+if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
+
+// Вычисление обьема
+OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
+end;
+Constructor TLIN.Create(iVer1,iVer2:Tver);
+begin
+inherited  Create;// Вызываю родительский конструктор
+
+VERS[1]:=iVer1;
+VERS[2]:=iVer2;
+TIP:=T_LIN;
+
+end;
+Destructor  TLIN.Destroy;
+begin
+inherited Destroy;
+end;
+Procedure   TLINS.AddL(iLin:TLin);
+var F:Longint;Ex:Boolean;
+begin
+  Ex:=False;
+
+  //------------------------------------------------------------------------------
+  // Если есть удаляемые плоскости то заменяем на новую плоскость
+
+  if KolD>MinKolDelLins then begin Ex:=True;
+  iLin.Nom:=DELL[1].NOM;// Новая плосоктсь получает индекс удаляемой
+  LINS[iLin.Nom]:=iLin ;//
+  DELL[1].Free;
+  // Свдигаем список удленных плоскостей
+  for f:=1 to KolD-1 Do DELL[F]:=DELL[F+1];
+  KOlD:=KolD-1;
+  end;
+
+  //------------------------------------------------------------------------------
+
+  // Если нет удаляемых Линий просто добавлем линию
+  if Not Ex then Begin
+  if KolL+1>MaxKOlLinInMir then
+  ERR(' TLINS.AddP  KolL+1>MaxKOlLinInMir ');
+  LiNS[KolL+1]:=iLiN;
+  LiNS[KolL+1].NOM:=KolL+1;
+  KOlL:=KOlL+1;
+  end;
+
+  //------------------------------------------------------------------------------
+
+end;
+Procedure   TLINS.AddD(iLin:TLin);
+begin
+  I_SetSel(iLin,false);// Снимаю выделение елси оно есть
+  ILin.Del:=True;
+  if KolD+1>MaxKolDelLins then
+  ERR(' TLinS.AddD(iLin:TLin);  KolD+1>MaxKolDelLins');
+  DELL[KolD+1]:=iLin;
+  KolD:=KolD+1;
+end;
+Constructor TLINS.Create;
+begin
+  KolL:=0;
+  KOlD:=0;
+end;
+
+{%EndRegion}
 var   {Описание Плоскоси      ===========================}{%Region /FOLD }
                                                            Reg06:Longint;
 
@@ -669,7 +776,7 @@ VERS[1]:=iVer1;
 VERS[2]:=iVer2;
 VERS[3]:=iVer3;
 VERS[4]:=iVer4;
-TIP:=2;
+TIP:=T_PLO;
 
 end;
 Destructor  TPLO.Destroy;
@@ -929,7 +1036,7 @@ begin
 inherited Create;
 KolV:=0;
 KolE:=0;
-TIP:=3;
+TIP:=T_ELE;
 end;
 Destructor  TELE.Destroy;
 var F:Longint;
@@ -996,8 +1103,10 @@ TYPE TOBJ=CLASS(TELE)
   OCEL:RCS3;// Цель куда нужно перпемесчаться
   OPER:RBOL;// Если это управляемый персонаж А не бот
   KolP:RLON;// Количество плоскостей
+  KolL:RLON;// Количество Линий
   KolD:RLON;// Количество Зависимых обьектов
   PLOS:Array[1..MaxKolPloInObj] of TPLO;// Плоскости
+  LINS:Array[1..MaxKolLinInObj] of TLin;// Линии
   DELS:Array[1..MaxKolObjInObj] of TObj;// Зависимые обьекты
   procedure   O_MATH;// Перевычисление обьекта
   procedure   O_SREA;// Вычисление Реальных координат
@@ -1012,7 +1121,7 @@ TYPE TOBJ=CLASS(TELE)
   constructor Create;// Констурктор
   Destructor  destroy;override;
   function    P(iVer1,iVer2,iVer3,iVer4:TVER):TPLO;// Добавляет плоскость
-
+  function    L(iVer1,iVer2:TVER):TLIN;// Добавляет Линию
 End;
 TYPE TOBJS=CLASS
 KOLO:Longint;
@@ -1036,6 +1145,17 @@ PLOS[KolP+1]:=Rez;
 KolP:=KolP+1;
 MirPlos.AddP(Rez);
 P:=Rez;
+end;
+function    TOBJ.L(iVer1,iVer2:TVER):TLIN;// Добавляет Линию
+Var Rez:TLin;
+begin
+Rez:=TLIN.CREATE(iVer1,iVer2);
+Rez.Obj:=Obj;
+Rez.Ele:=Self;
+LINS[KolL+1]:=Rez;
+KolL:=KolL+1;
+MirLins.AddL(Rez);
+L:=Rez;
 end;
 Procedure   TOBJ.AddDels(iObj:Tobj);// Добавлет зависимый обьект
 begin
@@ -1063,6 +1183,7 @@ O_SREA;// Получаю Реальные Координаты
 O_SECR;// Получаю Экранные координаты
 O_GABA;// Вычисление габаритов
 for f:=1 to KOlP do PLOS[f].P_GABA;// ВЫчисление габаритов плоскостей
+for f:=1 to KOlL do LINS[f].L_GABA;// ВЫчисление габаритов Линий
 O_RAST;// ВЫчисление растояний
 end;
 procedure   TOBJ.O_SREA;// Вычисление Реальных координат
@@ -1070,12 +1191,14 @@ var f:Longint;
 begin
 inherited E_SREA;// Вычисление Реальных координат вершин и вложеных элементов
 For F:=1 to KOlP do With PLOS[f] do REA:=SerRCs3(VERS[1].REA,VERS[3].REA);
+For F:=1 to KOlL do With LINS[f] do REA:=SerRCs3(VERS[1].REA,VERS[2].REA);
 end;
 procedure   TOBJ.O_SECR;// Вычисление Экранных координат
 var f:Longint;
 begin
 inherited E_SECR;
 for f:=1 to KolP do with PLOS[F] do ECR:=SerRCS3(ECR,REA);
+for f:=1 to KolL do with LINS[F] do ECR:=SerRCS3(ECR,REA);
 end;
 procedure   TOBJ.O_SWAP;// Вычисление Экранных координат
 begin
@@ -1089,6 +1212,7 @@ var f:Longint;
 begin
 inherited E_INIC;
 for f:=1 to KolP do with PLOS[F] do ECR:=REA;
+for f:=1 to KolL do with LINS[F] do ECR:=REA;
 end;
 procedure   TOBJ.O_RAST;// Вычисление Растояний от камеры
 var f:Longint;
@@ -1096,11 +1220,17 @@ begin
 inherited E_RAST;// Вычисление растоний от элементов и вершин
 RAS:=RasRCS3(REA,CaP2);// Вычисление растояний от камеры до обьекта
 // Вычисление растояния от камеры до плоскостей
-for f:=1 to KolP do
-With PLoS[f] do begin
+for f:=1 to KolP do With PLoS[f] do begin
 REA:=SerRCS3(Vers[1].REA,Vers[3].REA);
 RAS:=RasRCS3(REA,CaP2);
 end;
+// Вычисление растояния от камеры до Линий
+for f:=1 to KolL do With LinS[f] do begin
+REA:=SerRCS3(Vers[1].REA,Vers[2].REA);
+RAS:=RasRCS3(REA,CaP2);
+end;
+
+
 end;
 
 procedure   TOBJ.O_Rabo;// Работа Обьекта
@@ -1115,9 +1245,10 @@ end;
 Constructor TOBJ.Create;// Конструктор
 begin
 inherited Create;
-TIP:=4;
+TIP:=T_OBJ;
 Kadr:=1;
 OBJ:=Self;
+KolL:=0;
 KolP:=0;
 KolD:=0;
 OBJ:=Self;
@@ -1143,9 +1274,10 @@ begin
 I_SetSel(iObj,false);// Снимаю выделение елси оно есть
 iOBJ.Del:=true;
 for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
+for f:=1 to iOBJ.KolL do MirLins.AddD(iOBJ.Lins[f]);// Удалене Линий
+for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
 for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
 for f:=1 to iOBJ.KolE do MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
-for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
 DELO[KolD+1]:=iOBJ;
 KolD:=KolD+1;
 end;
@@ -1191,6 +1323,7 @@ procedure DEL(iSel:Tver);// Снимает  выделение с примити
 function  EST(iSel:Tver):Longint;// Возвращет номер в списке выделеных примитиво
 
 function  SELVERS:TSels;// Возвращает Список выделеных Вершин
+function  SELLINS:TSels;// Возвращает Список выделеных Линий
 function  SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
 function  SELELES:TSels;// Возвращает Список выделеных Элементов
 function  SELOBJS:TSels;// Возвращает Список выделеных Обьект
@@ -1242,15 +1375,23 @@ var Rez:TSels;f:Longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f].TIP=1) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=T_VER) then REz.Add(SELS[f]);
  SELVERS:=Rez;
+end;
+function  TSels.SELLINS:TSels;// Возвращает Список выделеных Линий
+var Rez:TSels;f:longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f].TIP=T_LIN) then REz.Add(SELS[f]);
+ SELLINS:=Rez;
 end;
 function  TSels.SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
 var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f].TIP=2) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=T_PLO) then REz.Add(SELS[f]);
  SELPLOS:=Rez;
 end;
 function  TSels.SELELES:TSels;// Возвращает Список выделеных Элементов
@@ -1258,7 +1399,7 @@ var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f].TIP=3) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=T_ELE) then REz.Add(SELS[f]);
  SELELES:=Rez;
 end;
 function  TSels.SELOBJS:TSels;// Возвращает Список выделеных ОБьектов
@@ -1266,7 +1407,7 @@ var Rez:TSels;f:longint;
 begin
  REz:=TSels.Create;
  for f:=1 to Kol do
- if (SELS[f].TIP=4) then REz.Add(SELS[f]);
+ if (SELS[f].TIP=T_OBJ) then REz.Add(SELS[f]);
  SELOBJS:=Rez;
 end;
 
@@ -1300,6 +1441,34 @@ NomItems:=NomItems+1;
      else begin
      iLis.Items.AddObject(rEle.VERS[f].Nam,rEle.VERS[f]);
      iLis.selected[iLis.Count-1]:=rEle.VERS[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefSpiLins(iObj:POinter;iLis:TCheckListBox);//Список  Линий
+var
+f:longint;// Для циклов
+rObj:TObj;
+NomItems:Longint;
+begin
+rObj:=TObj(iObj);
+NomItems:=0;// Для перебора Линий в списке
+for f:=1 to rObj.KolL do
+if Not rObj.LinS[f].DEL then begin // Если Линия не удалён
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rObj.LINS[f].Sel;
+     iLis.Items[NomItems]:=rObj.LINS[f].NAM;
+     iLis.Items.Objects[NomItems]:=rObj.LINS[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rObj.LINS[f].Nam,rObj.LINS[f]);
+     iLis.selected[iLis.Count-1]:=rObj.LINS[f].Sel;
      end
 end;
 
@@ -1518,6 +1687,20 @@ glBegin(GL_POINTS);
 glVertex3f(iVer.ECR.X,iVer.ECR.Y,iVer.ECR.Z);
 glEnd();
 end;
+procedure I_DrLin(iLin:TLin;iCol:RCol);// Вывод Линии
+var C:RCol;
+begin
+C:=iLin.Col;
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_LINES);
+with iLin do begin
+
+glVertex3f(iLin.VErs[1].ECR.X,iLin.VErs[1].ECR.Y,iLin.VErs[1].ECR.Z);
+glVertex3f(iLin.VErs[2].ECR.X,iLin.VErs[2].ECR.Y,iLin.VErs[2].ECR.Z);
+
+end;
+glEnd();
+end;
 procedure I_DrPlo(iPlo:TPlo;iCol:RCol);// Вывод Плоскости
 var C:RCol;
 begin
@@ -1646,6 +1829,7 @@ begin
       lVer:=TVer(iVer);
       if lVer=nil then ERR(' I_GetEl iVer=nil  ') else
       if lVer.TIP=T_VER Then Rez:=TEle(lVer.Ele) else
+      if lVer.TIP=T_LIN Then Rez:=TEle(lVer.Ele) else
       if lVer.TIP=T_PLO Then Rez:=TEle(lVer.Ele) else
       if lVer.TIP=T_ELE Then Rez:=TEle(lVer) else
       if lVer.TIP=T_OBJ Then Rez:=TEle(lVer) else
@@ -1676,6 +1860,24 @@ nVer:=rEle.V(0,0,0);
 nVer.Nam:=I_NewNamIdd('V ');
 TObj(nVer.Obj).O_MATH;
 I_AddVer:=nVer;
+end;
+function I_AddLin(iObj:Pointer):Pointer;// Доабвляет   Линию
+Var
+rObj:TObj;
+nLin:TLin;
+lSel:TSels;
+begin
+G_Change:=true;
+lSel:=MirSels.SELVERS;
+if lSel.KOl>=2 Then begin
+rObj:=I_GetOb(iObj);
+nLin:=rObj.L(lSel.SELS[2],
+             lSel.SELS[1]);
+nLin.Nam:=I_NewNamIdd('L ');
+TObj(nLin.Obj).O_MATH;
+end;
+lSel.free;
+I_AddLin:=nLin;
 end;
 function I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
 Var
@@ -1749,6 +1951,14 @@ if ((application.Components[f] as tform8).VER=iVer) then
     (application.Components[f] as tform8).close;
 // удаление в структуре --------------------------------------------------------
 MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
+end;
+procedure I_DelLin(iLin:Pointer);// Удаление Линии
+var
+dLin:TLin;
+begin
+G_Change:=true;
+dLin:=TLin(iLin);
+MirLins.AddD(dLin);// Добавляем Линию в удаляемые
 end;
 procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
 var
@@ -1837,6 +2047,19 @@ begin
      end;
 begin     I_FIN_VER:=l_fin_ver(TEle(iObj.Obj),iNam);
 end;
+function  I_FIN_LIN(iObj:Tver;iNam:Ansistring):TLin;// Ищит  Линию
+var
+f:Longint;
+lObj:TObj;
+Rez:TLin;
+begin
+          Rez:=Nil;
+          lObj:=TObj(iObj.OBJ);
+          f:=1;while(f<=lObj.KolL)and(REz=nil)do
+          if lObj.LINS[f].NAM=iNAM
+          Then Rez:=lObj.LINS[f] else f:=f+1;
+          I_FIN_LIN:=Rez;
+end;
 function  I_FIN_PLO(iObj:Tver;iNam:Ansistring):TPlo;// Ищит Плоско
 var
 f:Longint;
@@ -1886,6 +2109,21 @@ iStr:=iStr+'R('+IntToStr(iVer.COL.R)+')';// Цвет Красный
 iStr:=iStr+'G('+IntToStr(iVer.COL.G)+')';// Цвет Зеленый
 iStr:=iStr+'B('+IntToStr(iVer.COL.B)+')';// Цвет Голубой
 iStr:=iStr+'A('+IntToStr(iVer.COL.A)+')';// Прозрачность
+
+iStr:=iStr+CR;
+
+end;
+Procedure I_TLIN_PUT_01(iLin:TLin;var iStr:Ansistring);
+begin
+iStr:=iStr+'L('+iLin.NAM+')';// Сохраняю имя
+
+iStr:=iStr+'R('+IntToStr(iLin.COL.R)+')';// Цвет Красный
+iStr:=iStr+'G('+IntToStr(iLin.COL.G)+')';// Цвет Зеленый
+iStr:=iStr+'B('+IntToStr(iLin.COL.B)+')';// Цвет Голубой
+iStr:=iStr+'A('+IntToStr(iLin.COL.A)+')';// Прозрачность
+
+iStr:=iStr+'e('+iLin.VERS[1].NAm+')';// Вершина 1
+iStr:=iStr+'f('+iLin.VERS[2].NAm+')';// Вершина 2
 
 iStr:=iStr+CR;
 
@@ -1978,6 +2216,7 @@ end
 else begin
 
 if iVer.TIP=T_VER THEN I_TVER_PUT_01(TVer(iVer),iStr) else
+if iVer.TIP=T_LIN THEN I_TLIN_PUT_01(TLin(iVer),iStr) else
 if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
 if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
 if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
@@ -1992,6 +2231,7 @@ var
 lPos:Longint;
 lNam:Ansistring;
 lVer:TVer;
+lLin:TLin;
 lPlo:TPlo;
 lEle:TEle;
 lObj:Tobj;
@@ -2010,6 +2250,13 @@ else if iStr[lPos]='E' Then begin INC(lPos);
      lEle:=I_FIN_Ele(iVer,lNam);// Ищю Элемент с таким же именем
      if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
      iVer:=lEle;// Назначаю текущим
+     iVer.Nam:=lNam;// Указываю имя
+     end
+else if iStr[lPos]='L' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     lLin:=I_FIN_Lin(iVer,lNam);// Ищю Линию с таким же именем
+     if lLin=nil then lLin:=TLin(I_AddLin(iVer));// Если нету создает Линию
+     iVer:=lLin;// Назначаю текущим
      iVer.Nam:=lNam;// Указываю имя
      end
 else if iStr[lPos]='P' Then begin INC(lPos);
@@ -2075,6 +2322,12 @@ else if iStr[lPos]='c' Then begin INC(lPos);
      end
 else if iStr[lPos]='d' Then begin INC(lPos);
      lPlo.VERS[4]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='e' Then begin INC(lPos);
+     lLin.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='f' Then begin INC(lPos);
+     lLin.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else inc(lPos);
 end
@@ -2184,6 +2437,7 @@ for f:=0 to application.ComponentCount-1 do
       with (application.Components[f] as tform7).CheckListBox1 do
       for i:=1 to items.count-1 do // Вершины
       if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
       with (application.Components[f] as tform7).CheckListBox2 do
       for i:=1 to items.count-1 do // Элементы
       if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
@@ -2196,6 +2450,10 @@ else if (application.Components[f] is tform6) then begin
      if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
 
      with (application.Components[f] as tform6).CheckListBox2 do
+     for i:=1 to items.count-1 do // Линии
+     if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
+
+     with (application.Components[f] as tform6).CheckListBox3 do
      for i:=1 to items.count-1 do // Плоскости
      if Pointer(items.objects[i])=iPri then selected[i]:=iSel;
 
@@ -2243,6 +2501,20 @@ end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
+//------------------------------------------------------------------------------
+if form4.MenuItem22.Checked then begin // Линия
+for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
+I_DrLin(MirLins.LINS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirPLos.KolL) then begin
+MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel;
+I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);
+if MBUT THEN CaP3:=MirLins.Lins[RC].ECR;
+if DBUT THEN begin end;
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+End;
 //------------------------------------------------------------------------------
 if form4.MenuItem13.Checked then begin // Плоскос
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
@@ -2401,7 +2673,7 @@ iver4:=iPlo.VERS[4].ECR;
 end;
 end;
 function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
-var F,K2:Longint;
+var F,K2,Kl2:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
@@ -2429,9 +2701,21 @@ begin
      EPlo1[K2].VERS[6]:=Vers[1].Nom;
      end;
      MirPLos.Kol2:=K2;sleep(300);
+
+     KL2:=0;sleep(300);
+     with MirLins do for f:=1 to KolL do
+     if   not Lins[f].DEL then
+     with Lins[f] do begin
+     KL2:=KL2+1;
+     ELin1[KL2].VERS[1]:=Vers[1].Nom;
+     ELin1[KL2].VERS[2]:=Vers[2].Nom;
+     end;
+     MirLins.Kol2:=KL2;sleep(300);
+
      // ========================================================================
      with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
      with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
+     with MirLins do Move(ELin1,ELin2,(Kol2+0)*SizeOf(RLIN));
      with MirPlos do Move(EPlo1,EPlo2,(Kol2+0)*SizeOf(RPLO));
      // ========================================================================
    end;
@@ -2445,6 +2729,7 @@ Timer1.enabled:=false;// Отключаем запускатор
 
   GFon:=CreRCol(150,150,250,255);// Формируем цвет фона
   MirVers:=TVERS.Create;// Создаем списки вершин
+  MirLins:=TLINS.Create;// Создаем списки Линий
   MirPlos:=TPLOS.Create;// Создаем списки плоскостей
   MirEles:=TELES.Create;// Создаем списки элементов
   MirObjs:=TOBJS.Create;// Создаем списки Обьектов
@@ -2519,6 +2804,10 @@ begin
   glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glDrawElements(GL_TRIANGLES,MirPlos.Kol2*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
+  glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
+  glDrawElements(GL_LINES,MirLins.Kol2*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+
+
   I_EDITDRAW;//-----------------------------------------------------------------
   end;
   //----------------------------------------------------------------------------

@@ -346,6 +346,11 @@ object Form4: TForm4
         Checked = True
         OnClick = MenuItem13Click
       end
+      object MenuItem22: TMenuItem
+        Caption = 'Линии'
+        Checked = True
+        OnClick = MenuItem22Click
+      end
       object MenuItem14: TMenuItem
         Caption = 'Вершины'
         Checked = True

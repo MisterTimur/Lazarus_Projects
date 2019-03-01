@@ -1,0 +1,196 @@
+object Form10: TForm10
+  Left = 658
+  Height = 311
+  Top = 240
+  Width = 320
+  Caption = 'Form10'
+  ClientHeight = 311
+  ClientWidth = 320
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -13
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 34
+    Top = 0
+    Width = 320
+    Align = alTop
+    Caption = 'Panel1'
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 277
+    Top = 34
+    Width = 121
+    Align = alLeft
+    ClientHeight = 277
+    ClientWidth = 121
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+    object Edit2: TEdit
+      Left = 1
+      Height = 23
+      Top = 24
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 1
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 1
+      Height = 23
+      Top = 47
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 2
+      Text = 'Edit3'
+    end
+    object Edit4: TEdit
+      Left = 1
+      Height = 23
+      Top = 70
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 3
+      Text = 'Edit4'
+    end
+    object Edit5: TEdit
+      Left = 1
+      Height = 23
+      Top = 93
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 23
+      Top = 116
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 5
+      Text = 'Edit6'
+    end
+    object Edit7: TEdit
+      Left = 1
+      Height = 23
+      Top = 139
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 6
+      Text = 'Edit7'
+    end
+    object Edit8: TEdit
+      Left = 1
+      Height = 23
+      Top = 162
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 7
+      Text = 'Edit8'
+    end
+    object Edit9: TEdit
+      Left = 1
+      Height = 23
+      Top = 185
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 8
+      Text = 'Edit9'
+    end
+    object Edit10: TEdit
+      Left = 1
+      Height = 23
+      Top = 208
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 9
+      Text = 'Edit10'
+    end
+    object Edit11: TEdit
+      Left = 1
+      Height = 23
+      Top = 231
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 10
+      Text = 'Edit11'
+    end
+    object Edit12: TEdit
+      Left = 1
+      Height = 23
+      Top = 254
+      Width = 119
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 11
+      Text = 'Edit12'
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 121
+    Height = 277
+    Top = 34
+    Width = 5
+  end
+  object Panel3: TPanel
+    Left = 126
+    Height = 277
+    Top = 34
+    Width = 194
+    Align = alClient
+    Caption = 'Panel3'
+    TabOrder = 3
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 16
+    top = 8
+  end
+end

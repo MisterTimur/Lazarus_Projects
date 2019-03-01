@@ -28,6 +28,7 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem2: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -77,6 +78,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem21Click(Sender: TObject);
+    procedure MenuItem22Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
   private
 
@@ -96,28 +98,23 @@ begin
   //left:=0;//form3.Left+form3.width-width-30;
   //top:=0;//form3.top+form3.height-height-10;
 end;
-
 procedure TForm4.MenuItem10Click(Sender: TObject);
 begin
  MenuItem10.Checked:=not MenuItem10.Checked;
 end;
-
 procedure TForm4.MenuItem12Click(Sender: TObject);
 begin
    MenuItem12.Checked:=not MenuItem12.Checked;
 end;
-
 procedure TForm4.MenuItem13Click(Sender: TObject);
 begin
    MenuItem13.Checked:=not MenuItem13.Checked;
 
 end;
-
 procedure TForm4.MenuItem14Click(Sender: TObject);
 begin
    MenuItem14.Checked:=not MenuItem14.Checked;
 end;
-
 procedure TForm4.MenuItem17Click(Sender: TObject);// Новый проект
 var lOtv:TModalResult;
 begin
@@ -191,16 +188,20 @@ begin
  end
  end else Halt;// если изменения все сохранены
 end;
+
+procedure TForm4.MenuItem22Click(Sender: TObject);
+begin
+  MenuItem22.Checked:=not MenuItem22.Checked;
+end;
+
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
 end;
-
 procedure TForm4.CheckBox1Change(Sender: TObject);
 begin
  I_Set_MBUT(CheckBox1.Checked);
 end;
-
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
