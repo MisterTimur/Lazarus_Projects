@@ -93,14 +93,14 @@ begin
   I_GetX(iObj,lForm6.Edit2);
   I_GetY(iObj,lForm6.Edit3);
   I_GetZ(iObj,lForm6.Edit4);
-  I_GetCol(iObj,lForm6.Edit8);
-  I_GetAlp(iObj,lForm6.Edit9);
-  I_GetUX(iObj,lForm6.Edit5);
-  I_GetUY(iObj,lForm6.Edit6);
-  I_GetUZ(iObj,lForm6.Edit7);
-  I_RefreshSpisokPoints(iObj,lForm6.CheckListBox1);
-  I_RefreshSpisokPlos(iObj,lForm6.CheckListBox2);
-  I_RefreshSpisokElements(iObj,lForm6.CheckListBox4);
+  I_GetC(iObj,lForm6.Edit8);
+  I_GetA(iObj,lForm6.Edit9);
+  I_GeUX(iObj,lForm6.Edit5);
+  I_GeUY(iObj,lForm6.Edit6);
+  I_GeUZ(iObj,lForm6.Edit7);
+  I_RefSpiVers(iObj,lForm6.CheckListBox1);
+  I_RefSpiPlos(iObj,lForm6.CheckListBox2);
+  I_RefSpiEles(iObj,lForm6.CheckListBox4);
 end;
 procedure TForm6.MenuItem5Click(Sender: TObject);
 begin
@@ -118,7 +118,7 @@ procedure TForm6.CheckListBox1DblClick(Sender: TObject);
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
    if CheckListBox1.itemindex>0 then
-   U_OpenPoints(CheckListBox1.Items.Objects[CheckListBox1.ItemIndex],Obj);
+   U_OpenPoint(CheckListBox1.Items.Objects[CheckListBox1.ItemIndex],Obj);
 end;
 procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
@@ -172,19 +172,19 @@ begin
 end;
 procedure TForm6.Edit5Change(Sender: TObject);
 begin
-  I_SetUX(Obj,Edit5);
+  I_SeUX(Obj,Edit5);
 end;
 procedure TForm6.Edit6Change(Sender: TObject);
 begin
-  I_SetUY(Obj,Edit6);
+  I_SeUY(Obj,Edit6);
 end;
 procedure TForm6.Edit7Change(Sender: TObject);
 begin
-  I_SetUZ(Obj,Edit7);
+  I_SeUZ(Obj,Edit7);
 end;
 procedure TForm6.Edit8Change(Sender: TObject);
 begin
-  I_SetCol(Obj,Edit8);
+  I_SetC(Obj,Edit8);
 end;
 procedure TForm6.Edit8DblClick(Sender: TObject);
 begin
@@ -195,7 +195,7 @@ begin
 end;
 procedure TForm6.Edit9Change(Sender: TObject);
 begin
- I_SetAlp(Obj,Edit9);// Устанавливает прозрачность
+ I_SetA(Obj,Edit9);// Устанавливает прозрачность
 end;
 procedure TForm6.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
@@ -208,8 +208,8 @@ begin
 end;
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin
-  I_NewPoint(obj);
-  I_RefreshSpisokPOints(obj,CheckListBox1);
+  I_NewVer(obj);
+  I_RefSpiVers(obj,CheckListBox1);
 end;
 procedure TForm6.MenuItem2Click(Sender: TObject);
 var
@@ -217,34 +217,34 @@ var
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
    if CheckListBox1.itemindex>0 then begin
-   I_DelPoint(CheckListBox1.items.objects[CheckListBox1.itemindex]);
-   I_RefreshSpisokPoints(obj,CheckListBox1);
+   I_DelVer(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+   I_RefSpiVers(obj,CheckListBox1);
    end;
 end;
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
-  I_NewPlos(Obj);
-  I_RefreshSpisokPlos(obj,CheckListBox2);
+  I_NewPlo(Obj);
+  I_RefSpiPlos(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem4Click(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
    i_DelPLos(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefreshSpisokPLos(obj,CheckListBox2);
+   I_RefSpiPlos(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem7Click(Sender: TObject);
 begin
-    I_NewElement(Obj);
-    I_RefreshSpisokElements(obj,CheckListBox4);
+    I_NewEle(Obj);
+    I_RefSpiEles(obj,CheckListBox4);
 end;
 procedure TForm6.MenuItem8Click(Sender: TObject);
 begin
 
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then begin
-   I_DelElement(CheckListBox4.items.objects[CheckListBox4.itemindex]);
-   I_RefreshSpisokElements(Obj,CheckListBox4);
+   I_DelEle(CheckListBox4.items.objects[CheckListBox4.itemindex]);
+   I_RefSpiEles(Obj,CheckListBox4);
    end;
 
 end;

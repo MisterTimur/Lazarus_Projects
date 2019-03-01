@@ -1,7 +1,7 @@
 object Form7: TForm7
-  Left = 364
+  Left = 293
   Height = 239
-  Top = 205
+  Top = 114
   Width = 320
   BorderStyle = bsSizeToolWin
   Caption = 'Form7'

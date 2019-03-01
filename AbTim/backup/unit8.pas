@@ -40,9 +40,9 @@ type
 var
   Form8: TForm8;
 
-procedure U_OpenPoints(iVer,iEle:Pointer);
+procedure U_OpenPoint(iVer,iEle:Pointer);
 implementation {$R *.lfm} { TForm8 }
-procedure U_OpenPoints(iVer,iEle:Pointer);
+procedure U_OpenPoint(iVer,iEle:Pointer);
 var lForm8:TForm8;
 begin
 
@@ -54,8 +54,8 @@ begin
   I_GetX(iVer,lForm8.Edit2);
   I_GetY(iVer,lForm8.Edit3);
   I_GetZ(iVer,lForm8.Edit4);
-  I_GetCol(iVer,lForm8.Edit5);
-  I_GetAlp(iVer,lForm8.Edit6);
+  I_GetC(iVer,lForm8.Edit5);
+  I_GetA(iVer,lForm8.Edit6);
 
 end;
 procedure TForm8.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -86,7 +86,7 @@ begin
 end;
 procedure TForm8.Edit5Change(Sender: TObject);
 begin
-   I_SetCol(Ver,Edit5);
+   I_SetC(Ver,Edit5);
 end;
 procedure TForm8.Edit5DblClick(Sender: TObject);
 begin
@@ -99,14 +99,12 @@ procedure TForm8.Edit6Change(Sender: TObject);
 begin
   I_SetAlp(Ver,Edit6);// Устанавливает прозрачность
 end;
-
 procedure TForm8.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
   left:=form3.left+form3.Width-width-10;
   top:=form3.top+form3.height-height-50;
 end;
-
 procedure TForm8.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin
@@ -119,6 +117,5 @@ begin
   Top:=Top+MHeight-height;
   end;
 end;
-
 end.
 

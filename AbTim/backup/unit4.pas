@@ -43,6 +43,7 @@ type { TForm4 } TForm4 = class(TForm)
     Panel6: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
+    Panel9: TPanel;
     SaveDialog1: TSaveDialog;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
@@ -80,7 +81,7 @@ var Form4: TForm4;
 implementation{$R *.lfm}{ TForm4 }
 procedure TForm4.MenuItem5Click(Sender: TObject);
 begin
-
+   U_OpenObjects();
    MenuItem5.Enabled:=false;
 end;
 procedure TForm4.FormCreate(Sender: TObject);
@@ -188,19 +189,19 @@ begin
 end;
 procedure TForm4.Edit4Change(Sender: TObject);
 begin
- I_SetUX(Act,Edit4);
+ I_SeUX(Act,Edit4);
 end;
 procedure TForm4.Edit5Change(Sender: TObject);
 begin
- I_SetUY(Act,Edit5);
+ I_SeUY(Act,Edit5);
 end;
 procedure TForm4.Edit6Change(Sender: TObject);
 begin
- I_SetUZ(Act,Edit6);
+ I_SeUZ(Act,Edit6);
 end;
 procedure TForm4.Edit7Change(Sender: TObject);
 begin
- I_SetCol(Act,Edit7);
+ I_SetC(Act,Edit7);
 end;
 procedure TForm4.Edit7DblClick(Sender: TObject);
 begin

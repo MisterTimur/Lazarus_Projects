@@ -9,6 +9,8 @@ type { TForm3 }  TForm3 = class(TForm)
     Timer2: TTimer;
     Timer3: TTimer;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure OpenGLControl1Click(Sender: TObject);
+    procedure OpenGLControl1DblClick(Sender: TObject);
     procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure OpenGLControl1MouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -34,42 +36,42 @@ GStep:REal=0.1;// Шаг для Колеса мышки
 G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False;// В проекте есть не сохраненные изменения
 
-procedure I_NewPoint(iEle:Pointer);// Создает Вершины
-procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
+procedure I_NewVer(iEle:Pointer);// Создает Вершины
+procedure I_DelVer(iVer:Pointer);// Удаление Вершины
 
-procedure I_NewPlos(iObj:Pointer);// Создает Плоскости
-procedure I_DelPlos(iPlo:Pointer);// Удаление Плоскости
+procedure I_NewPlo(iObj:Pointer);// Создает Плоскости
+procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
 
-procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
-procedure I_DelElement(iEle:Pointer);// Удаление Элемента
+procedure I_NewEle(iEle:Pointer);// Создает новый Элемент
+procedure I_DelEle(iEle:Pointer);// Удаление Элемента
 
-procedure I_NewObject;// Создает новый обьект
-procedure i_DelObject(iObj:pointer);// Удаление обьекта
+procedure I_NewObj;// Создает новый обьект
+procedure I_DelObj(iObj:pointer);// Удаление обьекта
 
-procedure I_RefreshSpisokPoints   (iEle:POinter;iLis:TCheckListBox);
-procedure I_RefreshSpisokPlos     (iObj:POinter;iLis:TCheckListBox);
-procedure I_RefreshSpisokElements (iEle:POinter;iLis:TCheckListBox);
-procedure I_RefreshSpisokObjects  (iLis:TCheckListBox);
+procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);
+procedure I_RefSpiPlos(iObj:POinter;iLis:TCheckListBox);
+procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
+procedure I_RefSpiObjs(             iLis:TCheckListBox);
 
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
-procedure I_GetCol(iVer:Pointer;iEdit:TEdit);
-procedure I_GetAlp(iVer:Pointer;iEdit:TEdit);
-procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
-procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
-procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
+procedure I_GetC(iVer:Pointer;iEdit:TEdit);
+procedure I_GetA(iVer:Pointer;iEdit:TEdit);
+procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
+procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
+procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
-procedure I_SetCol(iVer:Pointer ;iEdit:TEdit);
-procedure I_SetAlp(iVer:Pointer ;iEdit:TEdit);
-procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
-procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
-procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
+procedure I_SetC(iVer:Pointer;iEdit:TEdit);
+procedure I_SetA(iVer:Pointer;iEdit:TEdit);
+procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
+procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
+procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
@@ -87,7 +89,7 @@ implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8;
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
-  MAxRAsInMir=32;//Максимальное растояние в игровом мире от камеры
+  MAxRAsInMir=32     ;//Максимальное растояние в игровом мире от камеры
 
   MaxKolVerInEle=128;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=128;// Максимальное количество Линий в Элементе
@@ -110,17 +112,12 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление элементов
   MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
 
-  MaxKolSelPris=1024*64 ;// Максимальнео количество выделеных примитивов
+  MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
   T_VER=1;// Вршина
   T_PLO=2;// Плоскость
   T_ELE=3;// Элементы
   T_OBJ=4;// Обьекеты
-
-  SCX= 0;
-  SCZ= 0;
-  RL = 3;
-  _D = 3;
 
 {%EndRegion}
 var   {Базовые типы данных    ===========================}{%Region /FOLD }
@@ -331,6 +328,7 @@ var   {Базовые переменные     ===========================}{%Reg
 
   LBut:RBOL;// Состояние Левой кнопки мышки
   RBut:RBOL;// Состояние Правой кнопки мышки
+  DBut:RBOL;// Двойное нажатие кнопки мышки
 
   RasN:RSIN;// Настоящие удаление от обьекта наблюдения
   Ras3:RSIN;// Целевое удаление от оббьекта наблюдения
@@ -350,17 +348,18 @@ var   {Базовые переменные     ===========================}{%Reg
 {%EndRegion}
 var   {Базовые функции        ===========================}{%Region /FOLD }
                                                            Reg04:Longint;
+
       procedure ERR(S:string);// Сообщение о ошибке
       begin
       GERR:=true;
       ShowMessage(S);
       end;
-      function NewIdd:RLon;// Генерирует уникальный IDD
+      function  NewIdd:RLon;// Генерирует уникальный IDD
       begin
       GIDD:=GIDD+1;
       NewIdd:=GIDD;
       end;
-      function isFloat(s:AnsiString):Boolean;
+      function  isFloat(s:AnsiString):Boolean;
       var f,c:Longint;r:real;Rez:Boolean;
       begin
         Rez:=False;
@@ -368,14 +367,14 @@ var   {Базовые функции        ===========================}{%Region
         if C=0 then Rez:=True;
         isFloat:=Rez;
       end;
-      function inFloat(s:AnsiString):real;
+      function  inFloat(s:AnsiString):real;
       var f,c:Longint;r:real;Rez:Boolean;
       begin
         r:=0;
         val(s,r,c);
         inFloat:=r;
       end;
-      function InString(i:REal):ansiString;
+      function  InString(i:REal):ansiString;
       var
       lStr,REz:Ansistring;
       T:Boolean;f,Kz:Longint;
@@ -475,11 +474,11 @@ var MirVers:Tvers;// Все вершины игрового мира здесь 
 Constructor TVER.Create;// Создает вершину
 begin
 
-  NAM:=''           ;
+  NAM:=''           ;// Имя вершины
   SEL:=false        ;// Не выделен примитив
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
-  NOM:=0            ;// Номер в списке отрисовки
-  TIP:=1            ;
+  NOM:=0            ;// Номер в списке всех вершин
+  TIP:=T_VER        ;// Тип Вершины
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -867,6 +866,14 @@ if (GMin.X>REA.x-0.01) then GMin.X:=REA.x-0.01;
 if (GMin.Y>REA.y-0.01) then GMin.Y:=REA.y-0.01;
 if (GMin.Z>REA.z-0.01) then GMin.Z:=REA.z-0.01;
 
+GMax.X:=GMax.X+0.01;
+GMax.Y:=GMax.Y+0.01;
+GMax.Z:=GMax.Z+0.01;
+
+GMin.X:=GMin.X-0.01;
+GMin.Y:=GMin.Y-0.01;
+GMin.Z:=GMin.Z-0.01;
+
 // Вычисление обьема
 OB3:=(GMax.X-GMin.X)*(GMax.Y-GMin.Y)*(GMax.Z-GMin.Z);
 end;
@@ -997,7 +1004,6 @@ KolP:=KolP+1;
 MirPlos.AddP(Rez);
 P:=Rez;
 end;
-
 Procedure   TOBJ.AddDels(iObj:Tobj);// Добавлет зависимый обьект
 begin
 if (KolD+1>MaxKolObjInObj) then
@@ -1005,7 +1011,6 @@ ERR(' TOBJ.AddDels(iObj:Tobj) (KolD+1>MaxKolObjInObj)');
 Dels[KolD+1]:=iObj;
 KolD:=Kold+1;
 end;
-
 procedure   TOBJ.O_MASH(iMah:RSin);// Маштабирование обьекта
 var f:Longint;
 begin
@@ -1140,8 +1145,67 @@ KolD:=0;
 end;
 
 {%EndRegion}
+
 var   {Загрузки выгрузки      ===========================}{%Region /FOLD }
                                                            Reg09:Longint;
+
+function  I_FIN_VER(iVer:Tver;iNam:Ansistring):TVer;// Ищит вершину с заданым иенем
+var
+f:LOngint;
+Rez:TVer;
+lEle:TEle;
+begin
+          REz:=Nil;
+          lEle:=TEle(iVer.Ele);
+          //--------------------------------------------------------
+          for f:=lEle.KolV downto 1 do
+          if (NOT lEle.VERS[f].DEL) and (lEle.VERS[f].NAM=iNAm)
+          Then Rez:=lEle.VERS[f];
+          //--------------------------------------------------------
+          if (rez=nil)and(lEle.ELE<>lEle) then Rez:=I_FIN_VER(lEle,iNam);
+          //--------------------------------------------------------
+          I_FIN_VER:=REz;
+end;
+function  I_FIN_PLO(iVer:Tver;iNam:Ansistring):TPlo;// Ищит Плоскость с заданым иенем
+var
+f:Longint;
+lObj:TObj;
+Rez:TPLo;
+begin
+          Rez:=Nil;
+          lObj:=TObj(iVer.OBJ);
+          for f:=lObj.KolP downto 1 do
+          if lObj.PLOS[f].NAM=iNAM Then Rez:=lObj.PLOS[f];
+          I_FIN_PLO:=Rez;
+end;
+function  I_FIN_ELE(iVer:Tver;iNam:Ansistring):TEle;// Ищит Элемент с заданым иенем
+var
+f:LOngint;
+Rez:Tele;
+lEle:TEle;
+begin
+          REz:=Nil;
+          lEle:=TEle(iVer.Ele);
+          //--------------------------------------------------------
+          for f:=lEle.KOlE downTo 1  do
+          if  (NOT lEle.eles[f].DEL) and (lEle.eles[f].NAM=iNAm)
+          Then Rez:=lEle.eles[f];
+          //--------------------------------------------------------
+          if (rez=nil)and(lEle.ELE<>lELE)then Rez:=I_FIN_ELE(lEle,iNam);
+          //--------------------------------------------------------
+          I_FIN_ELE:=REz;
+end;
+function  I_FIN_OBJ(iNam:Ansistring):TObj;// Ищит Обьект с заданым иенем
+var
+Rez:Tobj;
+F:Longint;
+begin
+          rez:=Nil;
+          for f:=MirObjs.KOlO downTo 1 do
+          if (not MirObjs.OBJS[f].DEL) and (MirObjs.OBJS[f].NAM=iNam)
+          then Rez:=MirObjs.OBJS[f];
+          I_FIN_OBJ:=Rez;
+end;
 
 Procedure I_TVER_PUT_01(iVer:TVer;var iStr:Ansistring);
 begin
@@ -1230,85 +1294,6 @@ for f:=1 to iObj.KOlP do
 if NOT iObj.PLos[f].DEL Then I_TPLO_PUT_01(iObj.Plos[f],iStr);
 
 end;
-Procedure I_SCENA_PUT_01(iVer:TVer;var iStr:Ansistring);
-var f:Longint;
-begin
-
-if iVer=Nil
-then begin
-for f:=1 to MirObjs.KOLO do
-if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
-end
-else begin
-
-if iVer.TIP=T_VER THEN I_TVER_PUT_01(TVer(iVer),iStr) else
-if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
-if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
-if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
-
-end;
-iStr:=iStr+CR;
-iStr:=iStr+CR;
-
-end;
-
-function  I_FIN_VER(iVer:Tver;iNam:Ansistring):TVer;// Ищит вершину с заданым иенем
-var
-f:LOngint;
-Rez:TVer;
-lEle:TEle;
-begin
-          REz:=Nil;
-          lEle:=TEle(iVer.Ele);
-          //--------------------------------------------------------
-          for f:=lEle.KolV downto 1 do
-          if (NOT lEle.VERS[f].DEL) and (lEle.VERS[f].NAM=iNAm)
-          Then Rez:=lEle.VERS[f];
-          //--------------------------------------------------------
-          if (rez=nil)and(lEle.ELE<>lEle) then Rez:=I_FIN_VER(lEle,iNam);
-          //--------------------------------------------------------
-          I_FIN_VER:=REz;
-end;
-function  I_FIN_PLO(iVer:Tver;iNam:Ansistring):TPlo;// Ищит Плоскость с заданым иенем
-var
-f:Longint;
-lObj:TObj;
-Rez:TPLo;
-begin
-          Rez:=Nil;
-          lObj:=TObj(iVer.OBJ);
-          for f:=lObj.KolP downto 1 do
-          if lObj.PLOS[f].NAM=iNAM Then Rez:=lObj.PLOS[f];
-          I_FIN_PLO:=Rez;
-end;
-function  I_FIN_ELE(iVer:Tver;iNam:Ansistring):TEle;// Ищит Элемент с заданым иенем
-var
-f:LOngint;
-Rez:Tele;
-lEle:TEle;
-begin
-          REz:=Nil;
-          lEle:=TEle(iVer.Ele);
-          //--------------------------------------------------------
-          for f:=lEle.KOlE downTo 1  do
-          if  (NOT lEle.eles[f].DEL) and (lEle.eles[f].NAM=iNAm)
-          Then Rez:=lEle.eles[f];
-          //--------------------------------------------------------
-          if (rez=nil)and(lEle.ELE<>lELE)then Rez:=I_FIN_ELE(lEle,iNam);
-          //--------------------------------------------------------
-          I_FIN_ELE:=REz;
-end;
-function  I_FIN_OBJ(iNam:Ansistring):TObj;// Ищит Обьект с заданым иенем
-var
-Rez:Tobj;
-F:Longint;
-begin
-          rez:=Nil;
-          for f:=MirObjs.KOlO downTo 1 do
-          if (not MirObjs.OBJS[f].DEL) and (MirObjs.OBJS[f].NAM=iNam)
-          then Rez:=MirObjs.OBJS[f];
-          I_FIN_OBJ:=Rez;
-end;
 
 function  I_GetEl(iVer:TVer):Tele;// возвращает элемент в котором находимся
 var REz:Tele;
@@ -1334,6 +1319,27 @@ begin
 
 end;
 
+Procedure I_SCENA_PUT_01(iVer:TVer;var iStr:Ansistring);
+var f:Longint;
+begin
+
+if iVer=Nil
+then begin
+for f:=1 to MirObjs.KOLO do
+if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
+end
+else begin
+
+if iVer.TIP=T_VER THEN I_TVER_PUT_01(TVer(iVer),iStr) else
+if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
+if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
+if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
+
+end;
+iStr:=iStr+CR;
+iStr:=iStr+CR;
+
+end;
 Procedure I_SCENA_GET_01(iVer:TVer;var iStr:Ansistring);
 var
 lPos:Longint;
@@ -1427,7 +1433,6 @@ else if iStr[lPos]='d' Then begin INC(lPos);
 else inc(lPos);
 end
 end;
-
 
 procedure I_SaveScena(iNamFile:Ansistring);
 var
@@ -1557,7 +1562,94 @@ end;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg11:Longint;
 
-procedure I_RefreshSpisokObjects (iLis:TCheckListBox);// Список с обьекта
+var   {----------------------- Возавращает списки     ===}{%Region /FOLD }
+                                                          A_Reg11:Longint;
+
+procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);//Список вершин
+var
+f:longint;// Для циклов
+rEle:TEle;
+NomItems:Longint;
+begin
+rEle:=TEle(iEle);
+NomItems:=0;// Для перебора Вершин в списке
+for f:=1 to rEle.KolV do
+if Not rEle.VERS[f].DEL then begin // Если Вершина не удалён
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rEle.VERS[f].Sel;
+     iLis.Items[NomItems]:=rEle.VERS[f].NAM;
+     iLis.Items.Objects[NomItems]:=rEle.VERS[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rEle.VERS[f].Nam,rEle.VERS[f]);
+     iLis.selected[iLis.Count-1]:=rEle.VERS[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefSpiPlos(iObj:POinter;iLis:TCheckListBox);//Список Плоско
+var
+f:longint;// Для циклов
+rObj:TObj;
+NomItems:Longint;
+begin
+rObj:=TObj(iObj);
+NomItems:=0;// Для перебора Плоскостей в списке
+for f:=1 to rObj.KolP do
+if Not rObj.PLOS[f].DEL then begin // Если рлоскостей не удалён
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rObj.PLOS[f].Sel;
+     iLis.Items[NomItems]:=rObj.PLOS[f].NAM;
+     iLis.Items.Objects[NomItems]:=rObj.PLOS[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rObj.PLOS[f].Nam,rObj.PLOS[f]);
+     iLis.selected[iLis.Count-1]:=rObj.PLOS[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);//Список Элемен
+var
+f:longint;// Для циклов
+rEle:TEle;
+NomItems:Longint;
+begin
+rEle:=TEle(iEle);
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to rEle.KolE do
+if Not rEle.ELES[f].DEL then begin // Если обьект не удалён  begin
+NomItems:=NomItems+1;
+     if NomItems<iLis.Items.count then begin
+
+     iLis.selected[NomItems]:=rEle.ELES[f].Sel;
+     iLis.Items[NomItems]:=rEle.ELES[f].NAM;
+     iLis.Items.Objects[NomItems]:=rEle.ELES[f];
+
+     end
+     else begin
+     iLis.Items.AddObject(rEle.ELES[f].Nam,rEle.ELES[f]);
+     iLis.selected[iLis.Count-1]:=rEle.ELES[f].Sel;
+     end
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+end;
+procedure I_RefSpiObjs(             iLis:TCheckListBox);//Список обьект
 var
 f:longint;// лдя циклов
 NomItems:Longint;// Перебирать записи в листбоксе
@@ -1588,137 +1680,53 @@ iLis.items.delete(iLis.count-1);
 
 
 end;
-procedure I_RefreshSpisokPoints  (iEle:POinter;iLis:TCheckListBox);
-var
-f:longint;// Для циклов
-rEle:TEle;
-NomItems:Longint;
-begin
-rEle:=TEle(iEle);
-NomItems:=0;// Для перебора Вершин в списке
-for f:=1 to rEle.KolV do
-if Not rEle.VERS[f].DEL then begin // Если Вершина не удалён
-NomItems:=NomItems+1;
-     if NomItems<iLis.Items.count then begin
 
-     iLis.selected[NomItems]:=rEle.VERS[f].Sel;
-     iLis.Items[NomItems]:=rEle.VERS[f].NAM;
-     iLis.Items.Objects[NomItems]:=rEle.VERS[f];
-
-     end
-     else begin
-     iLis.Items.AddObject(rEle.VERS[f].Nam,rEle.VERS[f]);
-     iLis.selected[iLis.Count-1]:=rEle.VERS[f].Sel;
-     end
-end;
-
-// Удаляем лишнии записи в конце списка
-while iLis.count-1>NomItems do
-iLis.items.delete(iLis.count-1);
-end;
-procedure I_RefreshSpisokPlos    (iObj:POinter;iLis:TCheckListBox);
-var
-f:longint;// Для циклов
-rObj:TObj;
-NomItems:Longint;
-begin
-rObj:=TObj(iObj);
-NomItems:=0;// Для перебора Плоскостей в списке
-for f:=1 to rObj.KolP do
-if Not rObj.PLOS[f].DEL then begin // Если рлоскостей не удалён
-NomItems:=NomItems+1;
-     if NomItems<iLis.Items.count then begin
-
-     iLis.selected[NomItems]:=rObj.PLOS[f].Sel;
-     iLis.Items[NomItems]:=rObj.PLOS[f].NAM;
-     iLis.Items.Objects[NomItems]:=rObj.PLOS[f];
-
-     end
-     else begin
-     iLis.Items.AddObject(rObj.PLOS[f].Nam,rObj.PLOS[f]);
-     iLis.selected[iLis.Count-1]:=rObj.PLOS[f].Sel;
-     end
-end;
-
-// Удаляем лишнии записи в конце списка
-while iLis.count-1>NomItems do
-iLis.items.delete(iLis.count-1);
-end;
-procedure I_RefreshSpisokElements(iEle:POinter;iLis:TCheckListBox);
-var
-f:longint;// Для циклов
-rEle:TEle;
-NomItems:Longint;
-begin
-rEle:=TEle(iEle);
-NomItems:=0;// Для перебора обье4ктов в списке
-for f:=1 to rEle.KolE do
-if Not rEle.ELES[f].DEL then begin // Если обьект не удалён  begin
-NomItems:=NomItems+1;
-     if NomItems<iLis.Items.count then begin
-
-     iLis.selected[NomItems]:=rEle.ELES[f].Sel;
-     iLis.Items[NomItems]:=rEle.ELES[f].NAM;
-     iLis.Items.Objects[NomItems]:=rEle.ELES[f];
-
-     end
-     else begin
-     iLis.Items.AddObject(rEle.ELES[f].Nam,rEle.ELES[f]);
-     iLis.selected[iLis.Count-1]:=rEle.ELES[f].Sel;
-     end
-end;
-
-// Удаляем лишнии записи в конце списка
-while iLis.count-1>NomItems do
-iLis.items.delete(iLis.count-1);
-end;
-
-procedure I_GetN(iVer:Pointer ;iEdit:TEdit);
+{%EndRegion}
+var   {----------------------- Set и GET              ===}{%Region /FOLD }
+                                                          B_Reg11:Longint;
+procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=TVEr(iVer).NAM;
 end;
-procedure I_GetX(iVer:Pointer ;iEdit:TEdit);
+procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.X);
 end;
-procedure I_GetY(iVer:Pointer ;iEdit:TEdit);
+procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Y);
 end;
-procedure I_GetZ(iVer:Pointer ;iEdit:TEdit);
+procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Z);
 end;
-
-procedure I_GetCol(iVer:Pointer ;iEdit:TEdit);
+procedure I_GetC(iVer:Pointer;iEdit:TEdit);
 begin
 //iEdit.Text:=InString(ColToInt(TVEr(iVer).COL));
 end;
-procedure I_GetAlp(iVer:Pointer ;iEdit:TEdit);
+procedure I_GetA(iVer:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TVEr(iVer).Col.A);
 end;
-
-
-procedure I_GetUX(iEle:Pointer;iEdit:TEdit);
+procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TEle(iEle).EUGL.X);
 end;
-procedure I_GetUY(iEle:Pointer;iEdit:TEdit);
+procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TEle(iEle).EUGL.Y);
 end;
-procedure I_GetUZ(iEle:Pointer;iEdit:TEdit);
+procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 begin
 iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 
-procedure I_SetN(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 TVEr(iVer).NAM:=iEdit.Text;
 end;
-procedure I_SetX(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1726,7 +1734,7 @@ TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetY(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1734,7 +1742,7 @@ TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetZ(iVer:Pointer ;iEdit:TEdit);
+procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1742,19 +1750,19 @@ TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
 TObj(TVEr(iVer).OBJ).O_MATH;
 end;
 end;
-procedure I_SetCol(iVer:Pointer;iEdit:TEdit);
+procedure I_SetC(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL:=IntToCol(trunc(inFloat(iEdit.Text)));
 end;
-procedure I_SetAlp(iVer:Pointer;iEdit:TEdit);
+procedure I_SetA(iVer:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then
 TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
 end;
-procedure I_SetUX(iEle:Pointer;iEdit:TEdit);
+procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1762,7 +1770,7 @@ TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
 TObj(TVEr(iEle).OBJ).O_MATH;
 end;
 end;
-procedure I_SetUY(iEle:Pointer;iEdit:TEdit);
+procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1770,7 +1778,7 @@ TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
 TObj(TVEr(iEle).OBJ).O_MATH;
 end;
 end;
-procedure I_SetUZ(iEle:Pointer;iEdit:TEdit);
+procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
 if isFloat(iEdit.Text) then begin
@@ -1779,8 +1787,86 @@ TObj(TVEr(iEle).OBJ).O_MATH;
 end;
 end;
 
+{%EndRegion}
+var   {----------------------- Отрисовкка примитивов  ===}{%Region /FOLD }
+                                                          C_Reg11:Longint;
+procedure I_DrVer(iVer:TVer;iCol:RCol);// Вывод вершины
+begin
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_POINTS);
+glVertex3f(iVer.ECR.X,iVer.ECR.Y,iVer.ECR.Z);
+glEnd();
+end;
+procedure I_DrPlo(iPlo:TPlo;iCol:RCol);// Вывод Плоскости
+var C:RCol;
+begin
+C:=iPlo.Col;
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_LINES);
+with iPlo do begin
 
-function  I_FinName(iEle:TEle;iNam:Ansistring):TVer;
+glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
+glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
+glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
+glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
+glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
+glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
+glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
+glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
+
+end;
+glEnd();
+end;
+procedure I_DrEle(iEle:TEle;iCol:RCol);// Вывод Элемента
+var C:RCol;
+begin
+C:=iEle.Col;
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_LINES);
+with iEle do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
+glEnd();
+end;
+procedure I_DrObj(iObj:TObj;iCol:RCol);// Вывод ОБьекта
+begin
+glColor3ub(iCol.R,iCol.G,iCol.B);
+glBegin(GL_LINES);
+with iObj do begin
+
+glVertex3f(GMin.X,GMin.Y,GMin.Z);
+glVertex3f(GMin.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMin.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
+
+glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
+glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
+
+glVertex3f(GMin.X,GMin.Y,GMAX.Z);
+glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
+
+end;
+glEnd();
+end;
+
+{%EndRegion}
+var   {----------------------- Имена примитивов       ===}{%Region /FOLD }
+                                                          D_Reg11:Longint;
+
+function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
 var REz:TVer;f:longint;
 begin
 
@@ -1803,7 +1889,7 @@ if REz=Nil Then begin
 f:=1;
  while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
  if iEle.ELES[f].NAM=iNAm then REz:=iEle.ELES[f];
- if rez=nil then REz:=I_FinName(iEle.ELES[f],inam);
+ if rez=nil then REz:=I_FinNam(iEle.ELES[f],inam);
  f:=f+1;
  end;
 end;
@@ -1812,24 +1898,28 @@ end;
 if iEle=Nil Then begin
 f:=1;
 while (f<=MirObjs.KolO) and (REz=Nil) do begin
-Rez:=I_FinName(MirObjs.OBJS[f],iNAm);
+Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);
 f:=f+1;
 end;
 
-I_FinName:=Nil;
+I_FinNam:=Nil;
 end;
 
 
-I_FinName:=Rez;
+I_FinNam:=Rez;
 end;
-
-function  I_NewName(iStr:Ansistring):Ansistring;
+function  I_NewNam(iStr:Ansistring):Ansistring;
 begin
-while (I_FinName(nil,iStr+IntToStr(GIDD))<>nil) do
+while (I_FinNam(nil,iStr+IntToStr(GIDD))<>nil) do
 GIDD:=GIDD+1000;
-I_NewName:=iStr+IntToStr(GIDD);
+I_NewNam:=iStr+IntToStr(GIDD);
 end;
-procedure I_NewPoint(iEle:Pointer);// Создает Вершины
+
+{%EndRegion}
+var   {----------------------- Добавлоение примитива  ===}{%Region /FOLD }
+                                                          E_Reg11:Longint;
+
+procedure I_NewVer(iEle:Pointer);// Создает Вершины
 Var
 rEle:TEle;
 lVer:TVer;
@@ -1837,24 +1927,10 @@ begin
 G_Change:=true;
 rEle:=TEle(iEle);
 lVer:=rEle.V(0,0,0);
-lVer.Nam:=I_NewName('V ');
+lVer.Nam:=I_NewNam('V ');
 TObj(lVer.Obj).O_MATH;
 end;
-procedure I_DelPoint(iVer:Pointer);// Удаление Вершины
-var
-dVer:TVer;F:Longint;
-begin
-G_Change:=true;
-dVer:=TVer(iVer);
-// Удаление форм ---------------------------------------------------------------
-for f:=0 to application.ComponentCount-1 do
-if  (application.Components[f] is tform8) then
-if ((application.Components[f] as tform8).VER=iVer) then
-    (application.Components[f] as tform8).close;
-// удаление в структуре --------------------------------------------------------
-MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
-end;
-procedure I_NewPlos(iObj:Pointer);// Создает Вершины
+procedure I_NewPlo(iObj:Pointer);// Создает Вершины
 Var
 rObj:TObj;
 lPLo:TPlo;
@@ -1868,20 +1944,12 @@ lPlo:=rObj.P(lSel.SELS[4],
              lSel.SELS[3],
              lSel.SELS[2],
              lSel.SELS[1]);
-lPlo.Nam:=I_NewName('P ');
+lPlo.Nam:=I_NewNam('P ');
 TObj(lPlo.Obj).O_MATH;
 end;
 lSel.free;
 end;
-procedure I_DelPLos(iPlo:Pointer);// Удаление Вершины
-var
-dPlo:TPlo;
-begin
-G_Change:=true;
-dPlo:=TPlo(iPlo);
-MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
-end;
-procedure I_NewElement(iEle:Pointer);// Создает новый Элемент
+procedure I_NewEle(iEle:Pointer);// Создает новый Элемент
 Var
 rEle:TEle;
 lEle:TEle;
@@ -1889,10 +1957,46 @@ begin
 G_Change:=true;
 rEle:=TEle(iEle);
 lEle:=rEle.E(0,0,0);
-lEle.Nam:=I_NewName('E ');
+lEle.Nam:=I_NewNam('E ');
 TObj(lEle.Obj).O_MATH;
 end;
-procedure I_DelElement(iEle:Pointer);// Удаление Элементов
+procedure I_NewObj;// Создает новый обьект
+Var nObj:TObj;
+begin
+G_Change:=true;
+nObj:=TObj.Create;
+nObj.Nam:=I_NewNam('Object ');
+nObj.O_MATH;
+MirObjs.AddO(nObj);
+end;
+
+{%EndRegion}
+var   {----------------------- Удалание  примитивов   ===}{%Region /FOLD }
+                                                          F_Reg11:Longint;
+
+procedure I_DelVer(iVer:Pointer);// Удаление Вершины
+var
+dVer:TVer;F:Longint;
+begin
+G_Change:=true;
+dVer:=TVer(iVer);
+// Удаление форм ---------------------------------------------------------------
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform8) then
+if ((application.Components[f] as tform8).VER=iVer) then
+    (application.Components[f] as tform8).close;
+// удаление в структуре --------------------------------------------------------
+MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
+end;
+procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
+var
+dPlo:TPlo;
+begin
+G_Change:=true;
+dPlo:=TPlo(iPlo);
+MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
+end;
+procedure I_DelEle(iEle:Pointer);// Удаление Элемента
 var
 dEle:TEle;f:Longint;
 begin
@@ -1911,16 +2015,7 @@ end;
 // удаляем в самой структуре ---------------------------------------------------
 MirEles.AddD(dEle);// Добавляем Элемент в удаляемые
 end;
-procedure I_NewObject;// Создает новый обьект
-Var nObj:TObj;
-begin
-G_Change:=true;
-nObj:=TObj.Create;
-nObj.Nam:=I_NewName('Object ');
-nObj.O_MATH;
-MirObjs.AddO(nObj);
-end;
-procedure I_DelObject(iObj:pointer);// Удаление обьектов
+procedure I_DelObj(iObj:pointer);// Удаление Обьекта
 Var
 dObj:TObj;f:Longint;
 begin
@@ -1943,6 +2038,9 @@ else if (application.Components[f] is tform6) then  begin // обьекты
 // Удаление в тсруктуре --------------------------------------------------------
 MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
 end;
+
+{%EndRegion}
+
 procedure I_RefreshActiveElement;
 begin
 with form4 do
@@ -1965,25 +2063,24 @@ then begin
 I_GETX(Act,Edit1);edit1.Enabled:=true;
 I_GETY(Act,Edit2);edit2.Enabled:=true;
 I_GETZ(Act,Edit3);edit3.Enabled:=true;
-I_GETCol(Act,Edit7);edit7.Enabled:=true;
-I_GETAlp(Act,Edit8);edit8.Enabled:=true;
+I_GETC(Act,Edit7);edit7.Enabled:=true;
+I_GETA(Act,Edit8);edit8.Enabled:=true;
 end;
 // Читаюю углы наклона
 if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
 then begin // Включаю углы наклона
-I_GETUX(Act,Edit4);edit4.Enabled:=true;
-I_GETUY(Act,Edit5);edit5.Enabled:=true;
-I_GETUZ(Act,Edit6);edit6.Enabled:=true;
+I_GEUX(Act,Edit4);edit4.Enabled:=true;
+I_GEUY(Act,Edit5);edit5.Enabled:=true;
+I_GEUZ(Act,Edit6);edit6.Enabled:=true;
 end
 else begin // Отключаю углы наклона
-I_GETUX(Act,Edit4);edit4.Enabled:=false;
-I_GETUY(Act,Edit5);edit5.Enabled:=false;
-I_GETUZ(Act,Edit6);edit6.Enabled:=false;
+edit4.Enabled:=false;
+edit5.Enabled:=false;
+edit6.Enabled:=false;
 end;
 
 end;
 end;
-
 function  I_RodEle(iEle,iObj:Pointer):Boolean;// Доделать
 var
 lEle:TEle;
@@ -2046,78 +2143,6 @@ if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1];
 I_RefreshActiveElement;
 // -----------------------------------------------------------------------------
 end;
-
-procedure I_DrVertex (iVer:TVer;iCol:RCol);// Вывод вершины
-begin
-glColor3ub(iCol.R,iCol.G,iCol.B);
-glBegin(GL_POINTS);
-glVertex3f(iVer.ECR.X,iVer.ECR.Y,iVer.ECR.Z);
-glEnd();
-end;
-procedure I_DrPlos   (iPlo:TPlo;iCol:RCol);// Вывод Плоскости
-var C:RCol;
-begin
-C:=iPlo.Col;
-glColor3ub(iCol.R,iCol.G,iCol.B);
-glBegin(GL_LINES);
-with iPlo do begin
-
-glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
-glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
-glVertex3f(iPlo.VErs[2].ECR.X,iPlo.VErs[2].ECR.Y,iPlo.VErs[2].ECR.Z);
-glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
-glVertex3f(iPlo.VErs[3].ECR.X,iPlo.VErs[3].ECR.Y,iPlo.VErs[3].ECR.Z);
-glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
-glVertex3f(iPlo.VErs[4].ECR.X,iPlo.VErs[4].ECR.Y,iPlo.VErs[4].ECR.Z);
-glVertex3f(iPlo.VErs[1].ECR.X,iPlo.VErs[1].ECR.Y,iPlo.VErs[1].ECR.Z);
-
-end;
-glEnd();
-end;
-procedure I_DrElement(iEle:TEle;iCol:RCol);// Вывод Элемента
-var C:RCol;
-begin
-C:=iEle.Col;
-glColor3ub(iCol.R,iCol.G,iCol.B);
-glBegin(GL_LINES);
-with iEle do begin
-
-glVertex3f(GMin.X,GMin.Y,GMin.Z);
-glVertex3f(GMin.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMin.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
-
-glVertex3f(GMin.X,GMin.Y,GMAX.Z);
-glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
-
-end;
-glEnd();
-end;
-procedure I_DrObject (iObj:TObj;iCol:RCol);// Вывод ОБьекта
-begin
-glColor3ub(iCol.R,iCol.G,iCol.B);
-glBegin(GL_LINES);
-with iObj do begin
-
-glVertex3f(GMin.X,GMin.Y,GMin.Z);
-glVertex3f(GMin.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMin.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMin.Z);
-
-glVertex3f(GMAX.X,GMin.Y,GMAX.Z);
-glVertex3f(GMAX.X,GMAx.Y,GMAX.Z);
-
-glVertex3f(GMin.X,GMin.Y,GMAX.Z);
-glVertex3f(GMin.X,GMAx.Y,GMAX.Z);
-
-end;
-glEnd();
-end;
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
 var f,RC:LongWord;
 begin
@@ -2125,17 +2150,23 @@ glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экр
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
-I_DrVertex(MirVers.VERS[f],IntToCol(f));
+I_DrVer(MirVers.VERS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirVers.KolV) then begin
+
 MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel;
-I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);CaP3:=MirVers.Vers[RC].ECR;
+I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);
+CaP3:=MirVers.Vers[RC].ECR;
+if DBUT then begin
+U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);
+DBUT:=False;
+end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
-I_DrPlos(MirPLos.PLOS[f],IntToCol(f));
+I_DrPlo(MirPLos.PLOS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirPLos.KolP) then begin
 MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
@@ -2145,7 +2176,7 @@ glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экр
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
-I_DrElement(MirEles.ELES[f],IntToCol(f));
+I_DrEle(MirEles.ELES[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirEles.KolE) then begin
 MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
@@ -2155,7 +2186,7 @@ glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экр
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
 for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
-I_DrObject(MirObjs.OBJS[f],IntToCol(f));
+I_DrObj(MirObjs.OBJS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
 if (RC>0) and (RC<=MirObjs.KolO) then begin
 MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
@@ -2172,38 +2203,35 @@ Begin // Отрисовка редактора
 // Отрисовываю все вершины в игровом мире
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 if Not MirVers.VERS[f].SEL
-then I_DrVertex(MirVers.VERS[f],CreRCol(0,0,0,255))
-else I_DrVertex(MirVers.VERS[f],RanRcol);
+then I_DrVer(MirVers.VERS[f],CreRCol(0,0,0,255))
+else I_DrVer(MirVers.VERS[f],RanRcol);
 
 // Отрисовываю все Плоскости в игровом мире
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
 if Not MirPlos.PLOS[f].SEL
-then I_DrPlos(MirPlos.PLOS[f],CreRCol(0,0,0,255))
-else I_DrPlos(MirPlos.PLOS[f],RanRcol);
+then I_DrPlo(MirPlos.PLOS[f],CreRCol(0,0,0,255))
+else I_DrPlo(MirPlos.PLOS[f],RanRcol);
 
 // Отрисовываю все элементы  в игровом мире
 for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
 if Not MirEles.ELES[f].SEL
-Then I_DrElement(MirEles.ELES[f],CreRCol(0,0,0,255))
-else I_DrElement(MirEles.ELES[f],RanRcol);
+Then I_DrEle(MirEles.ELES[f],CreRCol(0,0,0,255))
+else I_DrEle(MirEles.ELES[f],RanRcol);
 
 // Отрисовываю все ОБьекты в игровом мире
 for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
 if Not MirObjs.OBJS[f].SEL
-then  I_DrObject(MirObjs.OBJS[f],CreRCol(0,0,0,255))
-else  I_DrObject(MirObjs.OBJS[f],RanRCol)
+then  I_DrObj(MirObjs.OBJS[f],CreRCol(0,0,0,255))
+else  I_DrObj(MirObjs.OBJS[f],RanRCol)
 
 end;
-
-
 procedure I_ClearScena;// Очищает Сцену
 var f:Longint;
 begin
  G_Change:=true;
- for f:=1 to MirObjs.KolO do I_DelObject(MirObjs.OBJS[f]);
+ for f:=1 to MirObjs.KolO do I_DelObj(MirObjs.OBJS[f]);
  G_FileName:='';
 end;
-
 
 {%EndRegion}
 var   {Паралельные процесы    ===========================}{%Region /FOLD }
@@ -2431,6 +2459,16 @@ var   {События формы          ===========================}{%Region /
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
+end;
+
+procedure TForm3.OpenGLControl1Click(Sender: TObject);
+begin
+
+end;
+
+procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
+begin
+  DBUT:=true;
 end;
 
 
