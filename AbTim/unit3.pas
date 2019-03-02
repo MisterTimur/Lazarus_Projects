@@ -2618,7 +2618,8 @@ While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю 
 // Созаю елси нету таких элементов если есть назначаю текущим ------
      if iStr[lPos]='O' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lObj:=TObj(I_AddObj);// Создаю обьект
+     lObj:=I_FIN_Obj(lNam);
+     if lObj=nil then lObj:=TObj(I_AddObj);// Если нету создаю
      iVer:=lObj;// Указываю текущим
      iVer.Nam:=lNam;// Назанчаю имя
      end

@@ -2571,7 +2571,7 @@ for f:=1 to iObj.KOlE do
 if NOT iObj.Eles[f].DEL Then begin
 iStr:=iStr+'O('+iObj.NAM+')';// Сохраняю Текущий контекст
 I_TELE_PUT_01(iObj.Eles[f],iStr);
-end
+end;
 for f:=1 to iObj.KOlP do
 if NOT iObj.PLos[f].DEL Then I_TPLO_PUT_01(iObj.Plos[f],iStr);
 
