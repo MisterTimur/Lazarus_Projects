@@ -67,24 +67,11 @@ procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
-procedure I_GLC1(iLin:Pointer;iEdit:TEdit);
-procedure I_GLC2(iLin:Pointer;iEdit:TEdit);
-procedure I_GLA1(iLin:Pointer;iEdit:TEdit);
-procedure I_GLA2(iLin:Pointer;iEdit:TEdit);
 
-procedure I_GPC1(iPLo:Pointer;iEdit:TEdit);
-procedure I_GPC2(iPLo:Pointer;iEdit:TEdit);
-procedure I_GPC3(iPLo:Pointer;iEdit:TEdit);
-procedure I_GPC4(iPLo:Pointer;iEdit:TEdit);
 
-procedure I_GPA1(iPlo:Pointer;iEdit:TEdit);
-procedure I_GPA2(iPlo:Pointer;iEdit:TEdit);
-procedure I_GPA3(iPlo:Pointer;iEdit:TEdit);
-procedure I_GPA4(iPlo:Pointer;iEdit:TEdit);
 
 
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
-procedure I_SetR(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
@@ -93,22 +80,6 @@ procedure I_SetA(iVer:Pointer;iEdit:TEdit);
 procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
-
-procedure I_SLC1(iLin:Pointer;iEdit:TEdit);
-procedure I_SLC2(iLin:Pointer;iEdit:TEdit);
-
-procedure I_SLA1(iLin:Pointer;iEdit:TEdit);
-procedure I_SLA2(iLin:Pointer;iEdit:TEdit);
-
-procedure I_SPC1(iPlo:Pointer;iEdit:TEdit);
-procedure I_SPC2(iPlo:Pointer;iEdit:TEdit);
-procedure I_SPC3(iPlo:Pointer;iEdit:TEdit);
-procedure I_SPC4(iPlo:Pointer;iEdit:TEdit);
-
-procedure I_SPA1(iPLo:Pointer;iEdit:TEdit);
-procedure I_SPA2(iPLo:Pointer;iEdit:TEdit);
-procedure I_SPA3(iPLo:Pointer;iEdit:TEdit);
-procedure I_SPA4(iPLo:Pointer;iEdit:TEdit);
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
@@ -1098,6 +1069,15 @@ if (GMin.Y>VERS[f].REA.y) then GMin.Y:=VERS[f].REA.y;
 if (GMin.Z>VERS[f].REA.z) then GMin.Z:=VERS[f].REA.z;
 end;
 
+for f:=1 to KolE do begin
+if (GMax.X<ELES[f].GMax.x) then GMax.X:=ELES[f].GMax.x;
+if (GMax.Y<ELES[f].GMax.y) then GMax.Y:=ELES[f].GMax.y;
+if (GMax.Z<ELES[f].GMax.z) then GMax.Z:=ELES[f].GMax.z;
+if (GMin.X>ELES[f].GMin.x) then GMin.X:=ELES[f].GMin.x;
+if (GMin.Y>ELES[f].GMin.y) then GMin.Y:=ELES[f].GMin.y;
+if (GMin.Z>ELES[f].GMin.z) then GMin.Z:=ELES[f].GMin.z;
+end;
+
 if (GMax.X<REA.x+0.01) then GMax.X:=REA.x+0.01;
 if (GMax.Y<REA.y+0.01) then GMax.Y:=REA.y+0.01;
 if (GMax.Z<REA.z+0.01) then GMax.Z:=REA.z+0.01;
@@ -1539,6 +1519,54 @@ var   {Интерфейс редактора    ===========================}{%Re
 
 var   {----------------------- Возавращает списки     ===}{%Region /FOLD }
                                                           A_Reg11:Longint;
+function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
+var REz:TVer;f:longint;
+begin
+
+rez:=Nil;
+
+if iEle<>Nil Then begin
+
+if iEle.Nam=iNam Then REz:=iEle;
+
+if Rez=Nil Then
+if iEle.TIP=T_OBJ Then
+for f:=1 to TObj(iEle).KolP do
+if TObj(iEle).PLOS[f].NAM=iNAm then REz:=TObj(iEle).PLOS[f];
+
+if Rez=Nil Then
+for f:=1 to iEle.KolV do // Ищу среди вершин
+if iEle.VERS[f].NAM=iNam then REz:=iEle.VERS[f];
+
+if REz=Nil Then begin
+f:=1;
+ while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
+ if iEle.ELES[f].NAM=iNAm then REz:=iEle.ELES[f];
+ if rez=nil then REz:=I_FinNam(iEle.ELES[f],inam);
+ f:=f+1;
+ end;
+end;
+
+end;
+if iEle=Nil Then begin
+f:=1;
+while (f<=MirObjs.KolO) and (REz=Nil) do begin
+Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);
+f:=f+1;
+end;
+
+I_FinNam:=Nil;
+end;
+
+
+I_FinNam:=Rez;
+end;
+function  I_NewNamIdd(iStr:Ansistring):Ansistring;
+begin
+while (I_FinNam(nil,iStr+IntToStr(GIDD))<>nil) do
+GIDD:=GIDD+1000;
+I_NewNamIdd:=iStr+IntToStr(GIDD);
+end;
 
 procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);//Список вершин
 var
@@ -1755,20 +1783,22 @@ end;
 end;
 procedure I_RefreshEditorPrimitiv(iVer:Pointer);
 var
+ form5:TForm5;
  form6:TForm6;
  form7:TForm7;
  form8:TForm8;
 begin
- form6:=I_FindFormObj(iver);if Form6<>nil Then Form6.U_RefreshObj;
- form7:=I_FindFormEle(iver);if Form7<>nil Then Form7.U_RefreshEle;
- form8:=I_FindFormVer(iver);if Form8<>nil Then Form8.U_RefreshVer;
+ form5:=I_FindFormObjs(iver);if Form5<>nil Then Form5.U_RefreshObjs;
+ form6:=I_FindFormObj (iver);if Form6<>nil Then Form6.U_RefreshObj;
+ form7:=I_FindFormEle (iver);if Form7<>nil Then Form7.U_RefreshEle;
+ form8:=I_FindFormVer (iver);if Form8<>nil Then Form8.U_RefreshVer;
 end;
 
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 begin
-if iEdit.Text<>TVEr(iVer).NAM then begin
-iEdit.Text:=TVEr(iVer).NAM;
-end;
+if iEdit.Text<>TVEr(iVer).NAM then
+   iEdit.Text:=TVEr(iVer).NAM;
+
 end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
@@ -1826,10 +1856,20 @@ end;
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
+
+if I_FinNam(TEle(TVEr(iVer).Obj),iEdit.Text)=nil
+   then begin
    G_Change:=true;
    TVEr(iVer).NAM:=iEdit.Text;
+   iEdit.Color:=clDefault;
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
+   end
+   else begin
+   iEdit.Color:=RGBToColor(255,0,0)
+   end;
+
+
 end;
 end;
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
@@ -2017,59 +2057,7 @@ glEnd();
 end;
 
 {%EndRegion}
-var   {----------------------- Имена примитивов       ===}{%Region /FOLD }
-                                                          D_Reg11:Longint;
 
-function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
-var REz:TVer;f:longint;
-begin
-
-rez:=Nil;
-
-if iEle<>Nil Then begin
-
-if iEle.Nam=iNam Then REz:=iEle;
-
-if Rez=Nil Then
-if iEle.TIP=T_OBJ Then
-for f:=1 to TObj(iEle).KolP do
-if TObj(iEle).PLOS[f].NAM=iNAm then REz:=TObj(iEle).PLOS[f];
-
-if Rez=Nil Then
-for f:=1 to iEle.KolV do // Ищу среди вершин
-if iEle.VERS[f].NAM=iNam then REz:=iEle.VERS[f];
-
-if REz=Nil Then begin
-f:=1;
- while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
- if iEle.ELES[f].NAM=iNAm then REz:=iEle.ELES[f];
- if rez=nil then REz:=I_FinNam(iEle.ELES[f],inam);
- f:=f+1;
- end;
-end;
-
-end;
-if iEle=Nil Then begin
-f:=1;
-while (f<=MirObjs.KolO) and (REz=Nil) do begin
-Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);
-f:=f+1;
-end;
-
-I_FinNam:=Nil;
-end;
-
-
-I_FinNam:=Rez;
-end;
-function  I_NewNamIdd(iStr:Ansistring):Ansistring;
-begin
-while (I_FinNam(nil,iStr+IntToStr(GIDD))<>nil) do
-GIDD:=GIDD+1000;
-I_NewNamIdd:=iStr+IntToStr(GIDD);
-end;
-
-{%EndRegion}
 var   {----------------------- Добавлоение примитива  ===}{%Region /FOLD }
                                                           E_Reg11:Longint;
 
@@ -2748,6 +2736,62 @@ begin
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 //------------------------------------------------------------------------------
+if form4.MenuItem10.Checked then begin // ОБьекты
+for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
+I_DrObj(MirObjs.OBJS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirObjs.KolO) then begin
+MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
+I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
+if MBUT THEN CaP3:=MirObjs.Objs[RC].ECR;
+if DBUT THEN U_OpenObject(MirObjs.Objs[RC]);
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+end;
+//------------------------------------------------------------------------------
+if form4.MenuItem12.Checked then begin // Элемент
+for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
+I_DrEle(MirEles.ELES[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirEles.KolE) then begin
+MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
+I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
+if MBUT THEN CaP3:=MirEles.Eles[RC].ECR;
+if DBUT THEN U_OpenElement(MirEles.Eles[RC]);
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+end;
+//------------------------------------------------------------------------------
+if form4.MenuItem13.Checked then begin // Плоскос
+for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
+I_DrPlo(MirPLos.PLOS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirPLos.KolP) then begin
+MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
+I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
+if MBUT THEN CaP3:=MirPlos.Plos[RC].ECR;
+if DBUT THEN begin end;
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+End;
+//------------------------------------------------------------------------------
+if form4.MenuItem22.Checked then begin // Линия
+for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
+I_DrLin(MirLins.LINS[f],IntToCol(f));
+glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirLins.KolL) then begin
+MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel;
+I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);
+if MBUT THEN CaP3:=MirLins.Lins[RC].ECR;
+if DBUT THEN begin end;
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+End;
+//------------------------------------------------------------------------------
 if form4.MenuItem14.Checked then begin // Вершины
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 I_DrVer(MirVers.VERS[f],IntToCol(f));
@@ -2766,62 +2810,6 @@ glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экр
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
 //------------------------------------------------------------------------------
-if form4.MenuItem22.Checked then begin // Линия
-for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
-I_DrLin(MirLins.LINS[f],IntToCol(f));
-glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirLins.KolL) then begin
-MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel;
-I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);
-if MBUT THEN CaP3:=MirLins.Lins[RC].ECR;
-if DBUT THEN begin end;
-end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-End;
-//------------------------------------------------------------------------------
-if form4.MenuItem13.Checked then begin // Плоскос
-for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
-I_DrPlo(MirPLos.PLOS[f],IntToCol(f));
-glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirPLos.KolP) then begin
-MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
-I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
-if MBUT THEN CaP3:=MirPlos.Plos[RC].ECR;
-if DBUT THEN begin end;
-end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-End;
-//------------------------------------------------------------------------------
-if form4.MenuItem12.Checked then begin // Элемент
-for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
-I_DrEle(MirEles.ELES[f],IntToCol(f));
-glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirEles.KolE) then begin
-MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
-I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
-if MBUT THEN CaP3:=MirEles.Eles[RC].ECR;
-if DBUT THEN U_OpenElement(MirEles.Eles[RC]);
-end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-end;
-//------------------------------------------------------------------------------
-if form4.MenuItem10.Checked then begin // ОБьекты
-for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
-I_DrObj(MirObjs.OBJS[f],IntToCol(f));
-glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirObjs.KolO) then begin
-MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
-I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
-if MBUT THEN CaP3:=MirObjs.Objs[RC].ECR;
-if DBUT THEN U_OpenObject(MirObjs.Objs[RC]);
-end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-end;
-//------------------------------------------------------------------------------
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
@@ -2829,19 +2817,12 @@ procedure I_EDITDRAW;
 var f:Longint;
 Begin // Отрисовка редактора
 
-// Отрисовываю все вершины в игровом мире
-if form4.MenuItem14.Checked then   // Вершины
-for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
-if Not MirVers.VERS[f].SEL
-then I_DrVer(MirVers.VERS[f],CreRCol(0,0,0,255))
-else I_DrVer(MirVers.VERS[f],RanRcol);
-
-// Отрисовываю все Плоскости в игровом мире
-if form4.MenuItem13.Checked then // Плоскос
-for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
-if Not MirPlos.PLOS[f].SEL
-then I_DrPlo(MirPlos.PLOS[f],CreRCol(0,0,0,255))
-else I_DrPlo(MirPlos.PLOS[f],RanRcol);
+// Отрисовываю все ОБьекты в игровом мире
+if form4.MenuItem10.Checked then // ОБьекты
+for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
+if Not MirObjs.OBJS[f].SEL
+then  I_DrObj(MirObjs.OBJS[f],CreRCol(0,0,0,255))
+else  I_DrObj(MirObjs.OBJS[f],RanRCol);
 
 // Отрисовываю все элементы  в игровом мире
 if form4.MenuItem12.Checked then // Элемент
@@ -2850,12 +2831,30 @@ if Not MirEles.ELES[f].SEL
 Then I_DrEle(MirEles.ELES[f],CreRCol(0,0,0,255))
 else I_DrEle(MirEles.ELES[f],RanRcol);
 
-// Отрисовываю все ОБьекты в игровом мире
-if form4.MenuItem10.Checked then // ОБьекты
-for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
-if Not MirObjs.OBJS[f].SEL
-then  I_DrObj(MirObjs.OBJS[f],CreRCol(0,0,0,255))
-else  I_DrObj(MirObjs.OBJS[f],RanRCol)
+// Отрисовываю все Плоскости в игровом мире
+if form4.MenuItem13.Checked then // Плоскос
+for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
+if Not MirPlos.PLOS[f].SEL
+then I_DrPlo(MirPlos.PLOS[f],CreRCol(0,0,0,255))
+else I_DrPlo(MirPlos.PLOS[f],RanRcol);
+
+
+// Отрисовываю все Линии в игровом мире
+if form4.MenuItem22.Checked then // Линии
+for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
+if Not MirLins.LinS[f].SEL
+then I_DrLin(MirLins.LinS[f],CreRCol(0,0,0,255))
+else I_DrLin(MirLins.LinS[f],RanRcol);
+
+// Отрисовываю все вершины в игровом мире
+if form4.MenuItem14.Checked then   // Вершины
+for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
+if Not MirVers.VERS[f].SEL
+then I_DrVer(MirVers.VERS[f],CreRCol(0,0,0,255))
+else I_DrVer(MirVers.VERS[f],RanRcol);
+
+
+
 
 end;
 procedure I_ClearScena;// Очищает Сцену

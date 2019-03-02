@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 329
+  Left = 293
   Height = 70
-  Top = 434
-  Width = 907
+  Top = 569
+  Width = 615
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
   ClientHeight = 51
-  ClientWidth = 907
+  ClientWidth = 615
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -264,10 +264,10 @@ object Form4: TForm4
     Left = 0
     Height = 26
     Top = 0
-    Width = 907
+    Width = 615
     Align = alTop
     ClientHeight = 26
-    ClientWidth = 907
+    ClientWidth = 615
     TabOrder = 15
     object CheckBox1: TCheckBox
       Left = 8

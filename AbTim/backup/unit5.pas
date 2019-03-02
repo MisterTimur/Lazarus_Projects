@@ -25,12 +25,14 @@ type
 
   public
   mHeight:longint;
+  procedure U_RefreshObjs;
   end;
 
 var
   Form5: TForm5;
 
 procedure U_OpenObjects();
+function  I_FindFormObjs:Tform5;// Ищим форму с списком обьектов
 implementation {$R *.lfm} { TForm5 }uses unit4;
 procedure U_OpenObjects();
 var
@@ -38,6 +40,21 @@ var
 begin
  lForm5:=Tform5.create(application);
  lForm5.visible:=true;
+ lForm5.U_RefreshObjs;
+end;
+function  I_FindFormObjs:Tform5;// Ищим форму с списком обьектов
+var Rez:Tform5;f:Longint;
+begin
+Rez:=Nil;
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform5) then
+if  (application.Components[f] as tform5).visible then
+     REz:=application.Components[f] as tform5;
+I_FindFormObjs:=Rez;
+end;
+
+procedure TForm5.U_RefreshObjs;
+begin
  I_RefSpiObjs(lForm5.CheckListBox1);
 end;
 

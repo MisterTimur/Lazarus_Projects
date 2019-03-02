@@ -109,7 +109,6 @@ end;
 procedure TForm4.MenuItem13Click(Sender: TObject);
 begin
    MenuItem13.Checked:=not MenuItem13.Checked;
-
 end;
 procedure TForm4.MenuItem14Click(Sender: TObject);
 begin
@@ -188,12 +187,10 @@ begin
  end
  end else Halt;// если изменения все сохранены
 end;
-
 procedure TForm4.MenuItem22Click(Sender: TObject);
 begin
   MenuItem22.Checked:=not MenuItem22.Checked;
 end;
-
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
