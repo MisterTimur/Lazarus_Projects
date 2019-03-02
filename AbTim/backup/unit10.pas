@@ -9,17 +9,9 @@ type
   TForm10 = class(TForm)
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
-    Edit10: TEdit;
-    Edit11: TEdit;
-    Edit12: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
-    Edit5: TEdit;
-    Edit6: TEdit;
-    Edit7: TEdit;
-    Edit8: TEdit;
-    Edit9: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -49,9 +41,12 @@ type
     procedure Edit8Change(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
     procedure Edit9DblClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
   private
 
   public
+  MHeight:Longint;
   ELE:POinter;
   PLO:POinter;
   procedure U_RefreshPlo;
@@ -187,5 +182,22 @@ begin
   TEdit(sender).Text:=intToStr(ColorDialog1.Color);
   end;
 end;
+procedure TForm10.FormCreate(Sender: TObject);
+begin
+  MHeight:=Height;
+end;
+procedure TForm10.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Top:=Top-(MHeight-height);
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  Top:=Top+MHeight-height;
+  end;
+end;
+
 end.
 

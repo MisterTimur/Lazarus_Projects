@@ -55,7 +55,7 @@ end;
 
 procedure TForm5.U_RefreshObjs;
 begin
- I_RefSpiObjs(lForm5.CheckListBox1);
+ I_RefSpiObjs(CheckListBox1);
 end;
 
 procedure TForm5.MenuItem1Click(Sender: TObject);

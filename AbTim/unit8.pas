@@ -7,6 +7,10 @@ type
   { TForm8 }
 
   TForm8 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -16,6 +20,10 @@ type
     Edit6: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -84,6 +92,27 @@ procedure TForm8.Edit1Change(Sender: TObject);
 begin
   I_SetN(Ver,Edit1);
 end;
+
+procedure TForm8.Button1Click(Sender: TObject);
+begin
+  I_AddVerCOp(Ver);
+end;
+
+procedure TForm8.Button2Click(Sender: TObject);
+begin
+ I_AddVerSYX(Ver);
+end;
+
+procedure TForm8.Button3Click(Sender: TObject);
+begin
+  I_AddVerSYY(Ver);
+end;
+
+procedure TForm8.Button4Click(Sender: TObject);
+begin
+  I_AddVerSYZ(Ver);
+end;
+
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);

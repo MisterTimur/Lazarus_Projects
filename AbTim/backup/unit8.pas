@@ -7,6 +7,10 @@ type
   { TForm8 }
 
   TForm8 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -16,6 +20,10 @@ type
     Edit6: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -43,7 +51,6 @@ var
 
 procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
 function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
-procedure I_CLosFormVer(iVer:Pointer);// Закрываем форму с вершиной
 implementation {$R *.lfm} { TForm8 }
 procedure U_OpenPoint(iVer,iEle:Pointer);
 var lForm8:TForm8;
@@ -67,12 +74,6 @@ if ((application.Components[f] as tform8).VER=iVer) then
      REz:=application.Components[f] as tform8;
 I_FindFormVer:=Rez;
 end;
-procedure I_CLosFormVer(iVer:Pointer);// Закрываем форму с вершиной
-var lForm8:TForm8;
-begin
-    lForm8:=I_FindFormVer(iVer);
-    if lForm8<>nil Then lForm8.close;
-end;
 procedure TForm8.U_RefreshVer;
 begin
 I_GetN(Ver,Edit1);
@@ -91,6 +92,27 @@ procedure TForm8.Edit1Change(Sender: TObject);
 begin
   I_SetN(Ver,Edit1);
 end;
+
+procedure TForm8.Button1Click(Sender: TObject);
+begin
+  I_AddVerCOp(Ver);
+end;
+
+procedure TForm8.Button2Click(Sender: TObject);
+begin
+ I_AddVerSYX(Ver);
+end;
+
+procedure TForm8.Button3Click(Sender: TObject);
+begin
+  I_AddVer( Ver.Ele, Ver.LOC.X, Ver.LOC.Y*-1, Ver.LOC.Z );
+end;
+
+procedure TForm8.Button4Click(Sender: TObject);
+begin
+  I_AddVer( Ver.Ele, Ver.LOC.X, Ver.LOC.Y, Ver.LOC.Z*-1 );
+end;
+
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);

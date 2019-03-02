@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 293
+  Left = 173
   Height = 70
-  Top = 569
-  Width = 615
+  Top = 323
+  Width = 694
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
   ClientHeight = 51
-  ClientWidth = 615
+  ClientWidth = 694
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -264,10 +264,10 @@ object Form4: TForm4
     Left = 0
     Height = 26
     Top = 0
-    Width = 615
+    Width = 694
     Align = alTop
     ClientHeight = 26
-    ClientWidth = 615
+    ClientWidth = 694
     TabOrder = 15
     object CheckBox1: TCheckBox
       Left = 8
@@ -279,8 +279,37 @@ object Form4: TForm4
       TabOrder = 0
     end
   end
+  object Splitter8: TSplitter
+    Left = 616
+    Height = 25
+    Top = 26
+    Width = 5
+  end
+  object Panel10: TPanel
+    Left = 621
+    Height = 25
+    Top = 26
+    Width = 74
+    Align = alLeft
+    Caption = 'Panel10'
+    ClientHeight = 25
+    ClientWidth = 74
+    TabOrder = 17
+    object Edit9: TEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 72
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit9Change
+      TabOrder = 0
+      Text = '1'
+      TextHint = 'GStep'
+    end
+  end
   object MainMenu1: TMainMenu
-    left = 752
+    left = 520
     object MenuItem1: TMenuItem
       Caption = 'Файл'
       object MenuItem17: TMenuItem
@@ -367,7 +396,7 @@ object Form4: TForm4
   object FontDialog1: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 712
+    left = 488
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -393,20 +422,18 @@ object Form4: TForm4
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 672
+    left = 456
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text file|*.txt|All File|*.*'
-    left = 672
-    top = 32
+    left = 224
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text File|*.txt|All File|*.*'
-    left = 712
-    top = 32
+    left = 192
   end
 end

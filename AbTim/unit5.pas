@@ -52,12 +52,10 @@ if  (application.Components[f] as tform5).visible then
      REz:=application.Components[f] as tform5;
 I_FindFormObjs:=Rez;
 end;
-
 procedure TForm5.U_RefreshObjs;
 begin
  I_RefSpiObjs(CheckListBox1);
 end;
-
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
   I_AddObj;

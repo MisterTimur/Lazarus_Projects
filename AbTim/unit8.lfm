@@ -1,11 +1,11 @@
 object Form8: TForm8
-  Left = 353
-  Height = 174
-  Top = 145
+  Left = 454
+  Height = 274
+  Top = -5
   Width = 128
   BorderStyle = bsSizeToolWin
   Caption = 'Form8'
-  ClientHeight = 174
+  ClientHeight = 274
   ClientWidth = 128
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -27,12 +27,11 @@ object Form8: TForm8
   end
   object Panel2: TPanel
     Left = 0
-    Height = 140
+    Height = 240
     Top = 34
     Width = 128
     Align = alClient
-    Caption = 'Panel2'
-    ClientHeight = 140
+    ClientHeight = 240
     ClientWidth = 128
     TabOrder = 1
     object Edit1: TEdit
@@ -109,6 +108,46 @@ object Form8: TForm8
       OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 5
       Text = 'Edit6'
+    end
+    object Button1: TButton
+      Left = 1
+      Height = 25
+      Top = 139
+      Width = 126
+      Align = alTop
+      Caption = 'New'
+      OnClick = Button1Click
+      TabOrder = 6
+    end
+    object Button2: TButton
+      Left = 1
+      Height = 25
+      Top = 164
+      Width = 126
+      Align = alTop
+      Caption = 'Symmetry X'
+      OnClick = Button2Click
+      TabOrder = 7
+    end
+    object Button3: TButton
+      Left = 1
+      Height = 25
+      Top = 189
+      Width = 126
+      Align = alTop
+      Caption = 'Symmetry Y'
+      OnClick = Button3Click
+      TabOrder = 8
+    end
+    object Button4: TButton
+      Left = 1
+      Height = 25
+      Top = 214
+      Width = 126
+      Align = alTop
+      Caption = 'Symmetry Z'
+      OnClick = Button4Click
+      TabOrder = 9
     end
   end
   object ColorDialog1: TColorDialog

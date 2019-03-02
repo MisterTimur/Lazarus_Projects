@@ -35,9 +35,12 @@ type
     procedure Edit7Change(Sender: TObject);
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
   private
 
   public
+  MHeight:Longint;
   LIN:pointer;
   ELE:pointer;
   procedure U_RefreshLin;
@@ -140,5 +143,24 @@ end;
 procedure TForm9.Edit8Change(Sender: TObject);
 begin
 end;
+
+procedure TForm9.FormCreate(Sender: TObject);
+begin
+  MHeight:=Height;
+end;
+
+procedure TForm9.Panel1Click(Sender: TObject);
+begin
+  if Height=panel1.height then begin
+  Top:=Top-(MHeight-height);
+  Height:=mHeight;
+  end
+  else begin
+  MHeight:=Height;
+  Height:=panel1.height;
+  Top:=Top+MHeight-height;
+  end;
+end;
+
 end.
 

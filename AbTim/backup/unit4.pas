@@ -12,6 +12,7 @@ type { TForm4 } TForm4 = class(TForm)
     Edit6: TEdit;
     Edit7: TEdit;
     Edit8: TEdit;
+    Edit9: TEdit;
     FontDialog1: TFontDialog;
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
@@ -38,6 +39,7 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem9: TMenuItem;
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
+    Panel10: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -54,6 +56,7 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter5: TSplitter;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
+    Splitter8: TSplitter;
     procedure CheckBox1Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -68,6 +71,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure Edit7Change(Sender: TObject);
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
+    procedure Edit9Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
@@ -246,6 +250,11 @@ procedure TForm4.Edit8Change(Sender: TObject);
 begin
  I_SetA(Act,Edit8);
 end;
+procedure TForm4.Edit9Change(Sender: TObject);
+begin
+  GStep:=inFloat(Edit9.Text);
+end;
+
 end.
 
 
