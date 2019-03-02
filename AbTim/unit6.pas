@@ -78,31 +78,50 @@ type
   public
   OBJ:Pointer;
   MHeight:Longint;
+  procedure U_RefreshObj;
   end;
 
 var
   Form6: TForm6;
+
 procedure U_OpenObject(iObj:Pointer);
+function  I_FindFormObj(iObj:Pointer):Tform6;// Ищим форму с ОБьектом
 implementation {$R *.lfm}{ TForm6 }
 procedure U_OpenObject(iObj:Pointer);
 var lForm6:TForm6;
 begin
+  if I_FindFormObj(iObj)=nil then begin
   lForm6:=TForm6.Create(application);
   lForm6.Visible:=True;
   lForm6.Obj:=iObj;
-  I_GetN(iObj,lForm6.Edit1);
-  I_GetX(iObj,lForm6.Edit2);
-  I_GetY(iObj,lForm6.Edit3);
-  I_GetZ(iObj,lForm6.Edit4);
-  I_GetC(iObj,lForm6.Edit8);
-  I_GetA(iObj,lForm6.Edit9);
-  I_GeUX(iObj,lForm6.Edit5);
-  I_GeUY(iObj,lForm6.Edit6);
-  I_GeUZ(iObj,lForm6.Edit7);
-  I_RefSpiVers(iObj,lForm6.CheckListBox1);
-  I_RefSpiPlos(iObj,lForm6.CheckListBox2);
-  I_RefSpiLins(iObj,lForm6.CheckListBox3);
-  I_RefSpiEles(iObj,lForm6.CheckListBox4);
+  lForm6.U_RefreshObj;
+  end else I_FindFormObj(iObj).SetFocus;
+end;
+function  I_FindFormObj(iObj:Pointer):Tform6;// Ищим форму с ОБьектом
+var Rez:Tform6;f:Longint;
+begin
+Rez:=Nil;
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform6) then
+if ((application.Components[f] as tform6).Obj=iObj) then
+     REz:=application.Components[f] as tform6;
+I_FindFormObj:=Rez;
+end;
+procedure TForm6.U_RefreshObj;
+begin
+ I_GetN(Obj,Edit1);
+ I_GetX(Obj,Edit2);
+ I_GetY(Obj,Edit3);
+ I_GetZ(Obj,Edit4);
+ I_GetC(Obj,Edit8);
+ I_GetA(Obj,Edit9);
+ I_GeUX(Obj,Edit5);
+ I_GeUY(Obj,Edit6);
+ I_GeUZ(Obj,Edit7);
+ I_RefSpiVers(Obj,CheckListBox1);
+ I_RefSpiLins(Obj,CheckListBox2);
+ I_RefSpiPlos(Obj,CheckListBox3);
+ I_RefSpiEles(Obj,CheckListBox4);
 end;
 procedure TForm6.MenuItem5Click(Sender: TObject);
 begin
@@ -140,14 +159,12 @@ begin
  For f:=1 to CheckListBox2.Items.Count-1 do
  I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
 end;
-
 procedure TForm6.CheckListBox3SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox3.Items.Count-1 do
  I_SetSel(CheckListBox3.Items.Objects[f],CheckListBox3.Selected[f])
 end;
-
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then

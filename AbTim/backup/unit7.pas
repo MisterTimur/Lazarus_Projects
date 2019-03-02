@@ -59,31 +59,50 @@ type { TForm7 } TForm7 = class(TForm)
   public
   Ele:Pointer;
   MHeight:Longint;
+  procedure U_RefreshEle;
   end;
 var  Form7: TForm7;
 procedure U_OpenElement(iEle:Pointer);
+function  I_FindFormEle(iEle:Pointer):Tform7;// Ищим форму с Элементом
 implementation {$R *.lfm}{ TForm7 }
 procedure U_OpenElement(iEle:Pointer);
 var lForm7:TForm7;
 begin
+  if I_FindFormEle(iEle)=nil then begin
   lForm7:=TForm7.Create(application);
   lForm7.Visible:=True;
   lForm7.Ele:=iEle;
-  I_GetN(iEle,lForm7.Edit1);
-  I_GetX(iEle,lForm7.Edit2);
-  I_GetY(iEle,lForm7.Edit3);
-  I_GetZ(iEle,lForm7.Edit4);
-  I_GetC(iEle,lForm7.Edit8);
-  I_GetA(iEle,lForm7.Edit9);
-  I_GeUX(iEle,lForm7.Edit5);
-  I_GeUY(iEle,lForm7.Edit6);
-  I_GeUZ(iEle,lForm7.Edit7);
-  I_RefSpiVers(iEle,lForm7.CheckListBox1);
-  I_RefSpiEles(iEle,lForm7.CheckListBox2);
+  lForm7.U_RefreshEle
+  end else I_FindFormEle(iEle).SetFocus;
 end;
+function  I_FindFormEle(iEle:Pointer):Tform7;// Ищим форму с Элементом
+var Rez:Tform7;f:Longint;
+begin
+Rez:=Nil;
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform7) then
+if ((application.Components[f] as tform7).Ele=iEle) then
+     REz:=application.Components[f] as tform7;
+I_FindFormEle:=Rez;
+end;
+procedure TForm7.U_RefreshEle;
+begin
+  I_GetN(Ele,Edit1);
+  I_GetX(Ele,Edit2);
+  I_GetY(Ele,Edit3);
+  I_GetZ(Ele,Edit4);
+  I_GetC(Ele,Edit8);
+  I_GetA(Ele,Edit9);
+  I_GeUX(Ele,Edit5);
+  I_GeUY(Ele,Edit6);
+  I_GeUZ(Ele,Edit7);
+  I_RefSpiVers(Ele,CheckListBox1);
+  I_RefSpiEles(Ele,CheckListBox2);
+end;
+
 procedure TForm7.MenuItem1Click(Sender: TObject);
 begin
-  I_NewVer(Ele);
+  I_AddVer(Ele);
   I_RefSpiVers(Ele,CheckListBox1);
 end;
 procedure TForm7.Edit1Change(Sender: TObject);

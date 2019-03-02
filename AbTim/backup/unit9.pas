@@ -13,6 +13,7 @@ type
   { TForm9 }
 
   TForm9 = class(TForm)
+    ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;

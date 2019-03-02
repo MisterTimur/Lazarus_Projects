@@ -36,6 +36,8 @@ GStep:REal=0.1;// Шаг для Колеса мышки
 G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False;// В проекте есть не сохраненные изменения
 
+
+
 procedure I_DelVer(iVer:Pointer);// Удаление Вершины
 procedure I_DelLin(iLin:Pointer);// Удаление Линии
 procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
@@ -321,18 +323,38 @@ Rez.B:=b[2];
 Rez.A:=b[3];
 IntToCol:=Rez;
 end;
-function  ColRGBToInt(iCol:RCOL):LongWord;// Переводит Число в цвет
+
+function  TcolorToInt(iCol:Tcolor):LongWord;// Переводит Число в цвет
 var
-Col:RCol;
-B:Array[0..3] of Byte absolute Col;
+B:Array[0..3] of Byte;
 Rez:LongWord absolute B;
 begin
-Col:=iCol;
-b[0]:=Col.R;
-b[1]:=Col.G;
-b[2]:=Col.B;
-b[4]:=0;
-ColRGBToInt:=Rez;
+b[0]:=Red(iCol);
+b[1]:=Green(iCol);
+b[2]:=Blue(iCol);
+b[3]:=0;
+TcolorToInt:=Rez;
+end;
+function  IntToTcolor(iCol:LongWord):TColor;// Переводит Число в цвет
+var
+B:Array[0..3] of Byte;
+C:LongWord absolute B;
+Rez:Tcolor;
+begin
+C:=iCol;
+REz:=RGBToColor(B[0],B[1],B[2]);
+IntToTcolor:=Rez;
+end;
+function  RColRGBtoInt(iCol:RCol):LongWord;
+var
+REz:LongWord;
+B:Array[0..3] of Byte absolute REz;
+begin
+B[0]:=iCOl.R;
+B[1]:=iCOl.G;
+B[2]:=iCOl.B;
+B[3]:=0;
+RColRGBtoInt:=REz;
 end;
 
 {%EndRegion}
@@ -1567,113 +1589,217 @@ end;
 {%EndRegion}
 var   {----------------------- Set и GET              ===}{%Region /FOLD }
                                                           B_Reg11:Longint;
+
+procedure I_RefreshActivePrimitiv;
+begin
+with form4 do
+if (ACT=NIL) or (TVER(ACT).del)
+Then begin // Если нету активного элмеента либо он удалён
+edit1.Enabled:=false;
+edit2.Enabled:=false;
+edit3.Enabled:=false;
+edit4.Enabled:=false;
+edit5.Enabled:=false;
+edit6.Enabled:=false;
+edit7.Enabled:=false;
+edit8.Enabled:=false;
+end
+else begin // Если Есть выбраный активный элемент
+
+// Читаюю координатиы
+if(TVer(Act).TIP=T_VER)or(TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
+then begin
+edit1.Enabled:=true;I_GETX(Act,Edit1);
+edit2.Enabled:=true;I_GETY(Act,Edit2);
+edit3.Enabled:=true;I_GETZ(Act,Edit3);
+edit7.Enabled:=true;I_GETC(Act,Edit7);
+edit8.Enabled:=true;I_GETA(Act,Edit8);
+end;
+// Читаюю углы наклона
+if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
+then begin // Включаю углы наклона
+I_GEUX(Act,Edit4);edit4.Enabled:=true;
+I_GEUY(Act,Edit5);edit5.Enabled:=true;
+I_GEUZ(Act,Edit6);edit6.Enabled:=true;
+end
+else begin // Отключаю углы наклона
+edit4.Enabled:=false;
+edit5.Enabled:=false;
+edit6.Enabled:=false;
+end;
+
+end;
+end;
+procedure I_RefreshEditorPrimitiv(iVer:Pointer);
+var
+ form6:TForm6;
+ form7:TForm7;
+ form8:TForm8;
+begin
+ form6:=I_FindFormObj(iver);if Form6<>nil Then Form6.U_RefreshObj;
+ form7:=I_FindFormEle(iver);if Form7<>nil Then Form7.U_RefreshEle;
+ form8:=I_FindFormVer(iver);if Form8<>nil Then Form8.U_RefreshVer;
+end;
+
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>TVEr(iVer).NAM then begin
 iEdit.Text:=TVEr(iVer).NAM;
+end;
 end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TVEr(iVer).LOC.X) then begin
 iEdit.Text:=InString(TVEr(iVer).LOC.X);
+end;
 end;
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TVEr(iVer).LOC.Y) then begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Y);
+end;
 end;
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TVEr(iVer).LOC.Z) Then begin
 iEdit.Text:=InString(TVEr(iVer).LOC.Z);
+end;
 end;
 procedure I_GetC(iVer:Pointer;iEdit:TEdit);
 var
 lCol:Rcol;
 begin
 lCol:=TVEr(iVer).Col;
+if iEdit.Text<>InString(RColRGBtoInt(TVEr(iVer).COL)) then begin
 iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(ColRGBToInt(TVEr(iVer).COL));
+iEdit.Text:=InString(RColRGBtoInt(TVEr(iVer).COL));
+end;
 end;
 procedure I_GetA(iVer:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TVEr(iVer).Col.A) Then begin
 iEdit.Text:=InString(TVEr(iVer).Col.A);
+end;
 end;
 procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TEle(iEle).EUGL.X) then begin
 iEdit.Text:=InString(TEle(iEle).EUGL.X);
+end;
 end;
 procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TEle(iEle).EUGL.Y) then begin
 iEdit.Text:=InString(TEle(iEle).EUGL.Y);
+end;
 end;
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 begin
+if iEdit.Text<>InString(TEle(iEle).EUGL.Z) then begin
 iEdit.Text:=InString(TEle(iEle).EUGL.Z);
+end;
 end;
 
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-TVEr(iVer).NAM:=iEdit.Text;
+if (TVEr(iVer).NAM<>iEdit.Text) Then begin
+   G_Change:=true;
+   TVEr(iVer).NAM:=iEdit.Text;
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+end;
 end;
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
-TObj(TVEr(iVer).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>InString(TVEr(iVer).Loc.X) then begin
+   G_Change:=true;
+   TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
 end;
 end;
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
-TObj(TVEr(iVer).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TVEr(iVer).Loc.Y) then begin
+   G_Change:=true;
+   TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
 end;
 end;
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
-TObj(TVEr(iVer).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TVEr(iVer).Loc.Z) then begin
+   G_Change:=true;
+   TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
+   I_RefreshEditorPrimitiv(iVer);
 end;
 end;
 procedure I_SetC(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TVEr(iVer).COL.R:=Red(iEdit.Color);
-TVEr(iVer).COL.G:=Green(iEdit.Color);
-TVEr(iVer).COL.B:=Blue(iEdit.Color);
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TVEr(iVer).COL))  then begin
+
+   G_Change:=true;
+   TVEr(iVer).COL.R:=Red  (trunc(inFloat(iEdit.Text)));
+   TVEr(iVer).COL.G:=Green(trunc(inFloat(iEdit.Text)));
+   TVEr(iVer).COL.B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+
 end;
+
 end;
 procedure I_SetA(iVer:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
 if isFloat(iEdit.Text) then
-TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
+if iEdit.Text<>inString(TVEr(iVer).COL.A) then begin
+
+   G_Change:=true;
+   TVEr(iVer).COL.A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+
+end;
 end;
 procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
-TObj(TVEr(iEle).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TEle(iEle).EUGL.X) then begin
+
+   G_Change:=true;
+   TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iEle);
+
 end;
 end;
 procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
-TObj(TVEr(iEle).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TEle(iEle).EUGL.Y) then begin
+
+   G_Change:=true;
+   TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iEle);
+
 end;
 end;
 procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 begin
 G_Change:=true;
-if isFloat(iEdit.Text) then begin
-TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
-TObj(TVEr(iEle).OBJ).O_MATH;
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
+
+   G_Change:=true;
+   TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+
 end;
 end;
 
@@ -1937,6 +2063,9 @@ end;
 {%EndRegion}
 var   {----------------------- Удалание  примитивов   ===}{%Region /FOLD }
                                                           F_Reg11:Longint;
+
+
+
 
 procedure I_DelVer(iVer:Pointer);// Удаление Вершины
 var
@@ -2367,49 +2496,12 @@ end;
 {%EndRegion}
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
                                                            J_Reg11:Longint;
+
+
+
 procedure I_Set_MBUT(iBol:Boolean);
 begin
 MBUT:=iBol;
-end;
-procedure I_RefreshActiveElement;
-begin
-with form4 do
-if (ACT=NIL) or (TVER(ACT).del)
-Then begin // Если нету активного элмеента либо он удалён
-edit1.Enabled:=false;
-edit2.Enabled:=false;
-edit3.Enabled:=false;
-edit4.Enabled:=false;
-edit5.Enabled:=false;
-edit6.Enabled:=false;
-edit7.Enabled:=false;
-edit8.Enabled:=false;
-end
-else begin // Если Есть выбраный активный элемент
-
-// Читаюю координатиы
-if(TVer(Act).TIP=T_VER)or(TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
-then begin
-edit1.Enabled:=true;I_GETX(Act,Edit1);
-edit2.Enabled:=true;I_GETY(Act,Edit2);
-edit3.Enabled:=true;I_GETZ(Act,Edit3);
-edit7.Enabled:=true;I_GETC(Act,Edit7);
-edit8.Enabled:=true;I_GETA(Act,Edit8);
-end;
-// Читаюю углы наклона
-if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
-then begin // Включаю углы наклона
-I_GEUX(Act,Edit4);edit4.Enabled:=true;
-I_GEUY(Act,Edit5);edit5.Enabled:=true;
-I_GEUZ(Act,Edit6);edit6.Enabled:=true;
-end
-else begin // Отключаю углы наклона
-edit4.Enabled:=false;
-edit5.Enabled:=false;
-edit6.Enabled:=false;
-end;
-
-end;
 end;
 function  I_RodEle(iEle,iObj:Pointer):Boolean;// Доделать
 var
@@ -2475,7 +2567,7 @@ then MirSels.Add(TVer(iPri))
 else MirSels.Del(TVer(iPri));
 // Выборка активного примитива в данный момент времени -------------------------
 if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1];
-I_RefreshActiveElement;
+I_RefreshActivePrimitiv;
 // -----------------------------------------------------------------------------
 end;
 procedure I_EDITDRAWSEL(ClientHeight:Longint);
@@ -2506,7 +2598,7 @@ if form4.MenuItem22.Checked then begin // Линия
 for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
 I_DrLin(MirLins.LINS[f],IntToCol(f));
 glReadPixels(MouD.X,ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirPLos.KolL) then begin
+if (RC>0) and (RC<=MirLins.KolL) then begin
 MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel;
 I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);
 if MBUT THEN CaP3:=MirLins.Lins[RC].ECR;

@@ -35,29 +35,46 @@ type
   Ver:Pointer;
   Ele:Pointer;
   MHeight:Longint;
+  procedure U_RefreshVer;
   end;
 
 var
   Form8: TForm8;
 
-procedure U_OpenPoint(iVer,iEle:Pointer);
+procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
+function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
 implementation {$R *.lfm} { TForm8 }
 procedure U_OpenPoint(iVer,iEle:Pointer);
 var lForm8:TForm8;
 begin
-
+  If I_FindFormVer(iVer)=Nil then begin
   lForm8:=TForm8.Create(application);
   lForm8.Visible:=True;
   lForm8.Ver:=iVer;
   lForm8.Ele:=iEle;
-  I_GetN(iVer,lForm8.Edit1);
-  I_GetX(iVer,lForm8.Edit2);
-  I_GetY(iVer,lForm8.Edit3);
-  I_GetZ(iVer,lForm8.Edit4);
-  I_GetC(iVer,lForm8.Edit5);
-  I_GetA(iVer,lForm8.Edit6);
-
+  lForm8.U_RefreshVer;
+  end else I_FindFormVer(iVer).SetFocus;
 end;
+function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
+var Rez:Tform8;f:Longint;
+begin
+Rez:=Nil;
+for f:=0 to application.ComponentCount-1 do
+if  (application.Components[f] is tform8) then
+if ((application.Components[f] as tform8).VER=iVer) then
+     REz:=application.Components[f] as tform8;
+I_FindFormVer:=Rez;
+end;
+procedure TForm8.U_RefreshVer;
+begin
+I_GetN(Ver,Edit1);
+I_GetX(Ver,Edit2);
+I_GetY(Ver,Edit3);
+I_GetZ(Ver,Edit4);
+I_GetC(Ver,Edit5);
+I_GetA(Ver,Edit6);
+end;
+
 procedure TForm8.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin

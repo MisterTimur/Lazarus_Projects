@@ -1,13 +1,7 @@
-unit Unit9;
-
-{$mode objfpc}{$H+}
-
-interface
-
+unit Unit9; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls;
-
 type
 
   { TForm9 }
@@ -36,8 +30,6 @@ var
   Form9: TForm9;
 
 implementation
-
 {$R *.lfm}
-
 end.
 

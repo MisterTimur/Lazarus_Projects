@@ -1,10 +1,10 @@
 object Form10: TForm10
   Left = 658
-  Height = 367
+  Height = 311
   Top = 240
   Width = 320
   Caption = 'Form10'
-  ClientHeight = 367
+  ClientHeight = 311
   ClientWidth = 320
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -23,11 +23,11 @@ object Form10: TForm10
   end
   object Panel2: TPanel
     Left = 0
-    Height = 333
+    Height = 277
     Top = 34
     Width = 121
     Align = alLeft
-    ClientHeight = 333
+    ClientHeight = 277
     ClientWidth = 121
     TabOrder = 1
     object Edit1: TEdit
@@ -153,17 +153,44 @@ object Form10: TForm10
   end
   object Splitter1: TSplitter
     Left = 121
-    Height = 333
+    Height = 277
     Top = 34
     Width = 5
   end
   object Panel3: TPanel
     Left = 126
-    Height = 333
+    Height = 277
     Top = 34
     Width = 194
     Align = alClient
     Caption = 'Panel3'
     TabOrder = 3
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 16
+    top = 8
   end
 end
