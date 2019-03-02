@@ -58,7 +58,6 @@ procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiObjs(             iLis:TCheckListBox);
 
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
-procedure I_GetR(iVer:Pointer;iEdit:TEdit);// Испольщуемые цвета
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
@@ -163,10 +162,6 @@ const {Базовые Константы      ===========================}{%Regi
   T_LIN=3;// Линия
   T_ELE=4;// Элементы
   T_OBJ=5;// Обьекеты
-
-  C_VER=1;// Используються цвета вершин
-  C_ONE=1;// Используються один цвет
-  T_EXE=1;// Используються Собственые цвета для вершин
 
 {%EndRegion}
 var   {Базовые типы данных    ===========================}{%Region /FOLD }
@@ -404,7 +399,8 @@ var   {Базовые переменные     ===========================}{%Reg
 
   KolKAdVsek:Longint;// Количество кадров в секунду
 
-  HMath:HAndle;HMathTrId:DWORD;// Поток
+  HMath:HAndle;HMathTrId:DWORD;// Перевычисление обьектов
+  HSWAP:HAndle;HSWAPTrId:DWORD;// Вывод в буфер вывода
   Clos:Boolean;// Флаг Завершения программы
 
   LBut:RBOL;// Состояние Левой кнопки мышки
@@ -516,7 +512,6 @@ TYPE TVER=CLASS  // Опсиание вершиины
   IDD:RLON;// Уникальный идентификатор
   NOM:RLON;// Номер в списке отрисовки
   TIP:RLON;// Тип примитива
-  RGR:RBYT;// Режим используемых цветов
 
   LOC:RCS3;// ЛОкальная коордианата
   MAT:RCS3;// Используеться для вычисления реальных координат
@@ -569,7 +564,6 @@ begin
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке всех вершин
   TIP:=T_VER        ;// Тип Вершины
-  RGR:=C_VER        ;// Используються цвета вершин
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -654,13 +648,12 @@ var   {Описание Линии         ===========================}{%Region 
 
 TYPE TLIN=CLASS(TVER)
   VERS:Array[1..2] of TVER;// Вершины из котрых состоит Линия
-  COLS:Array[1..2] of RCOL;// Цвета Вершин из котрых состоит Линия
   Procedure   L_Gaba;// Вычислене габаритов
   Constructor Create(iVer1,iVer2:TVer);// Конструктор
   Destructor  destroy;override;
 end;
 TYPE TLINS=CLASS
-Kol2:RLON;// Клдичество реально рисуемых Линий
+DrKl:RLON;// Реально количество рисуемых Линий
 KOLL:RLON;// Количество Лиинй в игровом мире всего
 KOlD:RLON;// Количество удаленных Линий в игровом мире
 DELL :Array[1..MaxKOlLinInMir] of TLIN;// Удаленные Линии
@@ -709,9 +702,6 @@ inherited  Create;// Вызываю родительский конструкт�
 
 VERS[1]:=iVer1;
 VERS[2]:=iVer2;
-
-COLS[1]:=RanRcol;
-COLS[2]:=RanRcol;
 
 TIP:=T_LIN;
 
@@ -782,14 +772,13 @@ var   {Описание Плоскоси      ===========================}{%Regi
 
 TYPE TPLO=CLASS(TVER)
   VERS:Array[1..4] of TVER;// Вершины из котрых состоит плоскость
-  COLS:Array[1..4] of RCOL;// Цвета Вершин из котрых состоит плоскость
   Function    P_Viso(iCoo:RCS3):RSIN;// Определить высоту на плоскости
   Procedure   P_Gaba;// Вычислене габаритов
   Constructor Create(iVer1,iVer2,iVer3,iVer4:Tver);// Конструктор
   Destructor  destroy;override;
 end;
 TYPE TPLOS=CLASS
-Kol2:RLON;// Клдичество реально рисуемых плоскостей
+DrKp:RLON;// Реальное Количество рисуемых плоскостей
 KOLP:RLON;// Количество плоскостей в игровом мире всего
 KOlD:RLON;// Количество удаленных плоскостей в игровом мире
 DELP :Array[1..MaxKOlPloInMir] of TPLO;// Удаленные плоскости
@@ -865,11 +854,6 @@ VERS[2]:=iVer2;
 VERS[3]:=iVer3;
 VERS[4]:=iVer4;
 
-COLS[1]:=RanRcol;
-COLS[2]:=RanRcol;
-COLS[3]:=RanRcol;
-COLS[4]:=RanRcol;
-
 TIP:=T_PLO;
 
 end;
@@ -883,9 +867,9 @@ Begin
 for f:=1 to MirPlos.KOlP do
 if  not MirPlos.PLOS[f].DEL then
 if (MirPlos.PLOS[f].VERS[1]=iVer) or
-if (MirPlos.PLOS[f].VERS[2]=iVer) or
-if (MirPlos.PLOS[f].VERS[3]=iVer) or
-if (MirPlos.PLOS[f].VERS[4]=iVer) Then MirPlos.AddD(MirPLos.PLOS[f]) ;
+   (MirPlos.PLOS[f].VERS[2]=iVer) or
+   (MirPlos.PLOS[f].VERS[3]=iVer) or
+   (MirPlos.PLOS[f].VERS[4]=iVer) Then MirPlos.AddD(MirPLos.PLOS[f]) ;
 end;
 Procedure   TPLOS.AddP(iPlo:TPlo);
 var F:Longint;Ex:Boolean;
@@ -976,23 +960,33 @@ var  MirELEs:TEles;// Все вершины игрового мира здесь
 function    TELE.E(iX,iY,iZ:RSIN):TELE;// Добавляет Элемент
 Var Rez:TELE;
 begin
+//-----------------------------------------------------
 Rez:=TELE.CREATE;// Создаю экземпляр вершины
 Rez.OBJ:=OBJ;
 Rez.ELE:=Self;
-ELES[KolE+1]:=Rez;// Добавляю Верину в список элементов
+//-----------------------------------------------------
+
+//-----------------------------------------------------
+ELES[KolE+1]:=Rez;// Добавляю Вершину в список элементов
 KolE:=KolE+1;// Увеличиваю количество  элементов
 MirEles.AddE(Rez);
+//-----------------------------------------------------
 E:=Rez;
 end;
 function    TELE.V(iX,iY,iZ:RSIN):TVER;// Добавляет вершину
 Var Rez:TVER;
 begin
+//-----------------------------------------------------
 Rez:=TVER.CREATE;// Создаю экземпляр вершины
 Rez.Obj:=Obj;
 Rez.Ele:=Self;
+//-----------------------------------------------------
+
+//-----------------------------------------------------
 VERS[KolV+1]:=Rez;// Добавляю Верину в список верши элемента
 KolV:=KolV+1;// Увеличиваю количество вершин в элементе
 MirVers.AddV(Rez);
+//-----------------------------------------------------
 V:=Rez;
 end;
 procedure   TELE.E_MATH;// Вычисление МАТ координат
@@ -1188,8 +1182,10 @@ begin
   if not IEle.Del then begin
   I_SetSel(iEle,false);// Снимаю выделение елси оно есть
   IEle.Del:=True;
-  for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
-  for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
+  for f:=1 to iEle.KOlV do if not iEle.VERS[f].del then
+  MirVers.addD(iEle.VERS[f]);// Вершины на удаление
+  for f:=1 to iEle.KolE do if not iEle.ELES[f].del then
+  MirEles.AddD(iEle.Eles[f]);// Удаление элементов
   if KolD+1>MaxKolDelEles then
   ERR('МАсив с удаленными элементами переполнен');
   DELE[KolD+1]:=iEle;
@@ -1246,23 +1242,34 @@ var  MirObjs:TOBJS;
 function    TOBJ.P(iVer1,iVer2,iVer3,iVer4:TVER):TPLO;// Добавляет плоскость
 Var Rez:TPLO;
 begin
+//-----------------------------------------------------
 Rez:=TPLO.CREATE(iVer1,iVer2,iVer3,iVer4);
 Rez.Obj:=Obj;
 Rez.Ele:=Self;
+//-----------------------------------------------------
+
+
+//-----------------------------------------------------
 PLOS[KolP+1]:=Rez;
 KolP:=KolP+1;
 MirPlos.AddP(Rez);
+//-----------------------------------------------------
 P:=Rez;
 end;
 function    TOBJ.L(iVer1,iVer2:TVER):TLIN;// Добавляет Линию
 Var Rez:TLin;
 begin
+//-----------------------------------------------------
 Rez:=TLIN.CREATE(iVer1,iVer2);
 Rez.Obj:=Obj;
 Rez.Ele:=Self;
+//-----------------------------------------------------
+
+//-----------------------------------------------------
 LINS[KolL+1]:=Rez;
 KolL:=KolL+1;
 MirLins.AddL(Rez);
+//-----------------------------------------------------
 L:=Rez;
 end;
 Procedure   TOBJ.AddDels(iObj:Tobj);// Добавлет зависимый обьект
@@ -1378,11 +1385,16 @@ begin
    if not iOBJ.Del then begin
    I_SetSel(iObj,false);// Снимаю выделение если оно есть
    iOBJ.Del:=true;
-   for f:=1 to iOBJ.KolL do MirLins.AddD(iOBJ.Lins[f]);// Удалене Линий
-   for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
-   for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
-   for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
-   for f:=1 to iOBJ.KolE do MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
+   for f:=1 to iOBJ.KolL do if not iOBJ.Lins[f].del Then
+   MirLins.AddD(iOBJ.Lins[f]);// Удалене Линий
+   for f:=1 to iOBJ.KolP do if not iOBJ.Plos[f].del Then
+   MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
+   for f:=1 to iOBJ.KolD do if not iOBJ.Dels[f].del Then
+   MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
+   for f:=1 to iOBJ.KOlV do if not iOBJ.Vers[f].del Then
+   MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
+   for f:=1 to iOBJ.KolE do if not iOBJ.Eles[f].del Then
+   MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
    if KolD+1>MaxKolDelObjs then
    ERR('МАсив с удаленными ОБьектами переполнен');
    DELO[KolD+1]:=iOBJ;
@@ -1758,12 +1770,6 @@ if iEdit.Text<>TVEr(iVer).NAM then begin
 iEdit.Text:=TVEr(iVer).NAM;
 end;
 end;
-procedure I_GetR(iVer:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>intToStr(TVEr(iVer).RGR) then begin
-iEdit.Text:=intToStr(TVEr(iVer).RGR);
-end;
-end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
 if iEdit.Text<>InString(TVEr(iVer).LOC.X) then begin
@@ -1817,105 +1823,6 @@ iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 end;
 
-procedure I_GLC1(iLin:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TLin(iLin).COLS[1];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-procedure I_GLC2(iLin:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TLin(iLin).COLS[2];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-procedure I_GLA1(iLin:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TLin(iLin).Cols[1].A) Then begin
-iEdit.Text:=InString(TLin(iLin).Cols[1].A);
-end;
-end;
-procedure I_GLA2(iLin:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TLin(iLin).Cols[2].A) Then begin
-iEdit.Text:=InString(TLin(iLin).Cols[2].A);
-end;
-end;
-
-procedure I_GPC1(iPlo:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TPLo(iPlo).COLS[1];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-procedure I_GPC2(iPlo:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TPLo(iPlo).COLS[2];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-procedure I_GPC3(iPlo:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TPLo(iPlo).COLS[3];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-procedure I_GPC4(iPlo:Pointer;iEdit:TEdit);
-var
-lCol:Rcol;
-begin
-lCol:=TPLo(iPlo).COLS[4];
-if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
-iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
-iEdit.Text:=InString(RColRGBtoInt(lCol));
-end;
-end;
-
-procedure I_GPA1(iPlo:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TPlo(iPlo).Cols[1].A) Then begin
-iEdit.Text:=InString(TPlo(iPLo).Cols[1].A);
-end;
-end;
-procedure I_GPA2(iPlo:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TPlo(iPlo).Cols[2].A) Then begin
-iEdit.Text:=InString(TPlo(iPLo).Cols[2].A);
-end;
-end;
-procedure I_GPA3(iPlo:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TPlo(iPlo).Cols[3].A) Then begin
-iEdit.Text:=InString(TPlo(iPLo).Cols[3].A);
-end;
-end;
-procedure I_GPA4(iPlo:Pointer;iEdit:TEdit);
-begin
-if iEdit.Text<>InString(TPlo(iPlo).Cols[4].A) Then begin
-iEdit.Text:=InString(TPlo(iPLo).Cols[4].A);
-end;
-end;
-
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
@@ -1923,18 +1830,6 @@ if (TVEr(iVer).NAM<>iEdit.Text) Then begin
    TVEr(iVer).NAM:=iEdit.Text;
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
-end;
-end;
-procedure I_SetR(iVer:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TVEr(iVer).RGR) then begin
-
-   G_Change:=true;
-   TVEr(iVer).RGR:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iVer);
-
 end;
 end;
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
@@ -2031,170 +1926,6 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
 end;
 end;
 
-procedure I_SLC1(iLin:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TLin(iLin).COLS[1]))  then begin
-
-   G_Change:=true;
-   TLin(iLin).COLS[1].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TLin(iLin).COLS[1].G:=Green(trunc(inFloat(iEdit.Text)));
-   TLin(iLin).COLS[1].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iLin);
-
-end;
-
-end;
-procedure I_SLC2(iLin:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TLin(iLin).COLS[2]))  then begin
-
-   G_Change:=true;
-   TLin(iLin).COLS[2].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TLin(iLin).COLS[2].G:=Green(trunc(inFloat(iEdit.Text)));
-   TLin(iLin).COLS[2].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iLin);
-
-end;
-
-end;
-procedure I_SLA1(iLIN:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TLin(iLin).COLS[1].A) then begin
-
-   G_Change:=true;
-   TLin(iLin).COLS[1].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iLin);
-
-end;
-end;
-procedure I_SLA2(iLIN:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TLin(iLin).COLS[2].A) then begin
-
-   G_Change:=true;
-   TLin(iLin).COLS[2].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iLin);
-
-end;
-end;
-
-procedure I_SPC1(iPlo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[1]))  then begin
-
-   G_Change:=true;
-   TPLo(iPLo).COLS[1].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[1].G:=Green(trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[1].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-
-end;
-procedure I_SPC2(iPlo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[2]))  then begin
-
-   G_Change:=true;
-   TPLo(iPLo).COLS[2].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[2].G:=Green(trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[2].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-
-end;
-procedure I_SPC3(iPlo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[3]))  then begin
-
-   G_Change:=true;
-   TPLo(iPLo).COLS[3].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[3].G:=Green(trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[3].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-
-end;
-procedure I_SPC4(iPlo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[4]))  then begin
-
-   G_Change:=true;
-   TPLo(iPLo).COLS[4].R:=Red  (trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[4].G:=Green(trunc(inFloat(iEdit.Text)));
-   TPLo(iPLo).COLS[4].B:=Blue (trunc(inFloat(iEdit.Text)));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-
-end;
-
-procedure I_SPA1(iPLo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TPLo(iPLo).COLS[1].A) then begin
-
-   G_Change:=true;
-   TPlo(iPlo).COLS[1].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-end;
-procedure I_SPA2(iPLo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TPLo(iPLo).COLS[2].A) then begin
-
-   G_Change:=true;
-   TPlo(iPlo).COLS[2].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-end;
-procedure I_SPA3(iPLo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TPLo(iPLo).COLS[3].A) then begin
-
-   G_Change:=true;
-   TPlo(iPlo).COLS[3].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-end;
-procedure I_SPA4(iPLo:Pointer;iEdit:TEdit);
-begin
-if isFloat(iEdit.Text) then
-if iEdit.Text<>inString(TPLo(iPLo).COLS[4].A) then begin
-
-   G_Change:=true;
-   TPlo(iPlo).COLS[4].A:=trunc(inFloat(iEdit.Text));
-   I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iPlo);
-
-end;
-end;
 
 {%EndRegion}
 var   {----------------------- Отрисовкка примитивов  ===}{%Region /FOLD }
@@ -3206,13 +2937,24 @@ iver4:=iPlo.VERS[4].ECR;
 end;
 end;
 function  Math(Par:Pointer):DWORD;stdcall;// Вычисление
-var F,K2,Kl2:Longint;
+var F:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
      sleep(300);MirObjs.Ras;
-     for f:=1 to MirObjs.KolO do
-     MirObjs.OBJS[f].O_MATH;
+     for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
+   end;
+result:=0;
+end;
+function  SWAP(Par:Pointer):DWORD;stdcall;// Вычисление
+var
+F:Longword;// ДЛя циклов
+lDrKp:Longword;// Реальное количество Вершин Плоскостей
+lDrKL:Longword;// Реальное количество Вершин Линий
+begin
+   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
+   while Clos=false do begin
+     sleep(300);
      // ========================================================================
      with MirVers do for f:=1 to KOlV do
      if   not Vers[f].DEL then
@@ -3221,35 +2963,33 @@ begin
      ECOL1[f]:=Col;
      end;
      // ========================================================================
-     K2:=0;sleep(300);
+     lDrKp:=0;sleep(300);
      with MirPlos do for f:=1 to KolP do
      if   not Plos[f].DEL then
      with Plos[f] do begin
-     K2:=K2+1;
-     EPlo1[K2].VERS[1]:=Vers[1].Nom;
-     EPlo1[K2].VERS[2]:=Vers[2].Nom;
-     EPlo1[K2].VERS[3]:=Vers[3].Nom;
-     EPlo1[K2].VERS[4]:=Vers[3].Nom;
-     EPlo1[K2].VERS[5]:=Vers[4].Nom;
-     EPlo1[K2].VERS[6]:=Vers[1].Nom;
+     lDrKp:=lDrKp+1;
+     EPlo1[DrKp].VERS[1]:=Vers[1].Nom;
+     EPlo1[DrKp].VERS[2]:=Vers[2].Nom;
+     EPlo1[DrKp].VERS[3]:=Vers[3].Nom;
+     EPlo1[DrKp].VERS[4]:=Vers[3].Nom;
+     EPlo1[DrKp].VERS[5]:=Vers[4].Nom;
+     EPlo1[DrKp].VERS[6]:=Vers[1].Nom;
      end;
-     MirPLos.Kol2:=K2;sleep(300);
-
-     KL2:=0;sleep(300);
+     MirPLos.DrKp:=lDrKp;sleep(300);
+     lDrKl:=0;sleep(300);
      with MirLins do for f:=1 to KolL do
      if   not Lins[f].DEL then
      with Lins[f] do begin
-     KL2:=KL2+1;
-     ELin1[KL2].VERS[1]:=Vers[1].Nom;
-     ELin1[KL2].VERS[2]:=Vers[2].Nom;
+     lDrKl:=lDrKl+1;
+     ELin1[DrKl].VERS[1]:=Vers[1].Nom;
+     ELin1[DrKl].VERS[2]:=Vers[2].Nom;
      end;
-     MirLins.Kol2:=KL2;sleep(300);
-
+     MirLins.DrKl:=lDrKl;sleep(300);
      // ========================================================================
      with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
      with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
-     with MirLins do Move(ELin1,ELin2,(Kol2+0)*SizeOf(RLIN));
-     with MirPlos do Move(EPlo1,EPlo2,(Kol2+0)*SizeOf(RPLO));
+     with MirLins do Move(ELin1,ELin2,(DrKl+0)*SizeOf(RLIN));
+     with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
      // ========================================================================
    end;
    result:=0;
@@ -3269,6 +3009,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirSels:=TSELS.Create;// Создаем Буфер обмена
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@Math,nil,0,HMathTrId);
+  HSWAP:=CreateThread(nil,0,@SWAP,nil,0,HSwapTrId);
   // OpenGl настройки
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_Blend);
@@ -3336,9 +3077,9 @@ begin
   glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
   glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-  glDrawElements(GL_TRIANGLES,MirPlos.Kol2*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
+  glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
   glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
-  glDrawElements(GL_LINES,MirLins.Kol2*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+  glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
 
 
   I_EDITDRAW;//-----------------------------------------------------------------

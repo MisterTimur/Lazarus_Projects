@@ -1,10 +1,10 @@
 object Form10: TForm10
-  Left = 730
-  Height = 311
-  Top = 130
+  Left = 399
+  Height = 125
+  Top = 147
   Width = 320
   Caption = 'Form10'
-  ClientHeight = 311
+  ClientHeight = 125
   ClientWidth = 320
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -23,11 +23,11 @@ object Form10: TForm10
   end
   object Panel2: TPanel
     Left = 0
-    Height = 277
+    Height = 91
     Top = 34
     Width = 121
     Align = alLeft
-    ClientHeight = 277
+    ClientHeight = 91
     ClientWidth = 121
     TabOrder = 1
     object Edit1: TEdit
@@ -81,124 +81,16 @@ object Form10: TForm10
       TabOrder = 3
       TextHint = 'Alp'
     end
-    object Edit5: TEdit
-      Left = 1
-      Height = 23
-      Top = 93
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit5Change
-      OnDblClick = Edit5DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 4
-      TextHint = 'Col 1'
-    end
-    object Edit6: TEdit
-      Left = 1
-      Height = 23
-      Top = 116
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit6Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 5
-      TextHint = 'Alp 1'
-    end
-    object Edit7: TEdit
-      Left = 1
-      Height = 23
-      Top = 139
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit7Change
-      OnDblClick = Edit7DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 6
-      TextHint = 'Col 2'
-    end
-    object Edit8: TEdit
-      Left = 1
-      Height = 23
-      Top = 162
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit8Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 7
-      TextHint = 'Alp 2'
-    end
-    object Edit9: TEdit
-      Left = 1
-      Height = 23
-      Top = 185
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit9Change
-      OnDblClick = Edit9DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 8
-      TextHint = 'Col 3'
-    end
-    object Edit10: TEdit
-      Left = 1
-      Height = 23
-      Top = 208
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit10Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 9
-      TextHint = 'Alp 3'
-    end
-    object Edit11: TEdit
-      Left = 1
-      Height = 23
-      Top = 231
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit11Change
-      OnDblClick = Edit11DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 10
-      TextHint = 'Col 4'
-    end
-    object Edit12: TEdit
-      Left = 1
-      Height = 23
-      Top = 254
-      Width = 119
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit12Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 11
-      TextHint = 'Alp 4'
-    end
   end
   object Splitter1: TSplitter
     Left = 121
-    Height = 277
+    Height = 91
     Top = 34
     Width = 5
   end
   object Panel3: TPanel
     Left = 126
-    Height = 277
+    Height = 91
     Top = 34
     Width = 194
     Align = alClient

@@ -12,10 +12,6 @@ type
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
-    Edit5: TEdit;
-    Edit6: TEdit;
-    Edit7: TEdit;
-    Edit8: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -79,13 +75,8 @@ end;
 procedure TForm9.U_RefreshLin;
 begin
 I_GetN(Lin,Edit1);
-I_GetR(Lin,Edit2);
 I_GetC(Lin,Edit3);
 I_GetA(Lin,Edit4);
-I_GLC1(Lin,Edit5);
-I_GLA1(Lin,Edit6);
-I_GLC2(Lin,Edit7);
-I_GLA2(Lin,Edit8);
 end;
 procedure TForm9.Edit1Change(Sender: TObject);
 begin
@@ -93,7 +84,6 @@ begin
 end;
 procedure TForm9.Edit2Change(Sender: TObject);
 begin
-  I_SetR(Lin,Edit2);
 end;
 procedure TForm9.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
@@ -134,33 +124,21 @@ begin
 end;
 procedure TForm9.Edit5Change(Sender: TObject);
 begin
-  I_SLC1(Lin,Edit5);
 end;
 procedure TForm9.Edit5DblClick(Sender: TObject);
 begin
-  if ColorDialog1.Execute then begin
-  edit5.Color:=ColorDialog1.Color;
-  edit5.Text:=intToStr(ColorDialog1.Color);
-  end;
 end;
 procedure TForm9.Edit6Change(Sender: TObject);
 begin
-  I_SLA1(Lin,Edit6);
 end;
 procedure TForm9.Edit7Change(Sender: TObject);
 begin
-  I_SLC2(Lin,Edit7);
 end;
 procedure TForm9.Edit7DblClick(Sender: TObject);
 begin
-  if ColorDialog1.Execute then begin
-  edit7.Color:=ColorDialog1.Color;
-  edit7.Text:=intToStr(ColorDialog1.Color);
-  end;
 end;
 procedure TForm9.Edit8Change(Sender: TObject);
 begin
-  I_SLA2(Lin,Edit8);
 end;
 end.
 

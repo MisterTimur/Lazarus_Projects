@@ -62,7 +62,6 @@ var
 
 procedure U_OpenPLos(iPlo,iEle:Pointer);
 function  I_FindFormPLo(iPLo:Pointer):Tform10;// Ищим форму с Плоскостью
-procedure I_CLosFormPlo(iPlo:Pointer);// Закрываем форму с плоскостью
 implementation {$R *.lfm} { TForm10 }
 procedure U_OpenPLos(iPlo,iEle:Pointer);
 var lForm10:TForm10;
@@ -86,26 +85,11 @@ if ((application.Components[f] as tform10).PLO=iPLO) then
      REz:=application.Components[f] as tform10;
 I_FindFormPLO:=Rez;
 end;
-procedure I_CLosFormPlo(iPlo:Pointer);// Закрываем форму с Линией
-var lForm10:TForm10;
-begin
-    lForm10:=I_FindFormPlo(iPlo);
-    if lForm10<>nil Then lForm10.close;
-end;
 procedure TForm10.U_RefreshPlo;
 begin
 I_GetN(PLO,Edit1 );
-I_GetR(PLO,Edit2 );
 I_GetC(PLO,Edit3 );
 I_GetA(PLO,Edit4 );
-I_GPC1(PLO,Edit5 );
-I_GPA1(PLO,Edit6 );
-I_GPC2(PLO,Edit7 );
-I_GPA2(PLO,Edit8 );
-I_GPC3(PLO,Edit9 );
-I_GPA3(PLO,Edit10);
-I_GPC4(PLO,Edit11);
-I_GPA4(PLO,Edit12);
 end;
 procedure TForm10.Edit1Change(Sender: TObject);
 begin
@@ -113,11 +97,9 @@ begin
 end;
 procedure TForm10.Edit10Change(Sender: TObject);
 begin
-   I_SPA3(Plo,Edit10);
 end;
 procedure TForm10.Edit11Change(Sender: TObject);
 begin
-   I_SPC4(Plo,Edit11);
 end;
 procedure TForm10.Edit11DblClick(Sender: TObject);
 begin
@@ -128,11 +110,9 @@ begin
 end;
 procedure TForm10.Edit12Change(Sender: TObject);
 begin
-   I_SPA4(Plo,Edit12);
 end;
 procedure TForm10.Edit2Change(Sender: TObject);
 begin
-   I_SetR(Plo,Edit2);
 end;
 procedure TForm10.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
@@ -173,7 +153,6 @@ begin
 end;
 procedure TForm10.Edit5Change(Sender: TObject);
 begin
-  I_SPC1(Plo,Edit5);
 end;
 procedure TForm10.Edit5DblClick(Sender: TObject);
 begin
@@ -184,11 +163,9 @@ begin
 end;
 procedure TForm10.Edit6Change(Sender: TObject);
 begin
-  I_SPA1(Plo,Edit6);
 end;
 procedure TForm10.Edit7Change(Sender: TObject);
 begin
-  I_SPC2(Plo,Edit7);
 end;
 procedure TForm10.Edit7DblClick(Sender: TObject);
 begin
@@ -199,11 +176,9 @@ begin
 end;
 procedure TForm10.Edit8Change(Sender: TObject);
 begin
-   I_SPA2(Plo,Edit8);
 end;
 procedure TForm10.Edit9Change(Sender: TObject);
 begin
-   I_SPC3(Plo,Edit9);
 end;
 procedure TForm10.Edit9DblClick(Sender: TObject);
 begin

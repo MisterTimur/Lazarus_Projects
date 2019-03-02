@@ -1,10 +1,10 @@
 object Form9: TForm9
-  Left = 869
-  Height = 218
-  Top = 181
+  Left = 423
+  Height = 123
+  Top = 178
   Width = 320
   Caption = 'Form9'
-  ClientHeight = 218
+  ClientHeight = 123
   ClientWidth = 320
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -23,11 +23,11 @@ object Form9: TForm9
   end
   object Panel2: TPanel
     Left = 0
-    Height = 186
+    Height = 91
     Top = 32
     Width = 128
     Align = alLeft
-    ClientHeight = 186
+    ClientHeight = 91
     ClientWidth = 128
     TabOrder = 1
     object Edit1: TEdit
@@ -81,70 +81,16 @@ object Form9: TForm9
       TabOrder = 3
       TextHint = 'Alp'
     end
-    object Edit5: TEdit
-      Left = 1
-      Height = 23
-      Top = 93
-      Width = 126
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit5Change
-      OnDblClick = Edit5DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 4
-      TextHint = 'Col 1'
-    end
-    object Edit6: TEdit
-      Left = 1
-      Height = 23
-      Top = 116
-      Width = 126
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit6Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 5
-      TextHint = 'Alp 1'
-    end
-    object Edit7: TEdit
-      Left = 1
-      Height = 23
-      Top = 139
-      Width = 126
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit7Change
-      OnDblClick = Edit7DblClick
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 6
-      TextHint = 'Col 2'
-    end
-    object Edit8: TEdit
-      Left = 1
-      Height = 23
-      Top = 162
-      Width = 126
-      Align = alTop
-      Alignment = taCenter
-      OnChange = Edit8Change
-      OnMouseWheelDown = Edit3MouseWheelDown
-      OnMouseWheelUp = Edit3MouseWheelUp
-      TabOrder = 7
-      TextHint = 'Alp 2'
-    end
   end
   object Splitter1: TSplitter
     Left = 128
-    Height = 186
+    Height = 91
     Top = 32
     Width = 5
   end
   object Panel3: TPanel
     Left = 133
-    Height = 186
+    Height = 91
     Top = 32
     Width = 187
     Align = alClient
