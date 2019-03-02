@@ -81,6 +81,7 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform7) then
+if  (application.Components[f] as tform7).visible then
 if ((application.Components[f] as tform7).Ele=iEle) then
      REz:=application.Components[f] as tform7;
 I_FindFormEle:=Rez;
@@ -200,7 +201,6 @@ begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
    if CheckListBox1.itemindex>0 then
    I_DelVer(CheckListBox1.items.objects[CheckListBox1.itemindex]);
-   I_RefSpiVers(Ele,CheckListBox1);
 end;
 procedure TForm7.MenuItem3Click(Sender: TObject);
 begin
@@ -211,10 +211,8 @@ procedure TForm7.MenuItem4Click(Sender: TObject);
 begin
 
    if CheckListBox2.itemindex<CheckListBox2.items.count then
-   if CheckListBox2.itemindex>0 then begin
+   if CheckListBox2.itemindex>0 then
    i_DelEle(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefSpiEles(Ele,CheckListBox2);
-   end;
 
 end;
 procedure TForm7.Panel1Click(Sender: TObject);

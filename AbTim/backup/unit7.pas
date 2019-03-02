@@ -81,6 +81,7 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform7) then
+if  (application.Components[f] as tform7).visible then
 if ((application.Components[f] as tform7).Ele=iEle) then
      REz:=application.Components[f] as tform7;
 I_FindFormEle:=Rez;
@@ -99,7 +100,6 @@ begin
   I_RefSpiVers(Ele,CheckListBox1);
   I_RefSpiEles(Ele,CheckListBox2);
 end;
-
 procedure TForm7.MenuItem1Click(Sender: TObject);
 begin
   I_AddVer(Ele);

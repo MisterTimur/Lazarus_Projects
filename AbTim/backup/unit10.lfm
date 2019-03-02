@@ -39,7 +39,7 @@ object Form10: TForm10
       Alignment = taCenter
       OnChange = Edit1Change
       TabOrder = 0
-      Text = 'Edit1'
+      TextHint = 'Name'
     end
     object Edit2: TEdit
       Left = 1
@@ -49,8 +49,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
       TabOrder = 1
-      Text = 'Edit2'
+      TextHint = 'Rgr'
     end
     object Edit3: TEdit
       Left = 1
@@ -60,8 +62,11 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit3Change
+      OnDblClick = Edit3DblClick
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 2
-      Text = 'Edit3'
+      TextHint = 'Col'
     end
     object Edit4: TEdit
       Left = 1
@@ -71,8 +76,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit4Change
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 3
-      Text = 'Edit4'
+      TextHint = 'Alp'
     end
     object Edit5: TEdit
       Left = 1
@@ -82,8 +89,11 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit5Change
+      OnDblClick = Edit5DblClick
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 4
-      Text = 'Edit5'
+      TextHint = 'Col 1'
     end
     object Edit6: TEdit
       Left = 1
@@ -93,8 +103,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit6Change
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 5
-      Text = 'Edit6'
+      TextHint = 'Alp 1'
     end
     object Edit7: TEdit
       Left = 1
@@ -104,8 +116,11 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit7Change
+      OnDblClick = Edit7DblClick
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 6
-      Text = 'Edit7'
+      TextHint = 'Col 2'
     end
     object Edit8: TEdit
       Left = 1
@@ -115,8 +130,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit8Change
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 7
-      Text = 'Edit8'
+      TextHint = 'Alp 2'
     end
     object Edit9: TEdit
       Left = 1
@@ -126,8 +143,11 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit9Change
+      OnDblClick = Edit9DblClick
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 8
-      Text = 'Edit9'
+      TextHint = 'Col 3'
     end
     object Edit10: TEdit
       Left = 1
@@ -137,8 +157,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit10Change
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 9
-      Text = 'Edit10'
+      TextHint = 'Alp 3'
     end
     object Edit11: TEdit
       Left = 1
@@ -148,8 +170,11 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit11Change
+      OnDblClick = Edit11DblClick
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 10
-      Text = 'Edit11'
+      TextHint = 'Col 4'
     end
     object Edit12: TEdit
       Left = 1
@@ -159,8 +184,10 @@ object Form10: TForm10
       Align = alTop
       Alignment = taCenter
       OnChange = Edit12Change
+      OnMouseWheelDown = Edit3MouseWheelDown
+      OnMouseWheelUp = Edit3MouseWheelUp
       TabOrder = 11
-      Text = 'Edit12'
+      TextHint = 'Alp 4'
     end
   end
   object Splitter1: TSplitter

@@ -61,6 +61,7 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform8) then
+if  (application.Components[f] as tform8).visible then
 if ((application.Components[f] as tform8).VER=iVer) then
      REz:=application.Components[f] as tform8;
 I_FindFormVer:=Rez;

@@ -1,7 +1,7 @@
 unit Unit6; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus, StdCtrls,Unit3,unit7,unit8, Types;
+  CheckLst, Menus, StdCtrls,Unit3,unit7,unit8,unit9,unit10,Types;
 type
 
   { TForm6 }
@@ -43,7 +43,9 @@ type
 
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox2DblClick(Sender: TObject);
     procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox3DblClick(Sender: TObject);
     procedure CheckListBox3SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox4DblClick(Sender: TObject);
     procedure CheckListBox4SelectionChange(Sender: TObject; User: boolean);
@@ -103,6 +105,7 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform6) then
+if  (application.Components[f] as tform6).visible then
 if ((application.Components[f] as tform6).Obj=iObj) then
      REz:=application.Components[f] as tform6;
 I_FindFormObj:=Rez;
@@ -133,7 +136,6 @@ begin
    if CheckListBox3.itemindex<CheckListBox3.items.count then
    if CheckListBox3.itemindex>0 then
    i_DelPLo(CheckListBox3.items.objects[CheckListBox3.itemindex]);
-   I_RefSpiPlos(obj,CheckListBox3);
 end;
 procedure TForm6.Edit1Change(Sender: TObject);
 begin
@@ -153,11 +155,23 @@ begin
  I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
 
 end;
+procedure TForm6.CheckListBox2DblClick(Sender: TObject);
+begin
+   if CheckListBox2.itemindex<CheckListBox2.items.count then
+   if CheckListBox2.itemindex>0 then
+   U_OpenLine(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex],Obj);
+end;
 procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
 begin
  For f:=1 to CheckListBox2.Items.Count-1 do
  I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
+end;
+procedure TForm6.CheckListBox3DblClick(Sender: TObject);
+begin
+   if CheckListBox3.itemindex<CheckListBox3.items.count then
+   if CheckListBox3.itemindex>0 then
+   U_OpenPLos(CheckListBox3.Items.Objects[CheckListBox3.ItemIndex],Obj);
 end;
 procedure TForm6.CheckListBox3SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
@@ -247,10 +261,8 @@ var
   F:Longint;
 begin
    if CheckListBox1.itemindex<CheckListBox1.items.count then
-   if CheckListBox1.itemindex>0 then begin
+   if CheckListBox1.itemindex>0 then
    I_DelVer(CheckListBox1.items.objects[CheckListBox1.itemindex]);
-   I_RefSpiVers(obj,CheckListBox1);
-   end;
 end;
 procedure TForm6.MenuItem3Click(Sender: TObject);
 begin
@@ -262,7 +274,6 @@ begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
    i_DelLin(CheckListBox2.items.objects[CheckListBox2.itemindex]);
-   I_RefSpiLins(obj,CheckListBox2);
 end;
 procedure TForm6.MenuItem7Click(Sender: TObject);
 begin
@@ -273,10 +284,8 @@ procedure TForm6.MenuItem8Click(Sender: TObject);
 begin
 
    if CheckListBox4.itemindex<CheckListBox4.items.count then
-   if CheckListBox4.itemindex>0 then begin
+   if CheckListBox4.itemindex>0 then
    I_DelEle(CheckListBox4.items.objects[CheckListBox4.itemindex]);
-   I_RefSpiEles(Obj,CheckListBox4);
-   end;
 
 end;
 procedure TForm6.Panel1Click(Sender: TObject);

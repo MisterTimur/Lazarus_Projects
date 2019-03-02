@@ -123,7 +123,7 @@ procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
 
 {%EndRegion}
-implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8;
+implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
 var   {Базa                   ===========================}{%Region /FOLD }
                                                            BAS01:Longint;
 
@@ -506,7 +506,7 @@ var   {Базовые структуры      ===========================}{%Regi
                                                            BAS02:Longint;
 
 
-var   {Описание Dершины       ===========================}{%Region /FOLD }
+var   {Описание Вершины       ===========================}{%Region /FOLD }
                                                            Reg05:Longint;
 TYPE TVER=CLASS  // Опсиание вершиины
 
@@ -594,6 +594,8 @@ begin
 
 
 end;
+procedure   DelLinWithVer(iVer:Tver);forward;// Удаление вершин из линий
+procedure   DelPloWithVer(iVer:Tver);forward;// Удаление вершин из Плоск
 Procedure   TVERS.AddV(iVer:Tver);// Регестриует новую вершину
 var F:Longint;Ex:Boolean;
 begin
@@ -627,12 +629,18 @@ begin
 end;
 Procedure   TVERS.AddD(iVer:Tver);// ОТпарвляет вершину на удаление
 begin
+  if not IVer.Del then begin
   I_SetSel(iVer,false);// Снимаю выделение елси оно есть
+  //----------------------------------------------------------------------------
+  DelPloWithVer(iVer);
+  DelLinWithVer(iVer);
+  //----------------------------------------------------------------------------
   IVer.Del:=True;
   if KolD+1>MaxKolDelVers then
-  ERR(' TVERS.AddD(iVer:Tver) KolD+1>MaxKolDelVers');
+  ERR('Массив с удаленными вершинами переполнен');
   DELV[KolD+1]:=iVer;
   KolD:=KolD+1;
+  end else ERR('Попытка удалить уже удаленную вершину');
 end;
 Constructor TVERS.Create;
 begin
@@ -712,6 +720,14 @@ Destructor  TLIN.Destroy;
 begin
 inherited Destroy;
 end;
+procedure   DelLinWithVer(iVer:Tver);// Удаление вершин из линий
+var f:Longint;
+Begin
+for f:=1 to MirLins.KOlL do
+if  not MirLins.LINS[f].DEL then
+if (MirLins.LINS[f].VERS[1]=iVer) or
+   (MirLins.LINS[f].VERS[2]=iVer) Then MirLins.AddD(MirLins.LINS[f]) ;
+end;
 Procedure   TLINS.AddL(iLin:TLin);
 var F:Longint;Ex:Boolean;
 begin
@@ -745,12 +761,14 @@ begin
 end;
 Procedure   TLINS.AddD(iLin:TLin);
 begin
+  if not ILin.Del then begin
   I_SetSel(iLin,false);// Снимаю выделение елси оно есть
   ILin.Del:=True;
   if KolD+1>MaxKolDelLins then
-  ERR(' TLinS.AddD(iLin:TLin);  KolD+1>MaxKolDelLins');
+  ERR('Массив с удаленными линиями переполнен');
   DELL[KolD+1]:=iLin;
   KolD:=KolD+1;
+  end else Err('Попутка удалить уже удаленную линию ');
 end;
 Constructor TLINS.Create;
 begin
@@ -859,6 +877,16 @@ Destructor  TPLO.Destroy;
 begin
 inherited Destroy;
 end;
+procedure   DelPloWithVer(iVer:Tver);// Удаление вершин из Плоско
+var f:Longint;
+Begin
+for f:=1 to MirPlos.KOlP do
+if  not MirPlos.PLOS[f].DEL then
+if (MirPlos.PLOS[f].VERS[1]=iVer) or
+   (MirPlos.PLOS[f].VERS[2]=iVer) or
+   (MirPlos.PLOS[f].VERS[3]=iVer) or
+   (MirPlos.PLOS[f].VERS[4]=iVer) Then MirPlos.AddD(MirPLos.PLOS[f]) ;
+end;
 Procedure   TPLOS.AddP(iPlo:TPlo);
 var F:Longint;Ex:Boolean;
 begin
@@ -892,12 +920,14 @@ begin
 end;
 Procedure   TPLOS.AddD(iPlo:TPlo);
 begin
+  if Not IPlo.Del then begin
   I_SetSel(iPlo,false);// Снимаю выделение елси оно есть
   IPlo.Del:=True;
   if KolD+1>MaxKolDelPlos then
-  ERR(' TPLOS.AddD(iPlo:TPlo);  KolD+1>MaxKolDelPlos');
+  ERR('Масив с удаленными плоскостями переполнен');
   DELP[KolD+1]:=iPlo;
   KolD:=KolD+1;
+  end else ERR('ПОпытка удалить уже удаленную плоскость');
 end;
 Constructor TPLOS.Create;
 begin
@@ -1155,14 +1185,16 @@ end;
 Procedure   TELES.AddD(iELE:TELE);// ОТпарвляет Элемент на удаление
 var F:Longint;
 begin
+  if not IEle.Del then begin
   I_SetSel(iEle,false);// Снимаю выделение елси оно есть
   IEle.Del:=True;
   for f:=1 to iEle.KOlV do MirVers.addD(iEle.VERS[f]);// Вершины на удаление
   for f:=1 to iEle.KolE do MirEles.AddD(iEle.Eles[f]);// Удаление элементов
-  if KolD+1>MinKolDelEles then
-  ERR(' TELES.AddD(iELE:TELE) KolD+1>MinKolDelEles' );
+  if KolD+1>MaxKolDelEles then
+  ERR('МАсив с удаленными элементами переполнен');
   DELE[KolD+1]:=iEle;
   KolD:=KolD+1;
+  end else ERR('ПОпытка удалить уже удаленный элемент ');
 end;
 Constructor TELES.Create;
 begin
@@ -1281,8 +1313,6 @@ begin
 inherited E_SWAP;
 end;
 
-
-
 procedure   TOBJ.O_INIC;// Вычисление Экранных координат
 var f:Longint;
 begin
@@ -1336,8 +1366,6 @@ begin
 inherited Destroy;
 end;
 
-
-
 Procedure   TOBJS.Ras;
 var f:Longint;
 begin
@@ -1347,15 +1375,19 @@ end;
 procedure   TOBJS.AddD(iObj:TOBJ);
 Var F:Longint;
 begin
-I_SetSel(iObj,false);// Снимаю выделение елси оно есть
-iOBJ.Del:=true;
-for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
-for f:=1 to iOBJ.KolL do MirLins.AddD(iOBJ.Lins[f]);// Удалене Линий
-for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
-for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
-for f:=1 to iOBJ.KolE do MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
-DELO[KolD+1]:=iOBJ;
-KolD:=KolD+1;
+   if not iOBJ.Del then begin
+   I_SetSel(iObj,false);// Снимаю выделение если оно есть
+   iOBJ.Del:=true;
+   for f:=1 to iOBJ.KolL do MirLins.AddD(iOBJ.Lins[f]);// Удалене Линий
+   for f:=1 to iOBJ.KolP do MirPLos.AddD(iOBJ.Plos[f]);// Удалене плоскостией
+   for f:=1 to iOBJ.KolD do MirObjs.AddD(iOBJ.Dels[f]);// Удаление зависимых обьек
+   for f:=1 to iOBJ.KOlV do MirVers.addD(iOBJ.VERS[f]);// Вершины на удаление
+   for f:=1 to iOBJ.KolE do MirEles.AddD(iOBJ.Eles[f]);// Удаление элементов
+   if KolD+1>MaxKolDelObjs then
+   ERR('МАсив с удаленными ОБьектами переполнен');
+   DELO[KolD+1]:=iOBJ;
+   KolD:=KolD+1;
+   end else ERR('Попытка удалить уже удаленный обьект');
 end;
 function    TOBJS.AddO(iOBJ:TOBJ):Tobj;
 var F:Longint;Ex:Boolean;
@@ -1637,6 +1669,31 @@ end;
 while iLis.count-1>NomItems do
 iLis.items.delete(iLis.count-1);
 
+
+end;
+procedure I_RefAllForm;
+var f:Longint;
+begin
+
+     for f:=0 to application.ComponentCount-1 do
+     if  (application.Components[f] is tform5 ) then begin
+     I_RefSpiObjs((application.Components[f] as tform5) .CheckListBox1);
+     end
+else if  (application.Components[f] is tform6 ) then begin
+     (application.Components[f] as tform6 ).U_RefreshObj;
+     end
+else if  (application.Components[f] is tform7 ) then begin
+     (application.Components[f] as tform7 ).U_RefreshEle;
+     end
+else if  (application.Components[f] is tform8 ) then begin
+     (application.Components[f] as tform8 ).U_RefreshVer;
+     end
+else if  (application.Components[f] is tform9 ) then begin
+     (application.Components[f] as tform9 ).U_RefreshLin;
+     end
+else if  (application.Components[f] is tform10) then begin
+     (application.Components[f] as tform10).U_RefreshPlo;
+     end
 
 end;
 
@@ -2400,80 +2457,128 @@ end;
 var   {----------------------- Удалание  примитивов   ===}{%Region /FOLD }
                                                           F_Reg11:Longint;
 
+procedure I_DelFormsLin(iLin:TLin);forward;
+procedure I_DelFormsPlo(iPlo:TPlo);forward;
+procedure I_DelFormsAct(iVer:Tver);//          ЗАкрываем активный элемент
+begin
+if Tver(form4.Act)=iVer then begin
+form4.Act:=Nil;
+I_RefreshActivePrimitiv;
+end;
+end;
+procedure I_DelFormsVer(iVer:TVer);// Удаляет форму связаную с   Вершиной
+var
+f:Longint;
+lForm8:TForm8;
+begin
 
+        //--------------------------------------------------------------------------
+    for f:=0 to application.ComponentCount-1 do
+    if  (application.Components[f] is tform9) then
+    if  (application.Components[f] as tform9).visible then
+    if  (TLIN((application.Components[f] as tform9).LIN).VERS[1]=iVer) or
+        (TLIN((application.Components[f] as tform9).LIN).VERS[2]=iVer) then
+         I_DelFormsLin(TLIN((application.Components[f] as tform9).LIN));
 
+    for f:=0 to application.ComponentCount-1 do
+    if  (application.Components[f] is tform10) then
+    if  (application.Components[f] as tform10).visible then
+    if  (TPLO((application.Components[f] as tform10).PLO).VERS[1]=iVer) or
+        (TPLO((application.Components[f] as tform10).PLO).VERS[2]=iVer) or
+        (TPLO((application.Components[f] as tform10).PLO).VERS[3]=iVer) or
+        (TPLO((application.Components[f] as tform10).PLO).VERS[4]=iVer) then
+         I_DelFormsPLO(TPLO((application.Components[f] as tform10).PLO));
+    //--------------------------------------------------------------------------
 
-procedure I_DelVer(iVer:Pointer);// Удаление Вершины
+    lForm8:=I_FindFormVer(iVer);
+    while lForm8<>Nil do begin
+    lForm8.close;
+    lForm8:=I_FindFormVer(iVer);
+    end;
+end;
+procedure I_DelFormsLin(iLin:TLin);// Удаляет форму связаную с     Линией
 var
-dVer:TVer;F:Longint;
+lForm9:TForm9;
 begin
-G_Change:=true;
-dVer:=TVer(iVer);
-// Удаление форм ---------------------------------------------------------------
-for f:=0 to application.ComponentCount-1 do
-if  (application.Components[f] is tform8) then
-if ((application.Components[f] as tform8).VER=iVer) then
-    (application.Components[f] as tform8).close;
-// удаление в структуре --------------------------------------------------------
-MirVers.AddD(dVer);// Добавляем Вершину в удаляемые
+    lForm9:=I_FindFormLin(iLin);
+    while lForm9<>Nil do begin
+    lForm9.close;
+    lForm9:=I_FindFormLin(iLin);
+    end;
 end;
-procedure I_DelLin(iLin:Pointer);// Удаление Линии
+procedure I_DelFormsPlo(iPlo:TPlo);// Удаляет форму связаную с Плоскостью
 var
-dLin:TLin;
+lForm10:TForm10;
 begin
-G_Change:=true;
-dLin:=TLin(iLin);
-MirLins.AddD(dLin);// Добавляем Линию в удаляемые
+    lForm10:=I_FindFormPlo(iPlo);
+    while lForm10<>Nil do begin
+    lForm10.close;
+    lForm10:=I_FindFormPlo(iPlo);
+    end;
 end;
-procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
+procedure I_DelFormsEle(iEle:TEle);// Удаляет форму связаную с  Элементом
 var
-dPlo:TPlo;
+f:Longint;
+lForm7:TForm7;
 begin
-G_Change:=true;
-dPlo:=TPlo(iPlo);
-MirPLos.AddD(dPlo);// Добавляем Вершину в удаляемые
+    for f:=1 to iEle.KolV do I_DelFormsVer(iEle.VERS[F]);
+    for f:=1 to iEle.KolE do I_DelFormsEle(iEle.ELES[F]);
+    lForm7:=I_FindFormEle(iEle);
+    while lForm7<>Nil do begin
+    lForm7.close;
+    lForm7:=I_FindFormEle(iEle);
+    end;
 end;
-procedure I_DelEle(iEle:Pointer);// Удаление Элемента
+procedure I_DelFormsObj(iObj:TObj);// Удаляет форму связаную с   Обьектом
 var
-dEle:TEle;f:Longint;
+f:Longint;
+lForm6:TForm6;
+begin
+    for f:=1 to iObj.KolV do I_DelFormsVer(iObj.VERS[F]);
+    for f:=1 to iObj.KolL do I_DelFormsLin(iObj.LINS[F]);
+    for f:=1 to iObj.KolP do I_DelFormsPlo(iObj.PLOS[F]);
+    for f:=1 to iObj.KolE do I_DelFormsEle(iObj.ELES[F]);
+    lForm6:=I_FindFormObj(iObj);
+    while lForm6<>Nil do begin
+    lForm6.close;
+    lForm6:=I_FindFormObj(iObj);
+    end;
+end;
+
+procedure I_DelVer(iVer:POinter);// Удаление Вершины
 begin
 G_Change:=true;
-dEle:=TEle(iEle);
-// удаляем форму редактора   ---------------------------------------------------
-for f:=0 to application.ComponentCount-1 do
-if (application.Components[f] is tform8) then begin // Формы вершин
-   if I_RodEle((application.Components[f] as tform8).ELE,dEle) then
-   (application.Components[f] as tform8).close;
-end else
-if (application.Components[f] is tform7) then begin // Формы элементов
-   if I_RodEle((application.Components[f] as tform7).ELE,dEle) then
-   (application.Components[f] as tform7).close;
+I_DelFormsVer(Tver(iVer));
+MirVers.AddD(Tver(iVer));
+I_RefAllForm;
 end;
-// удаляем в самой структуре ---------------------------------------------------
-MirEles.AddD(dEle);// Добавляем Элемент в удаляемые
-end;
-procedure I_DelObj(iObj:pointer);// Удаление Обьекта
-Var
-dObj:TObj;f:Longint;
+procedure I_DelLin(iLin:POinter);// Удаление   Линии
 begin
 G_Change:=true;
-dObj:=TObj(iObj);
-// Удаление форм ---------------------------------------------------------------
-for f:=0 to application.ComponentCount-1 do
-     if (application.Components[f] is tform8) then begin // Вершины
-     if I_RodEle((application.Components[f] as tform8).ELE,dObj) then
-        (application.Components[f] as tform8).close;
-     end
-else if (application.Components[f] is tform7) then begin // Элементы
-     if I_RodEle((application.Components[f] as tform7).ELE,dObj) then
-     (application.Components[f] as tform7).close;
-     end
-else if (application.Components[f] is tform6) then  begin // обьекты
-     if I_RodEle((application.Components[f] as tform6).OBJ,dObj) then
-     (application.Components[f] as tform6).close;
-     end;
-// Удаление в тсруктуре --------------------------------------------------------
-MirObjs.AddD(dObj);// Добавляем обьект в удаляемые
+I_DelFormsLin(TLin(iLin));
+MirLins.AddD(TLin(iLin));
+I_RefAllForm;
+end;
+procedure I_DelPLo(iPlo:POinter);// Удаление Плоскос
+begin
+G_Change:=true;
+I_DelFormsPlo(TPlo(iPlo));
+MirPlos.AddD(TPlo(iPlo));
+I_RefAllForm;
+end;
+procedure I_DelEle(iEle:POinter);// Удаление Элемент
+begin
+G_Change:=true;
+I_DelFormsEle(Tele(iEle));
+MirEles.AddD(Tele(iEle));
+I_RefAllForm;
+end;
+procedure I_DelObj(iObj:POinter);// Удаление Обьекта
+begin
+G_Change:=true;
+I_DelFormsObj(TObj(iObj));
+MirObjs.AddD(TObj(iObj));
+I_RefAllForm;
 end;
 
 {%EndRegion}
@@ -3330,16 +3435,8 @@ end;
 {%EndRegion}
 end.
 
-
-
-
-
-
-
-
-
-
-// Не забуть доделать удаление
+// Не забуть доделать удаление по Признаку DEL
+// Доделать адаление вершины что бы удалял ялинии и плоскости с этими вершинами
 // Пропуск () "" '' {} и неизвестных знаков
 
 

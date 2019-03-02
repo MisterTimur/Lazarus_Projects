@@ -1,7 +1,7 @@
 unit Unit10; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls,unit3;
+  StdCtrls,unit3, Types;
 type
 
   { TForm10 }
@@ -26,16 +26,29 @@ type
     Splitter1: TSplitter;
     procedure Edit10Change(Sender: TObject);
     procedure Edit11Change(Sender: TObject);
+    procedure Edit11DblClick(Sender: TObject);
     procedure Edit12Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
+    procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure Edit3Change(Sender: TObject);
+    procedure Edit3DblClick(Sender: TObject);
+    procedure Edit3MouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure Edit3MouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
     procedure Edit4Change(Sender: TObject);
     procedure Edit5Change(Sender: TObject);
+    procedure Edit5DblClick(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
     procedure Edit7Change(Sender: TObject);
+    procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
+    procedure Edit9DblClick(Sender: TObject);
   private
 
   public
@@ -67,6 +80,7 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform10) then
+if  (application.Components[f] as tform10).visible then
 if ((application.Components[f] as tform10).PLO=iPLO) then
      REz:=application.Components[f] as tform10;
 I_FindFormPLO:=Rez;
@@ -98,6 +112,13 @@ procedure TForm10.Edit11Change(Sender: TObject);
 begin
    I_SPC4(Plo,Edit11);
 end;
+procedure TForm10.Edit11DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
+end;
 procedure TForm10.Edit12Change(Sender: TObject);
 begin
    I_SPA4(Plo,Edit12);
@@ -106,9 +127,38 @@ procedure TForm10.Edit2Change(Sender: TObject);
 begin
    I_SetR(Plo,Edit2);
 end;
+procedure TForm10.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+    TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
+    if inFloat(TEdit(Sender).Text)<1 then TEdit(Sender).Text:='3';
+end;
+procedure TForm10.Edit2MouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
+  if inFloat(TEdit(Sender).Text)>3 then TEdit(Sender).Text:='1';
+end;
 procedure TForm10.Edit3Change(Sender: TObject);
 begin
   I_SetC(Plo,Edit3);
+end;
+procedure TForm10.Edit3DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
+end;
+procedure TForm10.Edit3MouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+      TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-1);
+end;
+procedure TForm10.Edit3MouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+        TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+1);
 end;
 procedure TForm10.Edit4Change(Sender: TObject);
 begin
@@ -118,6 +168,13 @@ procedure TForm10.Edit5Change(Sender: TObject);
 begin
   I_SPC1(Plo,Edit5);
 end;
+procedure TForm10.Edit5DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
+end;
 procedure TForm10.Edit6Change(Sender: TObject);
 begin
   I_SPA1(Plo,Edit6);
@@ -125,6 +182,13 @@ end;
 procedure TForm10.Edit7Change(Sender: TObject);
 begin
   I_SPC2(Plo,Edit7);
+end;
+procedure TForm10.Edit7DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
 end;
 procedure TForm10.Edit8Change(Sender: TObject);
 begin
@@ -134,6 +198,12 @@ procedure TForm10.Edit9Change(Sender: TObject);
 begin
    I_SPC3(Plo,Edit9);
 end;
-
+procedure TForm10.Edit9DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
+end;
 end.
 

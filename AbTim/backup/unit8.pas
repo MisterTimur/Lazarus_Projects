@@ -43,6 +43,7 @@ var
 
 procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
 function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
+procedure I_CLosFormVer(iVer:Pointer);// Закрываем форму с вершиной
 implementation {$R *.lfm} { TForm8 }
 procedure U_OpenPoint(iVer,iEle:Pointer);
 var lForm8:TForm8;
@@ -61,9 +62,16 @@ begin
 Rez:=Nil;
 for f:=0 to application.ComponentCount-1 do
 if  (application.Components[f] is tform8) then
+if  (application.Components[f] as tform8).visible then
 if ((application.Components[f] as tform8).VER=iVer) then
      REz:=application.Components[f] as tform8;
 I_FindFormVer:=Rez;
+end;
+procedure I_CLosFormVer(iVer:Pointer);// Закрываем форму с вершиной
+var lForm8:TForm8;
+begin
+    lForm8:=I_FindFormVer(iVer);
+    if lForm8<>nil Then lForm8.close;
 end;
 procedure TForm8.U_RefreshVer;
 begin
@@ -81,7 +89,7 @@ begin
 end;
 procedure TForm8.Edit1Change(Sender: TObject);
 begin
-
+  I_SetN(Ver,Edit1);
 end;
 procedure TForm8.Edit2Change(Sender: TObject);
 begin

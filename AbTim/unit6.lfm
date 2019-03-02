@@ -199,6 +199,7 @@ object Form6: TForm6
       ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
+      OnDblClick = CheckListBox2DblClick
       OnSelectionChange = CheckListBox2SelectionChange
       PopupMenu = PopupMenu2
       TabOrder = 1
@@ -218,6 +219,7 @@ object Form6: TForm6
       ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
+      OnDblClick = CheckListBox3DblClick
       OnSelectionChange = CheckListBox3SelectionChange
       PopupMenu = PopupMenu3
       TabOrder = 2
