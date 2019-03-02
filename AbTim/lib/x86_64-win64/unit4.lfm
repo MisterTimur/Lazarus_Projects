@@ -309,7 +309,7 @@ object Form4: TForm4
     end
   end
   object MainMenu1: TMainMenu
-    left = 520
+    left = 320
     object MenuItem1: TMenuItem
       Caption = 'Файл'
       object MenuItem17: TMenuItem
@@ -396,7 +396,7 @@ object Form4: TForm4
   object FontDialog1: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 488
+    left = 288
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -422,7 +422,7 @@ object Form4: TForm4
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 456
+    left = 256
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'

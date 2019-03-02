@@ -34,7 +34,7 @@ var   {Интерфейс редактора    ===========================}{%Re
 CR:AnsiString=chr(13)+chr(10);
 GStep:REal=1            ;// Шаг для Колеса мышки
 MinRAsInMir:REal=1      ;// Минимальнео растояние в игровом мире и для рамки
-MAxRAsInMir:Real=128    ;// Максимальное растояние в игровом мире от камеры
+MAxRAsInMir:Real=1024   ;// Максимальное растояние в игровом мире от камеры
 G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False  ;// В проекте есть не сохраненные изменения
 
@@ -59,7 +59,6 @@ function I_AddPlo(iObj:Pointer):Pointer;// Создает Плоскости
 function I_AddEle(iEle:Pointer):Pointer;// Создает новый Элемент
 function I_AddObj:POinter;// Создает новый обьект
 
-
 procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiLins(iObj:POinter;iLis:TCheckListBox);
 procedure I_RefSpiPlos(iObj:POinter;iLis:TCheckListBox);
@@ -75,10 +74,6 @@ procedure I_GetA(iVer:Pointer;iEdit:TEdit);
 procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
-
-
-
-
 
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
@@ -113,7 +108,7 @@ const {Базовые Константы      ===========================}{%Regi
 
   MaxKolVerInEle=128;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=128;// Максимальное количество Линий в Элементе
-  MaxKolPloInObj=256;// Максимальное количество Плоскостей в Элементе
+  MaxKolPloInObj=512;// Максимальное количество Плоскостей в Элементе
   MaxKolObjInObj=128;// Максимальное количество Плоскостей в Элементе
   MaxKolEleInEle=128;// Максимальное количество Обьектов в Элементе
 
@@ -2134,8 +2129,6 @@ begin
       I_GetOb:=Rez;
 
 end;
-
-
 function I_AddVerCOP(iEle:Pointer):Pointer;// Создает копию вершины рядом
 Var
 rEle:TEle;
@@ -2546,7 +2539,10 @@ iStr:=iStr+CR;
 for f:=1 to iEle.KOlV do
 if NOT iEle.Vers[f].DEL THEN I_TVER_PUT_01(iEle.Vers[f],iStr);
 for f:=1 to iEle.KOlE do
-if NOT iEle.Eles[f].DEL THEN I_TELE_PUT_01(iEle.Eles[f],iStr);
+if NOT iEle.Eles[f].DEL THEN begin
+iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю Текущий контекст
+I_TELE_PUT_01(iEle.Eles[f],iStr);
+end;
 
 end;
 Procedure I_TOBJ_PUT_01(iObj:TObj;var iStr:Ansistring);
@@ -2572,7 +2568,10 @@ iStr:=iStr+CR;
 for f:=1 to iObj.KOlV do
 if NOT iObj.Vers[f].DEL Then I_TVER_PUT_01(iObj.Vers[f],iStr);
 for f:=1 to iObj.KOlE do
-if NOT iObj.Eles[f].DEL Then I_TELE_PUT_01(iObj.Eles[f],iStr);
+if NOT iObj.Eles[f].DEL Then begin
+iStr:=iStr+'O('+iObj.NAM+')';// Сохраняю Текущий контекст
+I_TELE_PUT_01(iObj.Eles[f],iStr);
+end
 for f:=1 to iObj.KOlP do
 if NOT iObj.PLos[f].DEL Then I_TPLO_PUT_01(iObj.Plos[f],iStr);
 
