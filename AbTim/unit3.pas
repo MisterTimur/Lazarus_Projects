@@ -2134,8 +2134,6 @@ begin
       I_GetOb:=Rez;
 
 end;
-
-
 function I_AddVerCOP(iEle:Pointer):Pointer;// Создает копию вершины рядом
 Var
 rEle:TEle;
@@ -2147,7 +2145,6 @@ nVer:=rEle.V(TVER(iEle).LOC.x+(MinRAsInMir/10),
              TVER(iEle).LOC.y+(MinRAsInMir/10),
              TVER(iEle).LOC.z+(MinRAsInMir/10));
 nVer.Nam:=I_NewNamIdd('V ');
-TObj(nVer.Obj).O_MATH;
 I_AddVerCOP:=nVer;
 end;
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2159,7 +2156,6 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x*-1,TVER(iEle).LOC.y,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
-//TObj(nVer.Obj).O_MATH;
 I_AddVerSYX:=nVer;
 end;
 function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2171,7 +2167,6 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y*-1,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
-//TObj(nVer.Obj).O_MATH;
 I_AddVerSYY:=nVer;
 end;
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2183,13 +2178,8 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y,TVER(iEle).LOC.z*-1);
 nVer.Nam:=I_NewNamIdd('V ');
-//TObj(nVer.Obj).O_MATH;
 I_AddVerSYZ:=nVer;
 end;
-
-
-
-
 function I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
 rEle:TEle;
@@ -2199,7 +2189,6 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(0,0,0);
 nVer.Nam:=I_NewNamIdd('V ');
-TObj(nVer.Obj).O_MATH;
 I_AddVer:=nVer;
 end;
 function I_AddLin(iObj:Pointer):Pointer;// Доабвляет   Линию
@@ -2215,7 +2204,6 @@ rObj:=I_GetOb(iObj);
 nLin:=rObj.L(lSel.SELS[2],
              lSel.SELS[1]);
 nLin.Nam:=I_NewNamIdd('L ');
-TObj(nLin.Obj).O_MATH;
 end;
 lSel.free;
 I_AddLin:=nLin;
@@ -2235,7 +2223,6 @@ nPlo:=rObj.P(lSel.SELS[4],
              lSel.SELS[2],
              lSel.SELS[1]);
 nPlo.Nam:=I_NewNamIdd('P ');
-TObj(nPlo.Obj).O_MATH;
 end;
 lSel.free;
 I_AddPlo:=nPlo;
@@ -2249,7 +2236,6 @@ G_Change:=true;
 rObj:=I_GetOb(iObj);
 nPlo:=rObj.P(rObj,rObj,rObj,rObj);
 nPlo.Nam:=I_NewNamIdd('P ');
-TObj(nPlo.Obj).O_MATH;
 I_AddPPl:=nPlo;
 end;
 function I_AddEle(iEle:Pointer):Pointer;// Доабвляет Элемент
@@ -2261,7 +2247,6 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nEle:=rEle.E(0,0,0);
 nEle.Nam:=I_NewNamIDd('E ');
-TObj(nEle.Obj).O_MATH;
 I_AddEle:=nEle;
 end;
 function I_AddObj:Pointer;// Добавляет новый обьект
@@ -2270,7 +2255,6 @@ begin
 G_Change:=true;
 nObj:=TObj.Create;
 nObj.Nam:=I_NewNamiDd('O ');
-nObj.O_MATH;
 MirObjs.AddO(nObj);
 I_AddObj:=nObj;
 end;
@@ -3134,7 +3118,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
-  GlPointSize(10);// размер точек
+  GlPointSize(25);// размер точек
   GlLineWidth(10);// рзмер Линий
   OpenGLControl1Resize(nil);// Начальное вычисление пропрций
   Timer2.enabled:=true;// Врубаем отрисовку
