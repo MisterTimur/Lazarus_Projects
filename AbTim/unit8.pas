@@ -81,7 +81,7 @@ begin
 end;
 procedure TForm8.Edit1Change(Sender: TObject);
 begin
-
+  I_SetN(Ver,Edit1);
 end;
 procedure TForm8.Edit2Change(Sender: TObject);
 begin

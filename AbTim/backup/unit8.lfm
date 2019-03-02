@@ -1,7 +1,7 @@
 object Form8: TForm8
-  Left = 1092
+  Left = 355
   Height = 174
-  Top = 400
+  Top = 219
   Width = 128
   BorderStyle = bsSizeToolWin
   Caption = 'Form8'

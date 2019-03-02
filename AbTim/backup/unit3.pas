@@ -58,6 +58,7 @@ procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiObjs(             iLis:TCheckListBox);
 
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetR(iVer:Pointer;iEdit:TEdit);// Испольщуемые цвета
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
@@ -67,7 +68,24 @@ procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
+procedure I_GLC1(iLin:Pointer;iEdit:TEdit);
+procedure I_GLC2(iLin:Pointer;iEdit:TEdit);
+procedure I_GLA1(iLin:Pointer;iEdit:TEdit);
+procedure I_GLA2(iLin:Pointer;iEdit:TEdit);
+
+procedure I_GPC1(iPLo:Pointer;iEdit:TEdit);
+procedure I_GPC2(iPLo:Pointer;iEdit:TEdit);
+procedure I_GPC3(iPLo:Pointer;iEdit:TEdit);
+procedure I_GPC4(iPLo:Pointer;iEdit:TEdit);
+
+procedure I_GPA1(iPlo:Pointer;iEdit:TEdit);
+procedure I_GPA2(iPlo:Pointer;iEdit:TEdit);
+procedure I_GPA3(iPlo:Pointer;iEdit:TEdit);
+procedure I_GPA4(iPlo:Pointer;iEdit:TEdit);
+
+
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
+procedure I_SetR(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
@@ -76,6 +94,22 @@ procedure I_SetA(iVer:Pointer;iEdit:TEdit);
 procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
+
+procedure I_SLC1(iLin:Pointer;iEdit:TEdit);
+procedure I_SLC2(iLin:Pointer;iEdit:TEdit);
+
+procedure I_SLA1(iLin:Pointer;iEdit:TEdit);
+procedure I_SLA2(iLin:Pointer;iEdit:TEdit);
+
+procedure I_SPC1(iPlo:Pointer;iEdit:TEdit);
+procedure I_SPC2(iPlo:Pointer;iEdit:TEdit);
+procedure I_SPC3(iPlo:Pointer;iEdit:TEdit);
+procedure I_SPC4(iPlo:Pointer;iEdit:TEdit);
+
+procedure I_SPA1(iPLo:Pointer;iEdit:TEdit);
+procedure I_SPA2(iPLo:Pointer;iEdit:TEdit);
+procedure I_SPA3(iPLo:Pointer;iEdit:TEdit);
+procedure I_SPA4(iPLo:Pointer;iEdit:TEdit);
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
@@ -87,6 +121,7 @@ procedure I_Set_MBUT(iBol:Boolean);
 procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
+
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8;
 var   {Базa                   ===========================}{%Region /FOLD }
@@ -128,6 +163,10 @@ const {Базовые Константы      ===========================}{%Regi
   T_LIN=3;// Линия
   T_ELE=4;// Элементы
   T_OBJ=5;// Обьекеты
+
+  C_VER=1;// Используються цвета вершин
+  C_ONE=1;// Используються один цвет
+  T_EXE=1;// Используються Собственые цвета для вершин
 
 {%EndRegion}
 var   {Базовые типы данных    ===========================}{%Region /FOLD }
@@ -477,6 +516,7 @@ TYPE TVER=CLASS  // Опсиание вершиины
   IDD:RLON;// Уникальный идентификатор
   NOM:RLON;// Номер в списке отрисовки
   TIP:RLON;// Тип примитива
+  RGR:RBYT;// Режим используемых цветов
 
   LOC:RCS3;// ЛОкальная коордианата
   MAT:RCS3;// Используеться для вычисления реальных координат
@@ -523,11 +563,13 @@ var MirVers:Tvers;// Все вершины игрового мира здесь 
 Constructor TVER.Create;// Создает вершину
 begin
 
-  NAM:=''           ;// Имя вершины
+  NAM:=''           ;// Уникальное Имя вершины
+  CAP:=''           ;// ПРоизвдьное имя примитива
   SEL:=false        ;// Не выделен примитив
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке всех вершин
   TIP:=T_VER        ;// Тип Вершины
+  RGR:=C_VER        ;// Используються цвета вершин
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -602,8 +644,9 @@ end;
 var   {Описание Линии         ===========================}{%Region /FOLD }
                                                            Reg0L:Longint;
 
-TYPE  TLIN=CLASS(TVER)
+TYPE TLIN=CLASS(TVER)
   VERS:Array[1..2] of TVER;// Вершины из котрых состоит Линия
+  COLS:Array[1..2] of RCOL;// Цвета Вершин из котрых состоит Линия
   Procedure   L_Gaba;// Вычислене габаритов
   Constructor Create(iVer1,iVer2:TVer);// Конструктор
   Destructor  destroy;override;
@@ -658,6 +701,10 @@ inherited  Create;// Вызываю родительский конструкт�
 
 VERS[1]:=iVer1;
 VERS[2]:=iVer2;
+
+COLS[1]:=RanRcol;
+COLS[2]:=RanRcol;
+
 TIP:=T_LIN;
 
 end;
@@ -715,8 +762,9 @@ end;
 var   {Описание Плоскоси      ===========================}{%Region /FOLD }
                                                            Reg06:Longint;
 
-TYPE  TPLO=CLASS(TVER)
+TYPE TPLO=CLASS(TVER)
   VERS:Array[1..4] of TVER;// Вершины из котрых состоит плоскость
+  COLS:Array[1..4] of RCOL;// Цвета Вершин из котрых состоит плоскость
   Function    P_Viso(iCoo:RCS3):RSIN;// Определить высоту на плоскости
   Procedure   P_Gaba;// Вычислене габаритов
   Constructor Create(iVer1,iVer2,iVer3,iVer4:Tver);// Конструктор
@@ -798,6 +846,12 @@ VERS[1]:=iVer1;
 VERS[2]:=iVer2;
 VERS[3]:=iVer3;
 VERS[4]:=iVer4;
+
+COLS[1]:=RanRcol;
+COLS[2]:=RanRcol;
+COLS[3]:=RanRcol;
+COLS[4]:=RanRcol;
+
 TIP:=T_PLO;
 
 end;
@@ -877,7 +931,7 @@ end;
 TYPE TELES=CLASS // Описание элементов
   KOLE :Longint;// Количество Элементов в игровом мире
   KOLD :Longint;// Количество Элементов котрые нада удалить
-  DELE :Array[1..MaxKOlEleInMir] of TELE;// Список элемента  на удаление очередь
+  DELE :Array[1..MaxKolDelEles ] of TELE;// Список элемента  на удаление очередь
   ELES :Array[1..MaxKOlEleInMir] of TELE;// Все элемента  игрового мира
   ECOO1:Array[0..MaxKolEleInMir] of RCS3;// Координаты всех элемента
   ECOO2:Array[0..MaxKolEleInMir] of RCS3;// Координаты элемента  для отрисовке
@@ -1148,8 +1202,8 @@ End;
 TYPE TOBJS=CLASS
 KOLO:Longint;
 KOLD:Longint;
-OBJS:Array[1..MaxKOlVerInMir] of TOBJ;
-DELO:Array[1..MaxKOlVerInMir] of TOBJ;
+OBJS:Array[1..MaxKOlObjInMir] of TOBJ;
+DELO:Array[1..MaxKolDelObjs ] of TOBJ;
 Procedure   Ras;
 Function    AddO(iObj:TOBJ):Tobj;
 procedure   AddD(iObj:TOBJ);
@@ -1647,6 +1701,12 @@ if iEdit.Text<>TVEr(iVer).NAM then begin
 iEdit.Text:=TVEr(iVer).NAM;
 end;
 end;
+procedure I_GetR(iVer:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>intToStr(TVEr(iVer).RGR) then begin
+iEdit.Text:=intToStr(TVEr(iVer).RGR);
+end;
+end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
 if iEdit.Text<>InString(TVEr(iVer).LOC.X) then begin
@@ -1700,6 +1760,107 @@ iEdit.Text:=InString(TEle(iEle).EUGL.Z);
 end;
 end;
 
+procedure I_GLC1(iLin:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TLin(iLin).COLS[1];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+procedure I_GLC2(iLin:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TLin(iLin).COLS[2];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+procedure I_GLA1(iLin:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TLin(iLin).Cols[1].A) Then begin
+iEdit.Text:=InString(TLin(iLin).Cols[1].A);
+end;
+end;
+procedure I_GLA2(iLin:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TLin(iLin).Cols[2].A) Then begin
+iEdit.Text:=InString(TLin(iLin).Cols[2].A);
+end;
+end;
+
+procedure I_GPC1(iPlo:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TPLo(iPlo).COLS[1];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+procedure I_GPC2(iPlo:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TPLo(iPlo).COLS[2];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+procedure I_GPC3(iPlo:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TPLo(iPlo).COLS[3];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+procedure I_GPC4(iPlo:Pointer;iEdit:TEdit);
+var
+lCol:Rcol;
+begin
+lCol:=TPLo(iPlo).COLS[4];
+if iEdit.Text<>InString(RColRGBtoInt(lCol)) then begin
+iEdit.Color:=RGBToColor(lCOL.R,lCOL.G,lCOL.B);
+iEdit.Text:=InString(RColRGBtoInt(lCol));
+end;
+end;
+
+procedure I_GPA1(iPlo:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TPlo(iPlo).Cols[1].A) Then begin
+iEdit.Text:=InString(TPlo(iPLo).Cols[1].A);
+end;
+end;
+procedure I_GPA2(iPlo:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TPlo(iPlo).Cols[2].A) Then begin
+iEdit.Text:=InString(TPlo(iPLo).Cols[2].A);
+end;
+end;
+procedure I_GPA3(iPlo:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TPlo(iPlo).Cols[3].A) Then begin
+iEdit.Text:=InString(TPlo(iPLo).Cols[3].A);
+end;
+end;
+procedure I_GPA4(iPlo:Pointer;iEdit:TEdit);
+begin
+if iEdit.Text<>InString(TPlo(iPlo).Cols[4].A) Then begin
+iEdit.Text:=InString(TPlo(iPLo).Cols[4].A);
+end;
+end;
+
+
+
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
@@ -1707,6 +1868,18 @@ if (TVEr(iVer).NAM<>iEdit.Text) Then begin
    TVEr(iVer).NAM:=iEdit.Text;
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
+end;
+end;
+procedure I_SetR(iVer:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TVEr(iVer).RGR) then begin
+
+   G_Change:=true;
+   TVEr(iVer).RGR:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+
 end;
 end;
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
@@ -1798,7 +1971,172 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
    G_Change:=true;
    TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
-   I_RefreshEditorPrimitiv(iVer);
+   I_RefreshEditorPrimitiv(iEle);
+
+end;
+end;
+
+procedure I_SLC1(iLin:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TLin(iLin).COLS[1]))  then begin
+
+   G_Change:=true;
+   TLin(iLin).COLS[1].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TLin(iLin).COLS[1].G:=Green(trunc(inFloat(iEdit.Text)));
+   TLin(iLin).COLS[1].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iLin);
+
+end;
+
+end;
+procedure I_SLC2(iLin:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TLin(iLin).COLS[2]))  then begin
+
+   G_Change:=true;
+   TLin(iLin).COLS[2].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TLin(iLin).COLS[2].G:=Green(trunc(inFloat(iEdit.Text)));
+   TLin(iLin).COLS[2].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iLin);
+
+end;
+
+end;
+procedure I_SLA1(iLIN:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TLin(iLin).COLS[1].A) then begin
+
+   G_Change:=true;
+   TLin(iLin).COLS[1].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iLin);
+
+end;
+end;
+procedure I_SLA2(iLIN:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TLin(iLin).COLS[2].A) then begin
+
+   G_Change:=true;
+   TLin(iLin).COLS[2].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iLin);
+
+end;
+end;
+
+procedure I_SPC1(iPlo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[1]))  then begin
+
+   G_Change:=true;
+   TPLo(iPLo).COLS[1].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[1].G:=Green(trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[1].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+
+end;
+procedure I_SPC2(iPlo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[2]))  then begin
+
+   G_Change:=true;
+   TPLo(iPLo).COLS[2].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[2].G:=Green(trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[2].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+
+end;
+procedure I_SPC3(iPlo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[3]))  then begin
+
+   G_Change:=true;
+   TPLo(iPLo).COLS[3].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[3].G:=Green(trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[3].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+
+end;
+procedure I_SPC4(iPlo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(RColRgbToInt(TPlo(iPLo).COLS[4]))  then begin
+
+   G_Change:=true;
+   TPLo(iPLo).COLS[4].R:=Red  (trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[4].G:=Green(trunc(inFloat(iEdit.Text)));
+   TPLo(iPLo).COLS[4].B:=Blue (trunc(inFloat(iEdit.Text)));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+
+end;
+
+procedure I_SPA1(iPLo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TPLo(iPLo).COLS[1].A) then begin
+
+   G_Change:=true;
+   TPlo(iPlo).COLS[1].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+end;
+procedure I_SPA2(iPLo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TPLo(iPLo).COLS[2].A) then begin
+
+   G_Change:=true;
+   TPlo(iPlo).COLS[2].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+end;
+procedure I_SPA3(iPLo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TPLo(iPLo).COLS[3].A) then begin
+
+   G_Change:=true;
+   TPlo(iPlo).COLS[3].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
+
+end;
+end;
+procedure I_SPA4(iPLo:Pointer;iEdit:TEdit);
+begin
+if isFloat(iEdit.Text) then
+if iEdit.Text<>inString(TPLo(iPLo).COLS[4].A) then begin
+
+   G_Change:=true;
+   TPlo(iPlo).COLS[4].A:=trunc(inFloat(iEdit.Text));
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iPlo);
 
 end;
 end;
@@ -2995,5 +3333,15 @@ end;
 end.
 
 
+
+
+
+
+
+
+
+
+// Не забуть доделать удаление
+// Пропуск () "" '' {} и неизвестных знаков
 
 

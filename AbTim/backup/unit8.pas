@@ -74,7 +74,6 @@ I_GetZ(Ver,Edit4);
 I_GetC(Ver,Edit5);
 I_GetA(Ver,Edit6);
 end;
-
 procedure TForm8.Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin

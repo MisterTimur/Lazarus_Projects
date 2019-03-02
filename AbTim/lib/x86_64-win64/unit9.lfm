@@ -1,7 +1,7 @@
 object Form9: TForm9
-  Left = 327
+  Left = 191
   Height = 218
-  Top = 240
+  Top = 127
   Width = 320
   Caption = 'Form9'
   ClientHeight = 218
@@ -37,6 +37,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end
@@ -47,6 +48,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit2Change
       TabOrder = 1
       Text = 'Edit2'
     end
@@ -57,6 +59,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit3Change
       TabOrder = 2
       Text = 'Edit3'
     end
@@ -67,6 +70,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit4Change
       TabOrder = 3
       Text = 'Edit4'
     end
@@ -77,6 +81,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit5Change
       TabOrder = 4
       Text = 'Edit5'
     end
@@ -87,6 +92,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit6Change
       TabOrder = 5
       Text = 'Edit6'
     end
@@ -97,6 +103,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit7Change
       TabOrder = 6
       Text = 'Edit7'
     end
@@ -107,6 +114,7 @@ object Form9: TForm9
       Width = 126
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit8Change
       TabOrder = 7
       Text = 'Edit8'
     end
@@ -150,7 +158,7 @@ object Form9: TForm9
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 14
+    left = 272
     top = 10
   end
 end
