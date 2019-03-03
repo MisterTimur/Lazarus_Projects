@@ -95,6 +95,8 @@ procedure I_Set_MBUT(iBol:Boolean);
 procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
+procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
+
 
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
@@ -2140,6 +2142,7 @@ nVer:=rEle.V(TVER(iEle).LOC.x+(MinRAsInMir/10),
              TVER(iEle).LOC.y+(MinRAsInMir/10),
              TVER(iEle).LOC.z+(MinRAsInMir/10));
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerCOP:=nVer;
 end;
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2151,6 +2154,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x*-1,TVER(iEle).LOC.y,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYX:=nVer;
 end;
 function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2162,6 +2166,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y*-1,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYY:=nVer;
 end;
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2173,6 +2178,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y,TVER(iEle).LOC.z*-1);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYZ:=nVer;
 end;
 function I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
@@ -2184,6 +2190,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(0,0,0);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVer:=nVer;
 end;
 function I_AddLin(iObj:Pointer):Pointer;// Доабвляет   Линию
@@ -2201,6 +2208,7 @@ nLin:=rObj.L(lSel.SELS[2],
 nLin.Nam:=I_NewNamIdd('L ');
 end;
 lSel.free;
+I_RefAllForm;
 I_AddLin:=nLin;
 end;
 function I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
@@ -2251,6 +2259,7 @@ G_Change:=true;
 nObj:=TObj.Create;
 nObj.Nam:=I_NewNamiDd('O ');
 MirObjs.AddO(nObj);
+I_RefAllForm;
 I_AddObj:=nObj;
 end;
 
@@ -2461,7 +2470,8 @@ begin
  //--------------------------------------------------------
  L_FIN_ELE:=REz;
 end;
-begin     I_FIN_ELE:=l_fin_ele(TELE(iObj.Obj),iNam);
+begin
+I_FIN_ELE:=l_fin_ele(TELE(iObj.Obj),iNam);
 end;
 
 {%EndRegion}
@@ -2569,7 +2579,7 @@ for f:=1 to iObj.KOlV do
 if NOT iObj.Vers[f].DEL Then I_TVER_PUT_01(iObj.Vers[f],iStr);
 for f:=1 to iObj.KOlE do
 if NOT iObj.Eles[f].DEL Then begin
-iStr:=iStr+'O('+iObj.NAM+')';// Сохраняю Текущий контекст
+iStr:=iStr+'O(self)';// Сохраняю Текущий контекст
 I_TELE_PUT_01(iObj.Eles[f],iStr);
 end;
 for f:=1 to iObj.KOlP do
@@ -2605,107 +2615,145 @@ iStr:=iStr+CR;
 end;
 Procedure I_SCENA_GET_01(iVer:TVer;var iStr:Ansistring);
 var
+R_K,R_D,R_P:Boolean;
 lPos:Longint;
 lNam:Ansistring;
 lVer:TVer;
 lLin:TLin;
 lPlo:TPlo;
 lEle:TEle;
-lObj:Tobj;
+lObj,SObj:Tobj;
 begin
+R_K:=False;// Режим Кадр обьекта для анимациии
+R_D:=False;// Режим Дубликат обьекта
+R_P:=true;// Режим параметров
 lPos:=1;
+sobj:=Tobj(iVer);
 While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
 // Созаю елси нету таких элементов если есть назначаю текущим ------
-     if iStr[lPos]='O' Then begin INC(lPos);
+     if iStr[lPos]='D' Then begin INC(lPos);// Включет режим Дублирование обьекта
+     R_D:=true;// Далее следует Копия обьекта
+     // Это означаем что ему нужно дать нвоое имя
+     end
+else if iStr[lPos]='K' Then begin INC(lPos);// Включет режим далее идет кадр
+     // Далее следует анимация занчит ненаад создавать элементы
+     R_K:=true;
+     end
+else if iStr[lPos]='O' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lObj:=I_FIN_Obj(lNam);
-     if lObj=nil then lObj:=TObj(I_AddObj);// Если нету создаю
+     If R_D Then begin // Дублирование кода
+     // нужно присвоить нвоое имя для обьекта
+     R_D:=False;
+     lObj:=TObj(I_AddObj);
+     lObj.NAm:=I_NewNamIdd(lNam+' ');
+     sObj:=lObj;
+     end;
+     if lObj=nil then
+     if lNam<>'self'
+     then begin lObj:=TObj(I_AddObj);sobj:=lObj; end// Если нету создаю
+     else begin
+     if Sobj=Nil Then ERR('Ни один обьект еще несоздан');
+     lObj:=sObj;
+     end;
      iVer:=lObj;// Указываю текущим
      iVer.Nam:=lNam;// Назанчаю имя
      end
 else if iStr[lPos]='E' Then begin INC(lPos);
+     R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lEle:=I_FIN_Ele(iVer,lNam);// Ищю Элемент с таким же именем
-     if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
-     iVer:=lEle;// Назначаю текущим
-     iVer.Nam:=lNam;// Указываю имя
+     if not R_K Then begin // Если не режим анимации то созаем элемент не достающий
+       if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
+       iVer:=lEle;// Назначаю текущим
+       iVer.Nam:=lNam;// Указываю имя
+     end else R_P:=False;// Чтение параметров отключено
      end
 else if iStr[lPos]='L' Then begin INC(lPos);
+     R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lLin:=I_FIN_Lin(iVer,lNam);// Ищю Линию с таким же именем
-     if lLin=nil then lLin:=TLin(I_AddLin(iVer));// Если нету создает Линию
-     iVer:=lLin;// Назначаю текущим
-     iVer.Nam:=lNam;// Указываю имя
+     if not R_K Then begin // Если не режим анимации то созаем элемент не достающий
+       if lLin=nil then lLin:=TLin(I_AddLin(iVer));// Если нету создает Линию
+       iVer:=lLin;// Назначаю текущим
+       iVer.Nam:=lNam;// Указываю имя
+     end else R_P:=False;// Чтение параметров отключено
      end
 else if iStr[lPos]='P' Then begin INC(lPos);
+     R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lPlo:=I_FIN_Plo(iVer,lNam);// Ищю плоскость с таким же именем
-     if lPlo=nil then lPlo:=TPlo(I_AddPPl(iVer));// Если нету создает плоскость
-     iVer:=lPlo;// Назначаю текущим
-     iVer.Nam:=lNam;// Указываю имя
+     if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
+       if lPlo=nil then lPlo:=TPlo(I_AddPPl(iVer));// Если нету создает плоскость
+       iVer:=lPlo;// Назначаю текущим
+       iVer.Nam:=lNam;// Указываю имя
+     end else R_P:=False;// Чтение параметров отключено
      end
 else if iStr[lPos]='V' Then begin INC(lPos);
+     R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lVer:=I_FIN_Ver(iVer,lNam);// Ищю вершину с тким именем
-     if lVer=Nil then lVer:=TVer(I_AddVer(iVer));// Добавляю вершину
-     iVer:=lVer;// Назанчаю текущитм
-     iVer.Nam:=lNam;// Указываю имя
+     if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
+       if lVer=Nil then lVer:=TVer(I_AddVer(iVer));// Добавляю вершину
+       iVer:=lVer;// Назанчаю текущитм
+       iVer.Nam:=lNam;// Указываю имя
+     end else R_P:=False;// Чтение параметров отключено
      end
 // Имя          ----------------------------------------------------
 else if iStr[lPos]='N' Then begin INC(lPos);
-     iVer.NAm:=I_GetSC(lPos,iStr);
+     if R_P then iVer.NAm:=I_GetSC(lPos,iStr);
      end
 // Коринаты     ----------------------------------------------------
 else if iStr[lPos]='X' Then begin INC(lPos);
-     iVer.LOC.X:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then iVer.LOC.X:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='Y' Then begin INC(lPos);
-     iVer.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then iVer.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='Z' Then begin INC(lPos);
-     iVer.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then iVer.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
      end
 // Цвета        ----------------------------------------------------
 else if iStr[lPos]='R' Then begin INC(lPos);
-     iVer.COL.R:=StrToInt(I_GetSC(lPos,iStr))
+     if R_P then iVer.COL.R:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='G' Then begin INC(lPos);
-     iVer.COL.G:=StrToInt(I_GetSC(lPos,iStr))
+     if R_P then iVer.COL.G:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='B' Then begin INC(lPos);
-     iVer.COL.B:=StrToInt(I_GetSC(lPos,iStr))
+     if R_P then iVer.COL.B:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='A' Then begin INC(lPos);
-     iVer.COL.A:=StrToInt(I_GetSC(lPos,iStr))
+     if R_P then iVer.COL.A:=StrToInt(I_GetSC(lPos,iStr))
      end
 // Углы наклона ----------------------------------------------------
 else if iStr[lPos]='x' Then begin INC(lPos);
-     I_GetEl(iVer).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then I_GetEl(iVer).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='y' Then begin INC(lPos);
-     I_GetEl(iVer).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then I_GetEl(iVer).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='z' Then begin INC(lPos);
-     I_GetEl(iVer).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
+     if R_P then I_GetEl(iVer).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
      end
 // Имена вершмин для плоскости -------------------------------------
 else if iStr[lPos]='a' Then begin INC(lPos);
-     lPlo.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lPlo.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='b' Then begin INC(lPos);
-     lPlo.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lPlo.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='c' Then begin INC(lPos);
-     lPlo.VERS[3]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lPlo.VERS[3]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='d' Then begin INC(lPos);
-     lPlo.VERS[4]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lPlo.VERS[4]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='e' Then begin INC(lPos);
-     lLin.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lLin.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='f' Then begin INC(lPos);
-     lLin.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     if R_P then lLin.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
      end
 else inc(lPos);
 end
@@ -2746,7 +2794,16 @@ end;
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
                                                            J_Reg11:Longint;
 
-
+procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
+var
+lStr:Ansistring;
+LObj:Pointer;
+begin
+lObj:=nil;
+I_SCENA_PUT_01(TObj(iTObj),lStr);// превращаем обьект в строку
+lStr:='D'+lStr;
+I_SCENA_GET_01(nil,lStr);// Превращаем строку в обьект
+end;
 procedure I_Set_MBUT(iBol:Boolean);
 begin
 MBUT:=iBol;

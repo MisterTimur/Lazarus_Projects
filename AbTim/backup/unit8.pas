@@ -101,7 +101,6 @@ end;
 procedure TForm8.Button2Click(Sender: TObject);
 begin
  I_AddVerSYX(Ver);
- I_RefreshEditorPrimitiv(Ver);
 end;
 
 procedure TForm8.Button3Click(Sender: TObject);

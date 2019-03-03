@@ -143,12 +143,10 @@ end;
 procedure TForm9.Edit8Change(Sender: TObject);
 begin
 end;
-
 procedure TForm9.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
 end;
-
 procedure TForm9.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin
@@ -161,6 +159,5 @@ begin
   Top:=Top+MHeight-height;
   end;
 end;
-
 end.
 

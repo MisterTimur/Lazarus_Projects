@@ -92,27 +92,22 @@ procedure TForm8.Edit1Change(Sender: TObject);
 begin
   I_SetN(Ver,Edit1);
 end;
-
 procedure TForm8.Button1Click(Sender: TObject);
 begin
   I_AddVerCOp(Ver);
 end;
-
 procedure TForm8.Button2Click(Sender: TObject);
 begin
  I_AddVerSYX(Ver);
 end;
-
 procedure TForm8.Button3Click(Sender: TObject);
 begin
   I_AddVerSYY(Ver);
 end;
-
 procedure TForm8.Button4Click(Sender: TObject);
 begin
   I_AddVerSYZ(Ver);
 end;
-
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);

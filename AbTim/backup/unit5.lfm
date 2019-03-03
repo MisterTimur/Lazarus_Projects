@@ -1,12 +1,12 @@
 object Form5: TForm5
-  Left = 774
-  Height = 243
-  Top = 110
-  Width = 129
+  Left = 361
+  Height = 357
+  Top = 151
+  Width = 283
   BorderStyle = bsSizeToolWin
   Caption = 'Form5'
-  ClientHeight = 243
-  ClientWidth = 129
+  ClientHeight = 357
+  ClientWidth = 283
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -20,7 +20,7 @@ object Form5: TForm5
     Left = 0
     Height = 34
     Top = 0
-    Width = 129
+    Width = 283
     Align = alTop
     Caption = 'Обьекты.'
     TabOrder = 0
@@ -29,10 +29,10 @@ object Form5: TForm5
   end
   object CheckListBox1: TCheckListBox
     Left = 0
-    Height = 209
+    Height = 323
     Top = 34
-    Width = 129
-    Align = alClient
+    Width = 128
+    Align = alLeft
     Items.Strings = (
       'Objects'
     )
@@ -47,9 +47,31 @@ object Form5: TForm5
       0100000000
     }
   end
+  object CheckListBox2: TCheckListBox
+    Left = 133
+    Height = 323
+    Top = 34
+    Width = 150
+    Align = alClient
+    Items.Strings = (
+      'Animation'
+    )
+    ItemHeight = 15
+    PopupMenu = PopupMenu2
+    TabOrder = 2
+    Data = {
+      0100000000
+    }
+  end
+  object Splitter1: TSplitter
+    Left = 128
+    Height = 323
+    Top = 34
+    Width = 5
+  end
   object PopupMenu1: TPopupMenu
     left = 16
-    top = 56
+    top = 64
     object MenuItem1: TMenuItem
       Caption = 'Добавить.'
       OnClick = MenuItem1Click
@@ -57,6 +79,25 @@ object Form5: TForm5
     object MenuItem2: TMenuItem
       Caption = 'Удалить.'
       OnClick = MenuItem2Click
+    end
+    object MenuItem7: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'Дублироввать.'
+      OnClick = MenuItem5Click
+    end
+  end
+  object PopupMenu2: TPopupMenu
+    left = 144
+    top = 64
+    object MenuItem3: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem3Click
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem4Click
     end
   end
 end

@@ -8,16 +8,26 @@ type
 
   TForm5 = class(TForm)
     CheckListBox1: TCheckListBox;
+    CheckListBox2: TCheckListBox;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem7: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
+    PopupMenu2: TPopupMenu;
+    Splitter1: TSplitter;
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
     procedure Panel1DblClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -52,12 +62,10 @@ if  (application.Components[f] as tform5).visible then
      REz:=application.Components[f] as tform5;
 I_FindFormObjs:=Rez;
 end;
-
 procedure TForm5.U_RefreshObjs;
 begin
  I_RefSpiObjs(CheckListBox1);
 end;
-
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
   I_AddObj;
@@ -74,6 +82,33 @@ begin
   end;
 
 end;
+
+procedure TForm5.MenuItem3Click(Sender: TObject); // Добавить анимацию
+begin
+
+  // Добавить анимацию
+
+end;
+
+procedure TForm5.MenuItem4Click(Sender: TObject);// Удалить анимацию
+begin
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then begin
+
+  // Удалить анимацию
+
+  end;
+end;
+
+procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Копия обьекта
+begin
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then
+  I_DoubleObject(CheckListBox2.items.objects[CheckListBox2.itemindex]);  ;
+end;
+
+
+
 procedure TForm5.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin
