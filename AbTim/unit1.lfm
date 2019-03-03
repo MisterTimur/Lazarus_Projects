@@ -13,6 +13,7 @@ object Form1: TForm1
   Font.Name = 'Consolas'
   Font.Pitch = fpFixed
   Font.Quality = fqDraft
+  FormStyle = fsSystemStayOnTop
   Position = poScreenCenter
   LCLVersion = '1.8.4.0'
   object Bevel1: TBevel

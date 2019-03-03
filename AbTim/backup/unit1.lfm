@@ -24,15 +24,15 @@ object Form1: TForm1
     Shape = bsBottomLine
   end
   object Label1: TLabel
-    Left = 16
-    Height = 22
+    Left = 24
+    Height = 23
     Top = 8
-    Width = 198
-    Caption = 'Абдулов Тимур 2019'
+    Width = 168
+    Caption = 'Abdulov Timur 2019'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
     Font.Height = -19
-    Font.Name = 'Arial'
+    Font.Name = 'Impact'
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     Font.Style = [fsBold]

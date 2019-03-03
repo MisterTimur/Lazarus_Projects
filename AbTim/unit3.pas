@@ -2140,6 +2140,7 @@ nVer:=rEle.V(TVER(iEle).LOC.x+(MinRAsInMir/10),
              TVER(iEle).LOC.y+(MinRAsInMir/10),
              TVER(iEle).LOC.z+(MinRAsInMir/10));
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerCOP:=nVer;
 end;
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2151,6 +2152,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x*-1,TVER(iEle).LOC.y,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYX:=nVer;
 end;
 function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2162,6 +2164,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y*-1,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYY:=nVer;
 end;
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -2173,6 +2176,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y,TVER(iEle).LOC.z*-1);
 nVer.Nam:=I_NewNamIdd('V ');
+I_RefAllForm;
 I_AddVerSYZ:=nVer;
 end;
 function I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину

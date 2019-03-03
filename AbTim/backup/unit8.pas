@@ -101,16 +101,17 @@ end;
 procedure TForm8.Button2Click(Sender: TObject);
 begin
  I_AddVerSYX(Ver);
+ I_RefreshEditorPrimitiv(Ver);
 end;
 
 procedure TForm8.Button3Click(Sender: TObject);
 begin
-  I_AddVer( Ver.Ele, Ver.LOC.X, Ver.LOC.Y*-1, Ver.LOC.Z );
+  I_AddVerSYY(Ver);
 end;
 
 procedure TForm8.Button4Click(Sender: TObject);
 begin
-  I_AddVer( Ver.Ele, Ver.LOC.X, Ver.LOC.Y, Ver.LOC.Z*-1 );
+  I_AddVerSYZ(Ver);
 end;
 
 procedure TForm8.Edit2Change(Sender: TObject);
