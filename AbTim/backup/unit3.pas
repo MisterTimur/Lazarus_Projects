@@ -1260,6 +1260,7 @@ TYPE TOBJ=CLASS(TELE)
   procedure   O_Rabo;Virtual;// Работа
   procedure   O_SWAP;// прямое изменение координат обьекта на экране
   Procedure   AddDels(iObj:Tobj);// Добавлет зависимый обьект
+  Procedure   DelDels(iObj:Tobj);// Удаляет зависимый обьект
   constructor Create;// Констурктор
   Destructor  destroy;override;
   function    P(iVer1,iVer2,iVer3,iVer4:TVER):TPLO;// Добавляет плоскость
@@ -1316,6 +1317,15 @@ if (KolD+1>MaxKolObjInObj) then
 ERR(' TOBJ.AddDels(iObj:Tobj) (KolD+1>MaxKolObjInObj)');
 Dels[KolD+1]:=iObj;
 KolD:=Kold+1;
+end;
+Procedure   TOBJ.DelDels(iObj:Tobj);// Удаляет зависимый обьект
+var f,f2:Longint;
+begin
+for f:=1 to KolD do
+if DELS[f]=iObj Then begin
+for f2:=f to KolD-1 do DELS[f2]:=DELS[f2+1];
+KolD:=Kold-1;
+end
 end;
 procedure   TOBJ.O_MASH(iMah:RSin);// Маштабирование обьекта
 var f:Longint;
@@ -1573,22 +1583,46 @@ end;
 {%EndRegion}
 var   {ГРавитация             ===========================}{%Region /FOLD }
                                                            Reg1G:Longint;
+
+function  VhoditObjObj(iPer,iObj:TObj):Boolean;
+var Rez:Boolean;
+begin
+Rez:=False;
+if Vhodit3D(iPer.REA,iObj.GMin,iObj.GMin) then
+if (iPer.GOB=Nil)or(iPer.GOB.OB3>iObj.OB3)then rez:=true;
+VhoditObjObj:=REz;
+end;
+function  VhoditObjPlo(iPer:TObj;iPLo:TPlo):Boolean;
+var Rez:Boolean;
+begin
+Rez:=False;
+if Vhodit3D(iPer.REA,iPlo.GMin,iPLo.GMin) then
+if (iPer.GPL=Nil)or(iPer.GPL.OB3>iPLo.OB3)then rez:=true;
+VhoditObjPlo:=REz;
+end;
 procedure Grav;
 var fo,fg:Longint;
 begin
+//------------------------------------------------------------------------------
 for fo:=1 to MirObjs.KOlO do
-if  not MirObjs.Objs[fo].OGRA then
-for fg:=1 to MirObjs.KOlO do
-if      MirObjs.Objs[fo].OGRA then
-if
-Vhodit3D(MirObjs.Objs[fo].REA,MirObjs.Objs[Fg].GMin,MirObjs.Objs[Fg].GMin) then
-if
-(MirObjs.Objs[fo].GOB=Nil)or(MirObjs.Objs[fo].GOB.OB3>MirObjs.Objs[fo].OB3)then
-then begin
-
-
-end
-
+if not MirObjs.Objs[fo].OGRA then for fg:=1 to MirObjs.KOlO do
+if     MirObjs.Objs[fg].OGRA then
+if VhoditObjObj(MirObjs.Objs[fo],MirObjs.Objs[Fg]) then
+begin
+if MirObjs.Objs[fo].GOb<>Nil Then
+TObj(MirObjs.Objs[fo].GOb).DelDels(MirObjs.Objs[fo]);
+MirObjs.Objs[Fg].AddDels(MirObjs.Objs[fo]);
+MirObjs.Objs[fo].Gob:=MirObjs.Objs[Fg];
+end;
+//------------------------------------------------------------------------------
+for fo:=1 to MirObjs.KOlO do
+if MirObjs.Objs[fo].GOb<>Nil Then
+for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
+if  VhoditObjPlo(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg]) then
+MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
+MirObjs.Objs[fo].LOC.Y:=
+TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC);
+//------------------------------------------------------------------------------
 end;
 
 {%EndRegion}
@@ -1610,8 +1644,6 @@ end;
 
 
 {%EndRegion}
-
-
 
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
