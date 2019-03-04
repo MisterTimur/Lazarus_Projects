@@ -99,5 +99,12 @@ object Form5: TForm5
       Caption = 'Удалить.'
       OnClick = MenuItem4Click
     end
+    object MenuItem8: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Применить'
+      OnClick = MenuItem6Click
+    end
   end
 end

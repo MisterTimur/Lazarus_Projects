@@ -14,7 +14,9 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
     PopupMenu2: TPopupMenu;
@@ -28,6 +30,7 @@ type
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
     procedure Panel1DblClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -82,33 +85,26 @@ begin
   end;
 
 end;
-
 procedure TForm5.MenuItem3Click(Sender: TObject); // Добавить анимацию
 begin
-
-  // Добавить анимацию
-
+  I_ADD_ANIMATION(CheckListBox2);
 end;
-
 procedure TForm5.MenuItem4Click(Sender: TObject);// Удалить анимацию
 begin
-  if CheckListBox2.itemindex<CheckListBox2.items.count then
-  if CheckListBox2.itemindex>0 then begin
-
-  // Удалить анимацию
-
-  end;
+  I_DEL_ANIMATION;
 end;
-
 procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Копия обьекта
 begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then
   I_DoubleObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);  ;
 end;
-
-
-
+procedure TForm5.MenuItem6Click(Sender: TObject);
+var
+  m:Tmemo;
+begin
+  I_SET_ANIMATION(CheckListBox1,CheckListBox2);
+end;
 procedure TForm5.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin

@@ -2,7 +2,7 @@ unit Unit3; {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, OpenGLContext, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls,windows,CheckLst,Types,Gl,Glu;
+  Dialogs, StdCtrls, ExtCtrls,windows,CheckLst,Types,Gl,Glu,GLext;
 type { TForm3 }  TForm3 = class(TForm)
     OpenGLControl1: TOpenGLControl;
     Timer1: TTimer;
@@ -96,8 +96,9 @@ procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
-
-
+function  I_ADD_ANIMATION(iLis:TCheckListBox):ansistring;// Созадет кадр анимации
+procedure I_SET_ANIMATION(iObjs,iAnis:TCheckListBox);// Приеняет кадр анимации
+procedure  I_DEL_ANIMATION;
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
 var   {Базa                   ===========================}{%Region /FOLD }
@@ -171,6 +172,9 @@ END;
 Type RPLO=RECORD   // ТИп описывающий Плоскость
   VERS:Array[1..6] of RLON; // Номера вершин
 END;
+type TStr=class
+TXT:Ansistring;
+end;
 
 function  Min(a,b:RSIN):RSIN;
 begin
@@ -1050,9 +1054,9 @@ end;
 procedure   TELE.E_SECR;// Вычисление Экранны координат
 var f:Longint;
 begin
-ECR:=SerRCS3(ECR,REA);
+ECR:=SerRCS8(ECR,REA);
 for f:=1 to KolE do with ELES[f] do E_SECR;
-for f:=1 to KolV do with VERS[f] do ECR:=SerRCS3(ECR,REA);
+for f:=1 to KolV do with VERS[f] do ECR:=SerRCS8(ECR,REA);
 end;
 procedure   TELE.E_SWAP;// Вычисление Экранны координат
 var f:Longint;
@@ -2478,6 +2482,8 @@ end;
 var   {----------------------- Сохранение примитива   ===}{%Region /FOLD }
                                                            H_Reg11:Longint;
 
+
+// Сохраниение структуры
 Procedure I_TVER_PUT_01(iVer:TVer;var iStr:Ansistring);
 begin
 iStr:=iStr+'V('+iVer.NAM+')';// Сохраняю имя
@@ -2582,9 +2588,132 @@ if NOT iObj.Eles[f].DEL Then begin
 iStr:=iStr+'O(self)';// Сохраняю Текущий контекст
 I_TELE_PUT_01(iObj.Eles[f],iStr);
 end;
+for f:=1 to iObj.KOlL do
+if NOT iObj.Lins[f].DEL Then I_TLIN_PUT_01(iObj.Lins[f],iStr);
 for f:=1 to iObj.KOlP do
 if NOT iObj.PLos[f].DEL Then I_TPLO_PUT_01(iObj.Plos[f],iStr);
 
+end;
+
+// Сохраниение анимации
+function  I_RAV_VER(iVer1,iVer2:TVer):Boolean;
+var Rez:Boolean;
+begin
+Rez:=true;
+if iver1.LOC.x<>iver2.LOC.x then rez:=false;
+if iver1.LOC.y<>iver2.LOC.y then rez:=false;
+if iver1.LOC.z<>iver2.LOC.z then rez:=false;
+if iver1.COL.R<>iver2.COL.R then rez:=false;
+if iver1.COL.G<>iver2.COL.G then rez:=false;
+if iver1.COL.B<>iver2.COL.B then rez:=false;
+if iver1.COL.A<>iver2.COL.A then rez:=false;
+I_RAV_VER:=Rez;
+end;
+function  I_RAV_ELE(iEle1,iEle2:TEle):Boolean;
+var
+lVer:Tver;
+lEle:Tele;
+Rez:Boolean;
+F:Longint;
+begin
+Rez:=true;
+//--------------------------------------------
+if iEle1.LOC.x <>iEle2.LOC.x  then rez:=false;
+if iEle1.LOC.y <>iEle2.LOC.y  then rez:=false;
+if iEle1.LOC.z <>iEle2.LOC.z  then rez:=false;
+if iEle1.EUGL.x<>iEle2.EUGL.x then rez:=false;
+if iEle1.EUGL.y<>iEle2.EUGL.y then rez:=false;
+if iEle1.EUGL.z<>iEle2.EUGL.z then rez:=false;
+if iEle1.COL.R <>iEle2.COL.R  then rez:=false;
+if iEle1.COL.G <>iEle2.COL.G  then rez:=false;
+if iEle1.COL.B <>iEle2.COL.B  then rez:=false;
+if iEle1.COL.A <>iEle2.COL.A  then rez:=false;
+//--------------------------------------------
+f:=1;while (f<=iEle2.KOlV) and (rez=true) do
+     begin
+     lVer:=I_FIN_Ver(iEle1.Obj,iEle2.VERS[f].NAM);
+     if lVer<>Nil then rez:=I_RAV_Ver(lVer,iEle2.VErS[f]);
+     f:=f+1;
+     end;
+//--------------------------------------------
+f:=1;while (f<=iEle2.KOlE) and (rez=true) do
+     begin
+     lEle:=I_FIN_ELE(iEle1.Obj,iEle2.ELES[f].NAM);
+     if lEle<>Nil then rez:=I_RAV_ELE(lEle,iEle2.ELES[f]);
+     f:=f+1;
+     end;
+//--------------------------------------------
+I_RAV_Ele:=Rez;
+end;
+Procedure I_TVER_ANI_01(iObj:Tobj;iVer:TVer;var iStr:Ansistring);
+var
+lver:Tver;
+begin
+
+
+lVer:=I_FIN_VER(iObj,iVer.NAM);
+
+if not I_RAV_VER(lver,iVer) then begin
+
+iStr:=iStr+'V('+iVer.NAM+')';// Сохраняю имя
+
+if iVer.LOC.X<>lVer.LOC.X then iStr:=iStr+'X('+InString(iVer.LOC.X)+')';
+if iVer.LOC.Y<>lVer.LOC.Y then iStr:=iStr+'Y('+InString(iVer.LOC.Y)+')';
+if iVer.LOC.Z<>lVer.LOC.Z then iStr:=iStr+'Z('+InString(iVer.LOC.Z)+')';
+
+if iVer.COL.R<>lVer.COL.R then iStr:=iStr+'R('+IntToStr(iVer.COL.R)+')';
+if iVer.COL.G<>lVer.COL.G then iStr:=iStr+'G('+IntToStr(iVer.COL.G)+')';
+if iVer.COL.B<>lVer.COL.B then iStr:=iStr+'B('+IntToStr(iVer.COL.B)+')';
+if iVer.COL.A<>lVer.COL.A then iStr:=iStr+'A('+IntToStr(iVer.COL.A)+')';
+
+iStr:=iStr+CR;
+end;
+
+end;
+Procedure I_TELE_ANI_01(iObj:Tobj;iEle:TEle;var iStr:Ansistring);
+var f:Longint;
+lver:Tver;
+lEle:Tele;
+begin
+lEle:=I_FIN_ELE(iObj,iEle.NAM);
+if not I_RAV_ELE(lEle,iEle) then begin
+
+iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю имя
+
+if lEle.LOC.X<>iEle.LOC.X then iStr:=iStr+'X('+InString(iEle.LOC.X)+')';// Координаты вершины X
+if lEle.LOC.Y<>iEle.LOC.Y then iStr:=iStr+'Y('+InString(iEle.LOC.Y)+')';// Координаты вершины Y
+if lEle.LOC.Z<>iEle.LOC.Z then iStr:=iStr+'Z('+InString(iEle.LOC.Z)+')';// Координаты вершины Z
+
+if lEle.EUGL.X<>iEle.EUGL.X then iStr:=iStr+'x('+InString(iEle.EUGL.X)+')';// Углы наклона X
+if lEle.EUGL.Y<>iEle.EUGL.Y then iStr:=iStr+'y('+InString(iEle.EUGL.Y)+')';// Углы наклона Y
+if lEle.EUGL.Z<>iEle.EUGL.Z then iStr:=iStr+'z('+InString(iEle.EUGL.Z)+')';// Углы наклона Z
+
+if lEle.COL.R<>iEle.COL.R then iStr:=iStr+'R('+IntToStr(iEle.COL.R)+')';// Цвет Красный
+if lEle.COL.G<>iEle.COL.G then iStr:=iStr+'G('+IntToStr(iEle.COL.G)+')';// Цвет Зеленый
+if lEle.COL.B<>iEle.COL.B then iStr:=iStr+'B('+IntToStr(iEle.COL.B)+')';// Цвет Голубой
+if lEle.COL.A<>iEle.COL.A then iStr:=iStr+'A('+IntToStr(iEle.COL.A)+')';// Прозрачность
+
+iStr:=iStr+CR;
+
+for f:=1 to iEle.KOlV do
+if NOT iEle.Vers[f].DEL THEN I_TVER_ANI_01(iObj,iEle.Vers[f],iStr);
+
+for f:=1 to iEle.KOlE do
+if NOT iEle.Eles[f].DEL THEN begin
+iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю Текущий контекст
+I_TELE_ANI_01(iObj,iEle.Eles[f],iStr);
+end;
+
+end;
+end;
+Procedure I_TOBJ_ANI_01(iObj1,iObj2:TObj;var iStr:Ansistring);
+var f:Longint;
+begin
+for f:=1 to iObj2.KOlE do
+if NOT iObj2.Eles[f].DEL Then begin
+iStr:=iStr+'K O(self)';// Сохраняю Текущий контекст
+I_TELE_ANI_01(iObj1,iObj2.Eles[f],iStr);
+end;
 end;
 
 {%EndRegion}
@@ -2663,17 +2792,25 @@ else if iStr[lPos]='O' Then begin INC(lPos);
      end;
      end
 else if iStr[lPos]='E' Then begin INC(lPos);
+
      R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lEle:=I_FIN_Ele(iVer,lNam);// Ищю Элемент с таким же именем
-     if not R_K Then begin // Если не режим анимации то созаем элемент не достающий
-       if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
-       iVer:=lEle;// Назначаю текущим
-       iVer.Nam:=lNam;// Указываю имя
-     end else R_P:=False;// Чтение параметров отключено
+
+     if     R_K Then
+     if lEle=nil then R_P:=False// Чтение параметров отключено
+                 else iVer:=lEle;// Назначаю текущим
+
+
+     if NOT R_K Then begin
+     if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
+     iVer:=lEle;// Назначаю текущим
+     iVer.Nam:=lNam;// Указываю имя
+     end;
+
      end
 else if iStr[lPos]='L' Then begin INC(lPos);
-     R_P:=True;// Включаем чтение параметров
+     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lLin:=I_FIN_Lin(iVer,lNam);// Ищю Линию с таким же именем
      if not R_K Then begin // Если не режим анимации то созаем элемент не достающий
@@ -2683,7 +2820,7 @@ else if iStr[lPos]='L' Then begin INC(lPos);
      end else R_P:=False;// Чтение параметров отключено
      end
 else if iStr[lPos]='P' Then begin INC(lPos);
-     R_P:=True;// Включаем чтение параметров
+     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lPlo:=I_FIN_Plo(iVer,lNam);// Ищю плоскость с таким же именем
      if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
@@ -2693,14 +2830,19 @@ else if iStr[lPos]='P' Then begin INC(lPos);
      end else R_P:=False;// Чтение параметров отключено
      end
 else if iStr[lPos]='V' Then begin INC(lPos);
-     R_P:=True;// Включаем чтение параметров
+     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      lVer:=I_FIN_Ver(iVer,lNam);// Ищю вершину с тким именем
+
+     if     R_K  Then
+     if lVer=nil then R_P:=False// Чтение параметров отключено
+                 else iVer:=lVer;// Назначаю текущим
+
      if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
        if lVer=Nil then lVer:=TVer(I_AddVer(iVer));// Добавляю вершину
        iVer:=lVer;// Назанчаю текущитм
        iVer.Nam:=lNam;// Указываю имя
-     end else R_P:=False;// Чтение параметров отключено
+     end;
      end
 // Имя          ----------------------------------------------------
 else if iStr[lPos]='N' Then begin INC(lPos);
@@ -2762,6 +2904,51 @@ else inc(lPos);
 end
 end;
 
+
+procedure  I_DEL_ANIMATION;
+var
+m:Tstr;
+begin
+with form5 do begin
+if CheckListBox2.itemindex<CheckListBox2.items.count then
+if CheckListBox2.itemindex>0 then begin
+M:=TStr(CheckListBox2.Items.Objects[CheckListBox2.itemindex]);
+M.Free;
+CheckListBox2.Items.Delete(CheckListBox2.itemindex);
+end;
+end;
+end;
+function  I_ADD_ANIMATION(iLis:TCheckListBox):ansistring;
+var
+Rez:Ansistring;
+lSelObjs:TSels;
+M:TStr;
+begin
+lSelObjs:=MirSels.SELOBJS;
+if lSelObjs.KOl=2 then begin
+I_TOBJ_ANI_01(TObj(lSelObjs.SELS[1]),TObj(lSelObjs.SELS[2]),Rez);
+M:=TStr.Create;
+M.TXT:=REz;
+iLis.Items.AddObject(I_NewNamIdd('A '),M);
+end;
+lSelObjs.free;
+
+I_ADD_ANIMATION:=Rez;
+end;
+procedure I_SET_ANIMATION(iObjs,iAnis:TCheckListBox);
+var
+lSelObjs:TSels;
+lStr:Tstr;
+begin
+lSelObjs:=MirSels.SELOBJS;
+if lSelObjs.KOl=1 then begin
+lStr:=TStr(iAnis.Items.Objects[iAnis.ItemIndex]);
+//lStr.TXT
+I_SCENA_GET_01(TObj(lSelObjs.SELS[1]),lStr.TXT);
+end;
+lSelObjs.free;
+end;
+
 procedure I_SaveScena(iNamFile:Ansistring);
 var
 tf:TextFile;
@@ -2796,6 +2983,11 @@ end;
 {%EndRegion}
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
                                                            J_Reg11:Longint;
+
+
+
+
+
 
 procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
 var
@@ -3104,7 +3296,7 @@ var F:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(300);MirObjs.Ras;
+     sleep(50);MirObjs.Ras;
      for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
    end;
 result:=0;
@@ -3117,7 +3309,7 @@ lDrKL:Longword;// Реальное количество Вершин Линий
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(300);
+     sleep(30);
      // ========================================================================
      with MirVers do for f:=1 to KOlV do
      if   not Vers[f].DEL then
@@ -3126,7 +3318,7 @@ begin
      ECOL1[f]:=Col;
      end;
      // ========================================================================
-     lDrKp:=0;sleep(300);
+     lDrKp:=0;sleep(30);
      with MirPlos do for f:=1 to KolP do
      if   not Plos[f].DEL then
      with Plos[f] do begin
@@ -3138,8 +3330,8 @@ begin
      EPlo1[lDrKp].VERS[5]:=Vers[4].Nom;
      EPlo1[lDrKp].VERS[6]:=Vers[1].Nom;
      end;
-     MirPLos.DrKp:=lDrKp;sleep(300);
-     lDrKl:=0;sleep(300);
+     MirPLos.DrKp:=lDrKp;
+     lDrKl:=0;
      with MirLins do for f:=1 to KolL do
      if   not Lins[f].DEL then
      with Lins[f] do begin
@@ -3147,7 +3339,7 @@ begin
      ELin1[DrKl].VERS[1]:=Vers[1].Nom;
      ELin1[DrKl].VERS[2]:=Vers[2].Nom;
      end;
-     MirLins.DrKl:=lDrKl;sleep(300);
+     MirLins.DrKl:=lDrKl;sleep(30);
      // ========================================================================
      with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
      with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
@@ -3244,8 +3436,6 @@ begin
   glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
   glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
   glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
-
-
   I_EDITDRAW;//-----------------------------------------------------------------
   end;
   //----------------------------------------------------------------------------
@@ -3340,11 +3530,11 @@ end;
 {%EndRegion}
 end.
 
-// Что то типа ТЗ напоминалка что бы не забыть
+
 // 1.Чай 5 мин
-// 2.Нарисовать человечека
-// 3.Сделать анимацию созание кадров обьектов
-// 4.Не забуть доделать удаление по Признаку DEL
-// 5.Пропуск () "" '' {} и неизвестных знаков
+// 2.Сделать анимацию созание кадров обьектов  )))) Почти готово ))))
+// 3.Не забуть доделать удаление по Признаку DEL
+// 4.Пропуск () "" '' {} и неизвестных знаков
+// Добавить сворачивание блоков       { }
 // Создаить окно найтроек
 
