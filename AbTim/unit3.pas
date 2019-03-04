@@ -88,17 +88,17 @@ procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
 
-function isFloat(s:AnsiString):Boolean;
-function inFloat(s:AnsiString):real;
-function InString(i:REal):ansiString;
+function  isFloat(s:AnsiString):Boolean;
+function  inFloat(s:AnsiString):real;
+function  InString(i:REal):ansiString;
 procedure I_Set_MBUT(iBol:Boolean);
 procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
-function  I_ADD_ANIMATION(iLis:TCheckListBox):ansistring;// Созадет кадр анимации
-procedure I_SET_ANIMATION(iObjs,iAnis:TCheckListBox);// Приеняет кадр анимации
-procedure  I_DEL_ANIMATION;
+procedure I_ADD_ANIMATION(iAni:TCheckListBox);// Созадет кадр анимации
+procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
+procedure I_DEL_ANIMATION(iAni:TCheckListBox);
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
 var   {Базa                   ===========================}{%Region /FOLD }
@@ -480,6 +480,28 @@ var   {Базовые функции        ===========================}{%Region
       begin
       GIDD:=GIDD+1;
       NewIdd:=GIDD;
+      end;
+      procedure StrToFile(var iNam,iStr:Ansistring);
+      var tf:TextFile;
+      begin
+      AssignFile(tf,iNam);
+      rewrite(tf);
+      writeln(tf,iStr);
+      closefile(tf);
+      end;
+      procedure FileToStr(var iNam,iStr:Ansistring);
+      var
+      tf:TextFile;
+      lStr,S:AnsiString;
+      begin
+      AssignFile(tf,iNam);
+      Reset(tf);
+      while Not Eof(tf) do begin
+      Readln(tf,S);
+      lStr:=lStr+s
+      end;
+      iStr:=lStr;
+      closefile(tf);
       end;
 
 {%EndRegion}
@@ -1221,6 +1243,7 @@ TYPE TOBJ=CLASS(TELE)
   KAdr:RSIN;// Номер кадра для анимации
   OCEL:RCS3;// Цель куда нужно перпемесчаться
   OPER:RBOL;// Если это управляемый персонаж А не бот
+  OGRA:RBOL;// Являеться ли обьект гравитационным
   KolP:RLON;// Количество плоскостей
   KolL:RLON;// Количество Линий
   KolD:RLON;// Количество Зависимых обьектов
@@ -1381,6 +1404,7 @@ KolP:=0;
 KolD:=0;
 OBJ:=Self;
 ELE:=Self;
+OGRA:=false;
 COM:=False;// Обьект собран и готов к отрисовке и работе
 end;
 Destructor  Tobj.Destroy;
@@ -1547,6 +1571,47 @@ begin
 end;
 
 {%EndRegion}
+var   {ГРавитация             ===========================}{%Region /FOLD }
+                                                           Reg1G:Longint;
+procedure Grav;
+var fo,fg:Longint;
+begin
+for fo:=1 to MirObjs.KOlO do
+if  not MirObjs.Objs[fo].OGRA then
+for fg:=1 to MirObjs.KOlO do
+if      MirObjs.Objs[fo].OGRA then
+if
+Vhodit3D(MirObjs.Objs[fo].REA,MirObjs.Objs[Fg].GMin,MirObjs.Objs[Fg].GMin) then
+if
+(MirObjs.Objs[fo].GOB=Nil)or(MirObjs.Objs[fo].GOB.OB3>MirObjs.Objs[fo].OB3)then
+begin
+
+
+end
+
+end;
+
+{%EndRegion}
+var   {Маршрутизация          ===========================}{%Region /FOLD }
+                                                           Reg1M:Longint;
+procedure GoGo;
+begin
+
+end;
+
+
+{%EndRegion}
+var   {ПРограмирваоние        ===========================}{%Region /FOLD }
+                                                           Reg1P:Longint;
+procedure Prog;
+begin
+
+end;
+
+
+{%EndRegion}
+
+
 
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
@@ -1557,48 +1622,41 @@ var   {----------------------- Возавращает списки     ===}{%Reg
 function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
 var REz:TVer;f:longint;
 begin
-
 rez:=Nil;
-
-if iEle<>Nil Then begin
-
-if iEle.Nam=iNam Then REz:=iEle;
-
-if Rez=Nil Then
-if iEle.TIP=T_OBJ Then
+if iEle.Nam=iNam Then REz:=iEle;        // Смотрю свое имя
+//-------------------------------------------------
+if (Rez=Nil) and (iEle.TIP=T_OBJ)  Then // Ищу среди Плоскостей
 for f:=1 to TObj(iEle).KolP do
 if TObj(iEle).PLOS[f].NAM=iNAm then REz:=TObj(iEle).PLOS[f];
-
-if Rez=Nil Then
-for f:=1 to iEle.KolV do // Ищу среди вершин
+//-------------------------------------------------
+if (Rez=Nil) and (iEle.TIP=T_OBJ)  Then // Ищу среди Линий
+for f:=1 to TObj(iEle).KolL do
+if TObj(iEle).ELES[f].NAM=iNAm then REz:=TObj(iEle).ELES[f];
+//-------------------------------------------------
+if Rez=Nil Then for f:=1 to iEle.KolV do // Ищу среди вершин
 if iEle.VERS[f].NAM=iNam then REz:=iEle.VERS[f];
-
-if REz=Nil Then begin
+//-------------------------------------------------
 f:=1;
- while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
- if iEle.ELES[f].NAM=iNAm then REz:=iEle.ELES[f];
- if rez=nil then REz:=I_FinNam(iEle.ELES[f],inam);
- f:=f+1;
- end;
+while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
+ REz:=I_FinNam(iEle.ELES[f],inam);f:=f+1;
 end;
-
+//-------------------------------------------------
+I_FinNam:=Rez;
 end;
-if iEle=Nil Then begin
-f:=1;
+function  I_FinNam(iNam:Ansistring):TVer;
+var
+REz:TVer;
+f:longint;
+begin
+REz:=Nil;f:=1;
 while (f<=MirObjs.KolO) and (REz=Nil) do begin
-Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);
-f:=f+1;
+Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);f:=f+1;
 end;
-
-I_FinNam:=Nil;
-end;
-
-
 I_FinNam:=Rez;
 end;
 function  I_NewNamIdd(iStr:Ansistring):Ansistring;
 begin
-while (I_FinNam(nil,iStr+IntToStr(GIDD))<>nil) do
+while (I_FinNam(iStr+IntToStr(GIDD))<>nil) do
 GIDD:=GIDD+1000;
 I_NewNamIdd:=iStr+IntToStr(GIDD);
 end;
@@ -1910,7 +1968,7 @@ procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
 
-if I_FinNam(Nil,iEdit.Text)=nil
+if I_FinNam(iEdit.Text)=nil
    then begin
    G_Change:=true;
    TVEr(iVer).NAM:=iEdit.Text;
@@ -2594,8 +2652,26 @@ for f:=1 to iObj.KOlP do
 if NOT iObj.PLos[f].DEL Then I_TPLO_PUT_01(iObj.Plos[f],iStr);
 
 end;
+Procedure I_PRIM_PUT_01(iVer:TVer;var iStr:Ansistring);
+begin
+if iVer.TIP=T_VER THEN I_TVER_PUT_01(TVer(iVer),iStr) else
+if iVer.TIP=T_LIN THEN I_TLIN_PUT_01(TLin(iVer),iStr) else
+if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
+if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
+if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
+iStr:=iStr+CR;
+iStr:=iStr+CR;
+end;
+Procedure I_OBJS_PUT_01(var iStr:Ansistring);
+var f:Longint;
+begin
+for f:=1 to MirObjs.KOLO do
+if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
+iStr:=iStr+CR;
+iStr:=iStr+CR;
+end;
 
-// Сохраниение анимации
+// Сравнение структур
 function  I_RAV_VER(iVer1,iVer2:TVer):Boolean;
 var Rez:Boolean;
 begin
@@ -2645,6 +2721,8 @@ f:=1;while (f<=iEle2.KOlE) and (rez=true) do
 //--------------------------------------------
 I_RAV_Ele:=Rez;
 end;
+
+// Сохраниение анимации
 Procedure I_TVER_ANI_01(iObj:Tobj;iVer:TVer;var iStr:Ansistring);
 var
 lver:Tver;
@@ -2711,7 +2789,7 @@ var f:Longint;
 begin
 for f:=1 to iObj2.KOlE do
 if NOT iObj2.Eles[f].DEL Then begin
-iStr:=iStr+'K O(self)';// Сохраняю Текущий контекст
+iStr:=iStr+'O(self)';// Сохраняю Текущий контекст
 I_TELE_ANI_01(iObj1,iObj2.Eles[f],iStr);
 end;
 end;
@@ -2720,284 +2798,537 @@ end;
 var   {----------------------- Сохранение и загрузка  ===}{%Region /FOLD }
                                                            I_Reg11:Longint;
 
-Procedure I_SCENA_PUT_01(iVer:TVer;var iStr:Ansistring);
-var f:Longint;
-begin
-
-if iVer=Nil
-then begin
-for f:=1 to MirObjs.KOLO do
-if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
-end
-else begin
-
-if iVer.TIP=T_VER THEN I_TVER_PUT_01(TVer(iVer),iStr) else
-if iVer.TIP=T_LIN THEN I_TLIN_PUT_01(TLin(iVer),iStr) else
-if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
-if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
-if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
-
-end;
-iStr:=iStr+CR;
-iStr:=iStr+CR;
-
-end;
-Procedure I_SCENA_GET_01(iVer:TVer;var iStr:Ansistring);
+Procedure I_SCENA_ADD_01(var iStr:Ansistring);
 var
-R_K,R_D,R_P:Boolean;
 lPos:Longint;
 lNam:Ansistring;
+lAni:Ansistring;
+lPri:TVER;
 lVer:TVer;
+fVer:TVer;
 lLin:TLin;
+fLin:TLin;
 lPlo:TPlo;
+fPlo:TPlo;
 lEle:TEle;
-lObj,SObj:Tobj;
+fEle:TEle;
+lObj:Tobj;
+fObj:Tobj;
 begin
-R_K:=False;// Режим Кадр обьекта для анимациии
-R_D:=False;// Режим Дубликат обьекта
-R_P:=true;// Режим параметров
-lPos:=1;
-sobj:=Tobj(iVer);
+lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;
 While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
 // Созаю елси нету таких элементов если есть назначаю текущим ------
-     if iStr[lPos]='D' Then begin INC(lPos);// Включет режим Дублирование обьекта
-     R_D:=true;// Далее следует Копия обьекта
-     // Это означаем что ему нужно дать нвоое имя
-     end
-else if iStr[lPos]='K' Then begin INC(lPos);// Включет режим далее идет кадр
-     // Далее следует анимация занчит ненаад создавать элементы
-     R_K:=true;
+     if iStr[lPos]='S' Then begin INC(lPos);// Далее следует кадр анимации
+     // Далее следует кадр анимации для загрузки
+     I_GetSC(lPos,iStr);
+     while (iStr[lpos]<>'.') and (lpos<length(iStr)) do
+     if iStr[lpos]='('
+     then lAni:=lAni+I_GetSC(lPos,iStr)
+     else begin lAni:=iStr[lPos];lpos:=lpos+1;end;
      end
 else if iStr[lPos]='O' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lObj:=I_FIN_Obj(lNam);
-     If R_D Then begin // Дублирование кода
-     // нужно присвоить нвоое имя для обьекта
-     R_D:=False;
-     lObj:=TObj(I_AddObj);
-     lObj.NAm:=I_NewNamIdd(lNam+' ');
-     sObj:=lObj;
-     iVer:=lObj;// Указываю текущим
-     end;
-     if lObj=nil then
-     if lNam<>'self'
+     if(lNam='self')
      then begin
-     lObj:=TObj(I_AddObj);sobj:=lObj;
-     iVer:=lObj;// Указываю текущим
-     iVer.Nam:=lNam;// Назанчаю имя
-     end// Если нету создаю
+          if (lObj=nil) then ERR('Ни один обьект еще несоздан');
+          lPri:=Tver(lObj);// Указываю текущим
+          end
      else begin
-     if Sobj=Nil Then ERR('Ни один обьект еще несоздан');
-     lObj:=sObj;
-     end;
+          fObj:=I_FIN_Obj(lNam);// Ищу обьект
+          if fObj=nil then begin // Если такого обьекта не существует
+                      lObj:=TObj(I_AddObj); // Создаю его
+                      lObj.Nam:=lNam;// Назанчаю имя
+                      end
+                      else lObj:=fObj;
+          lPri:=Tver(lObj);// Указываю текущим
+          end
      end
 else if iStr[lPos]='E' Then begin INC(lPos);
-
-     R_P:=True;// Включаем чтение параметров
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lEle:=I_FIN_Ele(iVer,lNam);// Ищю Элемент с таким же именем
-
-     if     R_K Then
-     if lEle=nil then R_P:=False// Чтение параметров отключено
-                 else iVer:=lEle;// Назначаю текущим
-
-
-     if NOT R_K Then begin
-     if lEle=nil then lEle:=TEle(i_AddEle(iVer));// Если нету создаю
-     iVer:=lEle;// Назначаю текущим
-     iVer.Nam:=lNam;// Указываю имя
-     end;
-
+     fEle:=I_FIN_Ele(lObj,lNam);// Ищю Элемент с таким же именем
+     if fEle=nil then begin
+                 lEle:=TEle(i_AddEle(lPri));// Если нету создаю элемент
+                 lEle.Nam:=lNam;// Указываю имя
+                 end
+                 else lEle:=fEle;
+     lPri:=lEle;// Назначаю текущим
      end
 else if iStr[lPos]='L' Then begin INC(lPos);
-     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lLin:=I_FIN_Lin(iVer,lNam);// Ищю Линию с таким же именем
-     if not R_K Then begin // Если не режим анимации то созаем элемент не достающий
-       if lLin=nil then lLin:=TLin(I_AddLin(iVer));// Если нету создает Линию
-       iVer:=lLin;// Назначаю текущим
-       iVer.Nam:=lNam;// Указываю имя
-     end else R_P:=False;// Чтение параметров отключено
+     fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
+     if fLin=nil then begin
+                 lLin:=TLin(I_AddLin(lObj));// Если нету создает Линию
+                 lLin.Nam:=lNam;// Указываю имя
+                 end
+                 else lLin:=fLin;
+     lPri:=lLin;// Назначаю текущим
      end
 else if iStr[lPos]='P' Then begin INC(lPos);
-     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lPlo:=I_FIN_Plo(iVer,lNam);// Ищю плоскость с таким же именем
-     if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
-       if lPlo=nil then lPlo:=TPlo(I_AddPPl(iVer));// Если нету создает плоскость
-       iVer:=lPlo;// Назначаю текущим
-       iVer.Nam:=lNam;// Указываю имя
-     end else R_P:=False;// Чтение параметров отключено
+     fPlo:=I_FIN_Plo(lObj,lNam);// Ищю плоскость с таким же именем
+     if fPlo=nil then begin
+                      lPlo:=TPlo(I_AddPPl(lObj));// Если нету создает плоскость
+                      lPlo.Nam:=lNam;// Указываю имя
+                      end
+                      else lPlo:=fPlo;
+     lPri:=lPlo;// Назначаю текущим
      end
 else if iStr[lPos]='V' Then begin INC(lPos);
-     R_P:=true;
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     lVer:=I_FIN_Ver(iVer,lNam);// Ищю вершину с тким именем
-
-     if     R_K  Then
-     if lVer=nil then R_P:=False// Чтение параметров отключено
-                 else iVer:=lVer;// Назначаю текущим
-
-     if not R_K Then begin// Если не режим анимации то созаем элемент не достающий
-       if lVer=Nil then lVer:=TVer(I_AddVer(iVer));// Добавляю вершину
-       iVer:=lVer;// Назанчаю текущитм
-       iVer.Nam:=lNam;// Указываю имя
-     end;
+     fVer:=I_FIN_Ver(lPri,lNam);// Ищю вершину с тким именем
+     if fVer=Nil then begin
+                 lVer:=TVer(I_AddVer(lPri));// Добавляю вершину
+                 lVer.Nam:=lNam;// Указываю имя
+                 end
+                 else lVer:=fVer;
+     lPri:=lVer;// Назанчаю текущитм
      end
 // Имя          ----------------------------------------------------
 else if iStr[lPos]='N' Then begin INC(lPos);
-     if R_P then iVer.NAm:=I_GetSC(lPos,iStr);
+     lPri.NAm:=I_GetSC(lPos,iStr);
      end
 // Коринаты     ----------------------------------------------------
 else if iStr[lPos]='X' Then begin INC(lPos);
-     if R_P then iVer.LOC.X:=inFloat(I_GetSC(lPos,iStr))
+     lPri.LOC.X:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='Y' Then begin INC(lPos);
-     if R_P then iVer.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
+     lPri.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='Z' Then begin INC(lPos);
-     if R_P then iVer.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
+     lPri.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
      end
 // Цвета        ----------------------------------------------------
 else if iStr[lPos]='R' Then begin INC(lPos);
-     if R_P then iVer.COL.R:=StrToInt(I_GetSC(lPos,iStr))
+     lPri.COL.R:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='G' Then begin INC(lPos);
-     if R_P then iVer.COL.G:=StrToInt(I_GetSC(lPos,iStr))
+     lPri.COL.G:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='B' Then begin INC(lPos);
-     if R_P then iVer.COL.B:=StrToInt(I_GetSC(lPos,iStr))
+     lPri.COL.B:=StrToInt(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='A' Then begin INC(lPos);
-     if R_P then iVer.COL.A:=StrToInt(I_GetSC(lPos,iStr))
+     lPri.COL.A:=StrToInt(I_GetSC(lPos,iStr))
      end
 // Углы наклона ----------------------------------------------------
 else if iStr[lPos]='x' Then begin INC(lPos);
-     if R_P then I_GetEl(iVer).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
+     I_GetEl(lPri).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='y' Then begin INC(lPos);
-     if R_P then I_GetEl(iVer).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
+     I_GetEl(lPri).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
      end
 else if iStr[lPos]='z' Then begin INC(lPos);
-     if R_P then I_GetEl(iVer).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
+     I_GetEl(lPri).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
      end
 // Имена вершмин для плоскости -------------------------------------
 else if iStr[lPos]='a' Then begin INC(lPos);
-     if R_P then lPlo.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lPlo.VERS[1]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='b' Then begin INC(lPos);
-     if R_P then lPlo.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lPlo.VERS[2]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='c' Then begin INC(lPos);
-     if R_P then lPlo.VERS[3]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lPlo.VERS[3]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='d' Then begin INC(lPos);
-     if R_P then lPlo.VERS[4]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lPlo.VERS[4]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='e' Then begin INC(lPos);
-     if R_P then lLin.VERS[1]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lLin.VERS[1]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='f' Then begin INC(lPos);
-     if R_P then lLin.VERS[2]:=I_FIN_VER(iVer,I_GetSC(lPos,iStr));
+     lLin.VERS[2]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
      end
-else inc(lPos);
+else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
+end
+end;
+Procedure I_SCENA_DOU_01(var iStr:Ansistring);
+var
+lPos:Longint;
+lNam:Ansistring;
+lAni:Ansistring;
+lPri:TVER;
+lVer:TVer;
+fVer:TVer;
+lLin:TLin;
+fLin:TLin;
+lPlo:TPlo;
+fPlo:TPlo;
+lEle:TEle;
+fEle:TEle;
+lObj:Tobj;
+fObj:Tobj;
+begin
+lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;
+While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
+// Созаю елси нету таких элементов если есть назначаю текущим ------
+     if iStr[lPos]='S' Then begin INC(lPos);// Далее следует кадр анимации
+     // Далее следует кадр анимации для загрузки
+     I_GetSC(lPos,iStr);
+     while (iStr[lpos]<>'.') and (lpos<length(iStr)) do
+     if iStr[lpos]='('
+     then lAni:=lAni+I_GetSC(lPos,iStr)
+     else begin lAni:=iStr[lPos];lpos:=lpos+1;end;
+     end
+else if iStr[lPos]='O' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if(lNam='self')
+     then begin
+          if (lObj=nil) then ERR('Ни один обьект еще несоздан');
+          lPri:=Tver(lObj);// Указываю текущим
+          end
+     else begin
+          fObj:=I_FIN_Obj(lNam);// Ищу обьект
+          if fObj=nil then begin // Если такого обьекта не существует
+                      lObj:=TObj(I_AddObj); // Создаю его
+                      lObj.Nam:=lNam;// Назанчаю имя
+                      end
+                      else begin
+                      lObj:=TObj(I_AddObj); // Создаю его
+                      lObj.Nam:=I_NewNamIdd(lNam);// Назанчаю имя
+                      end;
+          lPri:=Tver(lObj);// Указываю текущим
+          end
+     end
+else if iStr[lPos]='E' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     fEle:=I_FIN_Ele(lObj,lNam);// Ищю Элемент с таким же именем
+     if fEle=nil then begin
+                 lEle:=TEle(i_AddEle(lPri));// Если нету создаю элемент
+                 lEle.Nam:=lNam;// Указываю имя
+                 end else lEle:=fEle;
+     lPri:=lEle;// Назначаю текущим
+     end
+else if iStr[lPos]='L' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
+     if fLin=nil then begin
+                 lLin:=TLin(I_AddLin(lObj));// Если нету создает Линию
+                 lLin.Nam:=lNam;// Указываю имя
+                 end
+                 else lLin:=fLin;
+     lPri:=lLin;// Назначаю текущим
+     end
+else if iStr[lPos]='P' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     fPlo:=I_FIN_Plo(lObj,lNam);// Ищю плоскость с таким же именем
+     if fPlo=nil then begin
+                      lPlo:=TPlo(I_AddPPl(lObj));// Если нету создает плоскость
+                      lPlo.Nam:=lNam;// Указываю имя
+                      end
+                      else lPlo:=fPlo;
+     lPri:=lPlo;// Назначаю текущим
+     end
+else if iStr[lPos]='V' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     fVer:=I_FIN_Ver(lPri,lNam);// Ищю вершину с тким именем
+     if fVer=Nil then
+                 begin
+                 lVer:=TVer(I_AddVer(lPri));// Добавляю вершину
+                 lVer.Nam:=lNam;// Указываю имя
+                 end
+                 else lVer:=fVer;
+     lPri:=lVer;// Назанчаю текущитм
+     end
+// Имя          ----------------------------------------------------
+else if iStr[lPos]='N' Then begin INC(lPos);
+     LPri.NAm:=I_GetSC(lPos,iStr);
+     end
+// Коринаты     ----------------------------------------------------
+else if iStr[lPos]='X' Then begin INC(lPos);
+     LPri.LOC.X:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='Y' Then begin INC(lPos);
+     LPri.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='Z' Then begin INC(lPos);
+     LPri.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
+     end
+// Цвета        ----------------------------------------------------
+else if iStr[lPos]='R' Then begin INC(lPos);
+     LPri.COL.R:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='G' Then begin INC(lPos);
+     LPri.COL.G:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='B' Then begin INC(lPos);
+     LPri.COL.B:=StrToInt(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='A' Then begin INC(lPos);
+     LPri.COL.A:=StrToInt(I_GetSC(lPos,iStr))
+     end
+// Углы наклона ----------------------------------------------------
+else if iStr[lPos]='x' Then begin INC(lPos);
+     I_GetEl(LPri).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='y' Then begin INC(lPos);
+     I_GetEl(LPri).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
+     end
+else if iStr[lPos]='z' Then begin INC(lPos);
+     I_GetEl(LPri).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
+     end
+// Имена вершмин для плоскости -------------------------------------
+else if iStr[lPos]='a' Then begin INC(lPos);
+     lPlo.VERS[1]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='b' Then begin INC(lPos);
+     lPlo.VERS[2]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='c' Then begin INC(lPos);
+     lPlo.VERS[3]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='d' Then begin INC(lPos);
+     lPlo.VERS[4]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='e' Then begin INC(lPos);
+     lLin.VERS[1]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='f' Then begin INC(lPos);
+     lLin.VERS[2]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
+     end
+else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
+end
+end;
+Procedure I_SCENA_KAD_01(var iStr:Ansistring);
+var
+R_O,R_P:Boolean;
+lPos:Longint;
+lNam:Ansistring;
+lZna:Ansistring;
+lPri:TVER;
+lVer:TVer;
+fVer:TVer;
+lLin:TLin;
+fLin:TLin;
+lPlo:TPlo;
+fPlo:TPlo;
+lEle:TEle;
+fEle:TEle;
+lObj:Tobj;
+fObj:Tobj;
+begin
+lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;R_O:=False;R_P:=False;
+While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
+
+     if iStr[lPos]='O' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if(lNam='self')
+     then begin
+          if (lObj=nil) then ERR('Ни один обьект еще несоздан');
+          if R_O then lPri:=Tver(lObj);// Указываю текущим
+          end
+     else begin
+          fObj:=I_FIN_Obj(lNam);// Ищу обьект
+          if fObj=nil then begin // Если такого обьекта не существует
+                      R_O:=false;
+                      R_P:=False;
+                      end
+                      else begin
+                      R_O:=true;
+                      R_P:=true;
+                      lObj:=fObj;
+                      lPri:=Tver(lObj);// Указываю текущим
+                      end;
+          end
+     end
+else if iStr[lPos]='E' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if R_O then begin
+     fEle:=I_FIN_Ele(lObj,lNam);// Ищю Элемент с таким же именем
+     if fEle=nil then R_P:=false
+                 else begin
+                 R_P:=true;
+                 lEle:=fEle;
+                 lPri:=lEle;// Назначаю текущим
+                 end;
+     end;
+     end
+else if iStr[lPos]='L' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if R_O then begin
+     fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
+     if fLin=nil then R_P:=false
+                 else begin
+                 R_P:=true;
+                 lLin:=fLin;
+                 lPri:=lLin;// Назначаю текущим
+                 end
+     end
+     end
+else if iStr[lPos]='P' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if R_O then begin
+     fPlo:=I_FIN_Plo(lObj,lNam);// Ищю плоскость с таким же именем
+     if fPlo=nil then R_P:=false
+                 else begin
+                      R_P:=true;
+                      lPlo:=fPlo;
+                      lPri:=lPlo;// Указываю имя
+                      end;
+     end;
+     end
+else if iStr[lPos]='V' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
+     if R_O then begin
+     lVer:=I_FIN_Ver(lPri,lNam);// Ищю вершину с тким именем
+     if lVer=Nil then R_P:=false
+                 else begin
+                      R_P:=true;
+                      lVer:=fVer;
+                      lPri:=lVer;// Указываю имя
+                 end;
+     end
+     end
+// Имя          ----------------------------------------------------
+else if iStr[lPos]='N' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.Nam:=lZna;
+     end
+// Коринаты     ----------------------------------------------------
+else if iStr[lPos]='X' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.LOC.X:=inFloat(lZna)
+     end
+else if iStr[lPos]='Y' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.LOC.Y:=inFloat(lZna)
+     end
+else if iStr[lPos]='Z' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.LOC.Z:=inFloat(lZna)
+     end
+// Цвета        ----------------------------------------------------
+else if iStr[lPos]='R' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.COL.R:=StrToInt(lZna)
+     end
+else if iStr[lPos]='G' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.COL.G:=StrToInt(lZna)
+     end
+else if iStr[lPos]='B' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.COL.B:=StrToInt(lZna)
+     end
+else if iStr[lPos]='A' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.COL.A:=StrToInt(lZna)
+     end
+// Углы наклона ----------------------------------------------------
+else if iStr[lPos]='x' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then I_GetEl(LPri).EUGL.X:=inFloat(lZna)
+     end
+else if iStr[lPos]='y' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then I_GetEl(LPri).EUGL.Y:=inFloat(lZna)
+     end
+else if iStr[lPos]='z' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then I_GetEl(LPri).EUGL.Z:=inFloat(lZna)
+     end
+// Имена вершмин для плоскости -------------------------------------
+else if iStr[lPos]='a' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lPlo.VERS[1]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='b' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lPlo.VERS[2]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='c' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lPlo.VERS[3]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='d' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lPlo.VERS[4]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='e' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lLin.VERS[1]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='f' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then lLin.VERS[2]:=I_FIN_VER(LPri,lZna);
+     end
+else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
 end
 end;
 
-
-procedure  I_DEL_ANIMATION;
+procedure I_DEL_ANIMATION(iAni:TCheckListBox);
 var
+f:Longint;
 m:Tstr;
 begin
-with form5 do begin
-if CheckListBox2.itemindex<CheckListBox2.items.count then
-if CheckListBox2.itemindex>0 then begin
-M:=TStr(CheckListBox2.Items.Objects[CheckListBox2.itemindex]);
-M.Free;
-CheckListBox2.Items.Delete(CheckListBox2.itemindex);
+f:=iAni.Items.Count-1;
+while f>1 do begin
+if iAni.Selected[f] then begin
+   M:=TStr(iAni.Items.Objects[iAni.itemindex]);
+   M.Free;
+   iAni.items.delete(f);
+   end;
+f:=f-1;
+end
 end;
-end;
-end;
-function  I_ADD_ANIMATION(iLis:TCheckListBox):ansistring;
+procedure I_ADD_ANIMATION(iAni:TCheckListBox);
 var
-Rez:Ansistring;
 lSelObjs:TSels;
 M:TStr;
 begin
 lSelObjs:=MirSels.SELOBJS;
 if lSelObjs.KOl=2 then begin
-I_TOBJ_ANI_01(TObj(lSelObjs.SELS[1]),TObj(lSelObjs.SELS[2]),Rez);
 M:=TStr.Create;
-M.TXT:=REz;
-iLis.Items.AddObject(I_NewNamIdd('A '),M);
+I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),M.TXT);
+iAni.Items.AddObject(I_NewNamIdd('A '),M);
 end;
 lSelObjs.free;
-
-I_ADD_ANIMATION:=Rez;
 end;
-procedure I_SET_ANIMATION(iObjs,iAnis:TCheckListBox);
+procedure I_SET_ANIMATION(iAni:TCheckListBox);
 var
+fa,fo:Longint;
 lSelObjs:TSels;
 lStr:Tstr;
+lAni:AnsiString;
 begin
 lSelObjs:=MirSels.SELOBJS;
-if lSelObjs.KOl=1 then begin
-lStr:=TStr(iAnis.Items.Objects[iAnis.ItemIndex]);
-//lStr.TXT
-I_SCENA_GET_01(TObj(lSelObjs.SELS[1]),lStr.TXT);
+for fa:=1 to iAni.Items.count-1 do
+if iAni.Selected[fa]     then
+for fo:=1 to lSelObjs.KOl do begin
+lStr:=TStr(iAni.Items.Objects[fa]);
+lAni:='O('+lSelObjs.Sels[fo].NAM+')'+lStr.TXT;
+I_SCENA_KAD_01(lAni);
 end;
 lSelObjs.free;
 end;
 
 procedure I_SaveScena(iNamFile:Ansistring);
-var
-tf:TextFile;
-lStr:Ansistring;
+var lStr:Ansistring;
 begin
-I_SCENA_PUT_01(nil,lStr);
-AssignFile(tf,iNamFile);
-rewrite(tf);
-writeln(tf,lStr);
-closefile(tf);
+I_OBJS_PUT_01(lStr);
+StrToFile(iNamFile,lStr);
 G_Change:=false;
 end;
 procedure I_LoadScena(iNamFile:Ansistring);
 var
-tf:TextFile;
-s,lStr:Ansistring;
+lStr:AnsiString;
 begin
-lStr:='';
-AssignFile(tf,iNamFile);
-Reset(tf);
-while Not Eof(tf) do begin
-Readln(tf,S);
-lStr:=lStr+s
-end;
-closefile(tf);
+FileToStr(iNamFile,lStr);
 I_ClearScena;// Очищаем сцену
-I_SCENA_GET_01(nil,lStr);
+I_SCENA_DOU_01(lStr);
 G_Change:=false;
-
 end;
 
 {%EndRegion}
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
                                                            J_Reg11:Longint;
 
-
-
-
-
-
 procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
 var
 lStr:Ansistring;
-LObj:Pointer;
 begin
-lObj:=nil;
-I_SCENA_PUT_01(TObj(iTObj),lStr);// превращаем обьект в строку
-lStr:='D'+lStr;
-I_SCENA_GET_01(nil,lStr);// Превращаем строку в обьект
+I_TOBJ_PUT_01(TObj(iTObj),lStr);// превращаем обьект в строку
+I_SCENA_DOU_01(lStr);// Превращаем строку в обьект
 end;
 procedure I_Set_MBUT(iBol:Boolean);
 begin
@@ -3085,8 +3416,8 @@ if (RC>0) and (RC<=MirObjs.KolO) then begin
 NoSel:=False;// Указваю что есть выбраный обьект
 MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
 I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
-if MBUT THEN CaP3:=MirObjs.Objs[RC].ECR;
-if DBUT THEN U_OpenObject(MirObjs.Objs[RC]);
+if MBUT THEN begin CaP3:=MirObjs.Objs[RC].ECR;end;
+if DBUT THEN begin U_OpenObject(MirObjs.Objs[RC]);DBUT:=False;end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -3100,8 +3431,8 @@ if (RC>0) and (RC<=MirEles.KolE) then begin
 NoSel:=False;// Указваю что есть выбраный обьект
 MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
 I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
-if MBUT THEN CaP3:=MirEles.Eles[RC].ECR;
-if DBUT THEN U_OpenElement(MirEles.Eles[RC]);
+if MBUT THEN begin CaP3:=MirEles.Eles[RC].ECR;end;
+if DBUT THEN begin U_OpenElement(MirEles.Eles[RC]);DBUT:=False;end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -3115,11 +3446,11 @@ if (RC>0) and (RC<=MirPLos.KolP) then begin
 NoSel:=False;// Указваю что есть выбраный обьект
 MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
 I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
-if MBUT THEN CaP3:=MirPlos.Plos[RC].ECR;
+if MBUT THEN begin CaP3:=MirPlos.Plos[RC].ECR;end;
 if DBUT then begin
-U_OpenPlos(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);
-DBUT:=False;
-end;
+        U_OpenPlos(MirPLOs.PLos[RC],TELE(MirPlos.Plos[RC]).ELE);
+        DBUT:=False;
+        end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -3133,11 +3464,11 @@ if (RC>0) and (RC<=MirLins.KolL) then begin
 NoSel:=False;// Указваю что есть выбраный обьект
 MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel;
 I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);
-if MBUT THEN CaP3:=MirLins.Lins[RC].ECR;
+if MBUT THEN begin CaP3:=MirLins.Lins[RC].ECR;end;
 if DBUT then begin
-U_OpenLine(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);
-DBUT:=False;
-end;
+             U_OpenLine(MirLins.Lins[RC],TELE(MirLins.Lins[RC]).ELE);
+             DBUT:=False;
+             end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -3151,19 +3482,20 @@ if (RC>0) and (RC<=MirVers.KolV) then begin
 NoSel:=False;// Указваю что есть выбраный обьект
 MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel;
 I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);
-if MBUT THEN CaP3:=MirVers.Vers[RC].ECR;
+if MBUT THEN begin CaP3:=MirVers.Vers[RC].ECR;end;
 if DBUT then begin
-U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);
-DBUT:=False;
-end;
+             U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);
+             DBUT:=False;
+             end;
 end;
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
 //------------------------------------------------------------------------------
 if NoSel                    then begin // Если ничего не выбрано
-   while MirSels.Kol<>0 do I_SetSel(MirSels.sels[MirSels.Kol],false);
-end;
+             while MirSels.Kol<>0 do I_SetSel(MirSels.sels[MirSels.Kol],false);
+             DBUT:=False;
+                            end;
 //------------------------------------------------------------------------------
 glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -3279,6 +3611,7 @@ iver2:=iPlo.VERS[2].ECR;
 iver3:=iPlo.VERS[3].ECR;
 iver4:=iPlo.VERS[4].ECR;
 
+if MBUT then
         CaP3:=OpredelitCoo(
                MouD.X,
                form3.ClientHeight-MouD.Z,
@@ -3287,7 +3620,7 @@ iver4:=iPlo.VERS[4].ECR;
 	       iver3,
 	       iver4,
 	       16
-	       );CaP3.Y:=CaP3.Y;
+	       );
 end;
 end;
 
@@ -3532,8 +3865,9 @@ end.
 
 
 // 1.Чай 5 мин
-// 2.Сделать анимацию созание кадров обьектов  )))) Почти готово ))))
-// 3.Не забуть доделать удаление по Признаку DEL
+// 2.Сделать анимацию созание кадров обьектов ))  готово ))))
+// Немного подправить осталося анимацию от относиться к пункту 3
+// 3.Не забуть доделать удаление по Признаку DEL  оформить место для анимации
 // 4.Пропуск () "" '' {} и неизвестных знаков
 // Добавить сворачивание блоков       { }
 // Создаить окно найтроек

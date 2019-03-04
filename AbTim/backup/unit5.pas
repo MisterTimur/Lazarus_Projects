@@ -91,7 +91,7 @@ begin
 end;
 procedure TForm5.MenuItem4Click(Sender: TObject);// Удалить анимацию
 begin
-  I_DEL_ANIMATION;
+  I_DEL_ANIMATION(CheckListBox2);
 end;
 procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Копия обьекта
 begin
@@ -103,14 +103,7 @@ procedure TForm5.MenuItem6Click(Sender: TObject);
 var
   m:Tmemo;
 begin
-  if CheckListBox2.itemindex<CheckListBox2.items.count then
-  if CheckListBox2.itemindex>0 then
-  if CheckListBox1.itemindex<CheckListBox1.items.count then
-  if CheckListBox1.itemindex>0 then begin
-  // Применение анимации к выбраному обьекту
-  M:=Tmemo(CheckListBox2.items.Objects[CheckListBox2.itemindex]);
-  I_SET_ANIMATION(M.Text);
-  end;
+  I_SET_ANIMATION(CheckListBox1,CheckListBox2);
 end;
 procedure TForm5.Panel1Click(Sender: TObject);
 begin
