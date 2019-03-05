@@ -34,7 +34,7 @@ var   {Интерфейс редактора    ===========================}{%Re
 CR:AnsiString=chr(13)+chr(10);
 GStep:REal=1            ;// Шаг для Колеса мышки
 MinRAsInMir:REal=1      ;// Минимальнео растояние в игровом мире и для рамки
-MAxRAsInMir:Real=1024   ;// Максимальное растояние в игровом мире от камеры
+MAxRAsInMir:Real=1024*8 ;// Максимальное растояние в игровом мире от камеры
 G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False  ;// В проекте есть не сохраненные изменения
 
@@ -1663,7 +1663,7 @@ if TObj(iEle).PLOS[f].NAM=iNAm then REz:=TObj(iEle).PLOS[f];
 //-------------------------------------------------
 if (Rez=Nil) and (iEle.TIP=T_OBJ)  Then // Ищу среди Линий
 for f:=1 to TObj(iEle).KolL do
-if TObj(iEle).ELES[f].NAM=iNAm then REz:=TObj(iEle).ELES[f];
+if TObj(iEle).LINS[f].NAM=iNAm then REz:=TObj(iEle).LINS[f];
 //-------------------------------------------------
 if Rez=Nil Then for f:=1 to iEle.KolV do // Ищу среди вершин
 if iEle.VERS[f].NAM=iNam then REz:=iEle.VERS[f];
@@ -2232,12 +2232,14 @@ nVer:TVer;
 begin
 G_Change:=true;
 rEle:=I_GetEl(iEle);
-nVer:=rEle.V(TVER(iEle).LOC.x+(MinRAsInMir/10),
-             TVER(iEle).LOC.y+(MinRAsInMir/10),
-             TVER(iEle).LOC.z+(MinRAsInMir/10));
+nVer:=rEle.V(TVER(iEle).LOC.x+10,
+             TVER(iEle).LOC.y,
+             TVER(iEle).LOC.z);
+nVer.Col:=TVER(iEle).Col;
 nVer.Nam:=I_NewNamIdd('V ');
 I_RefAllForm;
 I_AddVerCOP:=nVer;
+U_OpenPoint(nVer,nVer.Ele);
 end;
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
@@ -2248,8 +2250,10 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x*-1,TVER(iEle).LOC.y,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYX:=nVer;
+U_OpenPoint(nVer,nVer.Ele);
 end;
 function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
@@ -2260,8 +2264,10 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y*-1,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYY:=nVer;
+U_OpenPoint(nVer,nVer.Ele);
 end;
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
@@ -2272,8 +2278,10 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y,TVER(iEle).LOC.z*-1);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYZ:=nVer;
+U_OpenPoint(nVer,nVer.Ele);
 end;
 function I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
@@ -2304,6 +2312,18 @@ end;
 lSel.free;
 I_RefAllForm;
 I_AddLin:=nLin;
+end;
+function I_AddPLi(iObj:Pointer):Pointer;// Доабвляет пустую  Линию
+Var
+rObj:TObj;
+nLin:TLin;
+lSel:TSels;
+begin
+G_Change:=true;
+rObj:=I_GetOb(iObj);
+nLin:=rObj.L(rObj,rObj);
+nLin.Nam:=I_NewNamIdd('L ');
+I_AddPLi:=nLin;
 end;
 function I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
 Var
@@ -2889,7 +2909,7 @@ else if iStr[lPos]='L' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
      if fLin=nil then begin
-                 lLin:=TLin(I_AddLin(lObj));// Если нету создает Линию
+                 lLin:=TLin(I_AddPLi(lObj));// Если нету создает Линию
                  lLin.Nam:=lNam;// Указываю имя
                  end
                  else lLin:=fLin;
@@ -3035,7 +3055,7 @@ else if iStr[lPos]='L' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
      if fLin=nil then begin
-                 lLin:=TLin(I_AddLin(lObj));// Если нету создает Линию
+                 lLin:=TLin(I_AddPLi(lObj));// Если нету создает Линию
                  lLin.Nam:=lNam;// Указываю имя
                  end
                  else lLin:=fLin;
@@ -3799,8 +3819,10 @@ begin
   glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
-  glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
+  glDisableClientState(GL_COLOR_ARRAY);
+  glColor4ub(0,0,0,255);
   glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+  glEnableClientState(GL_COLOR_ARRAY);
   I_EDITDRAW;//-----------------------------------------------------------------
   end;
   //----------------------------------------------------------------------------
@@ -3897,8 +3919,8 @@ end.
 
 
 // 1.Чай 5 мин
-// 2.Сделать анимацию созание кадров обьектов ))  готово ))))
-// Немного подправить осталося анимацию от относиться к пункту 3
+// 2.Сделать маршрутизацию
+// 3.Сделать язык програмирования
 // 3.Не забуть доделать удаление по Признаку DEL  оформить место для анимации
 // 4.Пропуск () "" '' {} и неизвестных знаков
 // Добавить сворачивание блоков       { }

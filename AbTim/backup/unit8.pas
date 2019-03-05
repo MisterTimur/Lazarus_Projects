@@ -1,7 +1,7 @@
 unit Unit8; {$mode objfpc}{$H+} interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, Types,unit3;
+  StdCtrls, Menus, Types,unit3;
 type
 
   { TForm8 }
@@ -18,12 +18,13 @@ type
     Edit4: TEdit;
     Edit5: TEdit;
     Edit6: TEdit;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
+    PopupMenu1: TPopupMenu;
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -36,6 +37,10 @@ type
     procedure Edit5DblClick(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
   private
 
@@ -93,25 +98,8 @@ begin
   I_SetN(Ver,Edit1);
 end;
 
-procedure TForm8.Button1Click(Sender: TObject);
-begin
-  I_AddVerCOp(Ver);
-end;
 
-procedure TForm8.Button2Click(Sender: TObject);
-begin
- I_AddVerSYX(Ver);
-end;
 
-procedure TForm8.Button3Click(Sender: TObject);
-begin
-  I_AddVerSYY(Ver);
-end;
-
-procedure TForm8.Button4Click(Sender: TObject);
-begin
-  I_AddVerSYZ(Ver);
-end;
 
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
@@ -151,6 +139,27 @@ begin
   left:=form3.left+form3.Width-width-10;
   top:=form3.top+form3.height-height-50;
 end;
+
+procedure TForm8.MenuItem1Click(Sender: TObject);
+begin
+   I_AddVerCOp(Ver);
+end;
+
+procedure TForm8.MenuItem2Click(Sender: TObject);
+begin
+   I_AddVerSYX(Ver);
+end;
+
+procedure TForm8.MenuItem3Click(Sender: TObject);
+begin
+   I_AddVerSYY(Ver);
+end;
+
+procedure TForm8.MenuItem4Click(Sender: TObject);
+begin
+   I_AddVerSYZ(Ver);
+end;
+
 procedure TForm8.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin
