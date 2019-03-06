@@ -51,6 +51,7 @@ function I_AddVerCOP(iEle:Pointer):Pointer;// Создает симетричн�
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
 function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
+function I_AddVer150(iEle:Pointer):Pointer;// Создает симетричную вершину
 
 
 function I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
@@ -95,7 +96,7 @@ procedure I_Set_MBUT(iBol:Boolean);
 procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
-procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
+procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает копию обьекта
 procedure I_ADD_ANIMATION(iAni:TCheckListBox);// Созадет кадр анимации
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
 procedure I_DEL_ANIMATION(iAni:TCheckListBox);
@@ -109,8 +110,8 @@ const {Базовые Константы      ===========================}{%Regi
   GMAxRAsInMir=1024*8;// Растояние на котором вершину не видно
 
 
-  MaxKolVerInEle=128;// Максимальное количество Вершин в Элементе
-  MaxKolLinInObj=128;// Максимальное количество Линий в Элементе
+  MaxKolVerInEle=512;// Максимальное количество Вершин в Элементе
+  MaxKolLinInObj=512;// Максимальное количество Линий в Элементе
   MaxKolPloInObj=512;// Максимальное количество Плоскостей в Элементе
   MaxKolObjInObj=128;// Максимальное количество Плоскостей в Элементе
   MaxKolEleInEle=128;// Максимальное количество Обьектов в Элементе
@@ -2283,6 +2284,20 @@ I_RefAllForm;
 I_AddVerSYZ:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
+function I_AddVer150(iEle:Pointer):Pointer;// Создает симетричную вершину
+Var
+rEle:TEle;
+nVer:TVer;
+begin
+G_Change:=true;
+rEle:=I_GetEl(iEle);
+nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y+150,TVER(iEle).LOC.z);
+nVer.Nam:=I_NewNamIdd('V ');
+nVer.Col:=TVER(iEle).Col;
+I_RefAllForm;
+I_AddVer150:=nVer;
+U_OpenPoint(nVer,nVer.Ele);
+end;
 function I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
 rEle:TEle;
@@ -3375,7 +3390,7 @@ end;
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
                                                            J_Reg11:Longint;
 
-procedure I_DoubleObject(iTObj:Pointer);// Создает копию обьекта
+procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает копию обьек
 var
 lStr:Ansistring;
 begin
@@ -3561,21 +3576,21 @@ if form4.MenuItem10.Checked then // ОБьекты
 for f:=1 to MirObjs.KolO do if not MirObjs.OBJS[f].DEL then
 if Not MirObjs.OBJS[f].SEL
 then  I_DrObj(MirObjs.OBJS[f],CreRCol(0,0,0,150))
-else  I_DrObj(MirObjs.OBJS[f],RanRCol);
+else  I_DrObj(MirObjs.OBJS[f],CreRCol(255,0,0,255));//RanRCol
 
 // Отрисовываю все элементы  в игровом мире
 if form4.MenuItem12.Checked then // Элемент
 for f:=1 to MirEles.KolE do if not MirEles.ELES[f].DEL then
 if Not MirEles.ELES[f].SEL
 Then I_DrEle(MirEles.ELES[f],CreRCol(0,0,0,150))
-else I_DrEle(MirEles.ELES[f],RanRcol);
+else I_DrEle(MirEles.ELES[f],CreRCol(255,0,0,255));
 
 // Отрисовываю все Плоскости в игровом мире
 if form4.MenuItem13.Checked then // Плоскос
 for f:=1 to MirPlos.KolP do if not MirPlos.PLOS[f].DEL then
 if Not MirPlos.PLOS[f].SEL
 then I_DrPlo(MirPlos.PLOS[f],CreRCol(0,0,0,150))
-else I_DrPlo(MirPlos.PLOS[f],RanRcol);
+else I_DrPlo(MirPlos.PLOS[f],CreRCol(255,0,0,255));
 
 
 // Отрисовываю все Линии в игровом мире
@@ -3583,14 +3598,14 @@ if form4.MenuItem22.Checked then // Линии
 for f:=1 to MirLins.KolL do if not MirLins.LINS[f].DEL then
 if Not MirLins.LinS[f].SEL
 then I_DrLin(MirLins.LinS[f],CreRCol(0,0,0,150))
-else I_DrLin(MirLins.LinS[f],RanRcol);
+else I_DrLin(MirLins.LinS[f],CreRCol(255,0,0,255));
 
 // Отрисовываю все вершины в игровом мире
 if form4.MenuItem14.Checked then   // Вершины
 for f:=1 to MirVers.KolV do if not MirVers.VERS[f].DEL then
 if Not MirVers.VERS[f].SEL
 then I_DrVer(MirVers.VERS[f],CreRCol(0,0,0,150))
-else I_DrVer(MirVers.VERS[f],RanRcol);
+else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
 
 
 
@@ -3781,7 +3796,7 @@ begin
   glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
   glRotateD(CaU2.X,1,0,0);// Поворот по оси X
   glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
-  glTranslateD(-CaP2.x,-CaP2.y,-CaP2.z);// Координаты камеры
+  glTranslateD(-CaP2.x,-CaP2.y-100,-CaP2.z);// Координаты камеры
   end;
   //----------------------------------------------------------------------------
   if LBut then Begin
@@ -3821,6 +3836,9 @@ begin
   glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
   glDisableClientState(GL_COLOR_ARRAY);
   glColor4ub(0,0,0,255);
+  glTranslateD(0,0,1);// Отодвигаем камеру на нужное растояние
+  glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+  glTranslateD(0,0,-2);// Отодвигаем камеру на нужное растояние
   glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
   glEnableClientState(GL_COLOR_ARRAY);
   I_EDITDRAW;//-----------------------------------------------------------------
@@ -3923,6 +3941,6 @@ end.
 // 3.Сделать язык програмирования
 // 3.Не забуть доделать удаление по Признаку DEL  оформить место для анимации
 // 4.Пропуск () "" '' {} и неизвестных знаков
-// Добавить сворачивание блоков       { }
-// Создаить окно найтроек
+// 5.Добавить сворачивание блоков       { }
+// 6.Создаить окно найтроек
 

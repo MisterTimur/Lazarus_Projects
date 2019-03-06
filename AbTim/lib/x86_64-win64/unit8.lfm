@@ -1,7 +1,7 @@
 object Form8: TForm8
-  Left = 471
+  Left = 450
   Height = 173
-  Top = 304
+  Top = 294
   Width = 128
   BorderStyle = bsSizeToolWin
   Caption = 'Form8'
@@ -156,6 +156,10 @@ object Form8: TForm8
     object MenuItem4: TMenuItem
       Caption = 'Отразить по Z'
       OnClick = MenuItem4Click
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'Вверх'
+      OnClick = MenuItem5Click
     end
   end
 end

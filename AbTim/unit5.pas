@@ -96,8 +96,9 @@ end;
 procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Копия обьекта
 begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
-  if CheckListBox1.itemindex>0 then
-  I_DoubleObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);  ;
+  if CheckListBox1.itemindex>0 then  begin
+  I_DoubleObject(CheckListBox1.items.objects[CheckListBox1.itemindex],CheckListBox1);
+  end;
 end;
 procedure TForm5.MenuItem6Click(Sender: TObject);
 var

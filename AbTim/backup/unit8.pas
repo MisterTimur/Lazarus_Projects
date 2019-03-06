@@ -7,10 +7,6 @@ type
   { TForm8 }
 
   TForm8 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -22,6 +18,7 @@ type
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
     PopupMenu1: TPopupMenu;
@@ -41,6 +38,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
   private
 
@@ -158,6 +156,11 @@ end;
 procedure TForm8.MenuItem4Click(Sender: TObject);
 begin
    I_AddVerSYZ(Ver);
+end;
+
+procedure TForm8.MenuItem5Click(Sender: TObject);
+begin
+   I_AddVer150();
 end;
 
 procedure TForm8.Panel1Click(Sender: TObject);

@@ -30,6 +30,10 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
+    MenuItem23: TMenuItem;
+    MenuItem24: TMenuItem;
+    MenuItem25: TMenuItem;
+    MenuItem26: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -83,6 +87,10 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem21Click(Sender: TObject);
     procedure MenuItem22Click(Sender: TObject);
+    procedure MenuItem23Click(Sender: TObject);
+    procedure MenuItem24Click(Sender: TObject);
+    procedure MenuItem25Click(Sender: TObject);
+    procedure MenuItem26Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
   private
 
@@ -195,6 +203,27 @@ procedure TForm4.MenuItem22Click(Sender: TObject);
 begin
   MenuItem22.Checked:=not MenuItem22.Checked;
 end;
+
+procedure TForm4.MenuItem23Click(Sender: TObject);
+begin
+  I_AddVerCOp(Act);
+end;
+
+procedure TForm4.MenuItem24Click(Sender: TObject);
+begin
+   I_AddVerSYX(Act);
+end;
+
+procedure TForm4.MenuItem25Click(Sender: TObject);
+begin
+   I_AddVerSYZ(Act);
+end;
+
+procedure TForm4.MenuItem26Click(Sender: TObject);
+begin
+  I_AddVer150(Act);
+end;
+
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);

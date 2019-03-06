@@ -18,6 +18,7 @@ type
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
     PopupMenu1: TPopupMenu;
@@ -37,6 +38,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
   private
 
@@ -154,6 +156,11 @@ end;
 procedure TForm8.MenuItem4Click(Sender: TObject);
 begin
    I_AddVerSYZ(Ver);
+end;
+
+procedure TForm8.MenuItem5Click(Sender: TObject);
+begin
+   I_AddVer150(Ver);
 end;
 
 procedure TForm8.Panel1Click(Sender: TObject);

@@ -1,7 +1,7 @@
 object Form4: TForm4
-  Left = 171
+  Left = 256
   Height = 70
-  Top = 541
+  Top = 144
   Width = 694
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
@@ -335,6 +335,22 @@ object Form4: TForm4
     end
     object MenuItem2: TMenuItem
       Caption = 'Правка'
+      object MenuItem23: TMenuItem
+        Caption = 'Добавить вершину '
+        OnClick = MenuItem23Click
+      end
+      object MenuItem24: TMenuItem
+        Caption = 'Симетрия X'
+        OnClick = MenuItem24Click
+      end
+      object MenuItem25: TMenuItem
+        Caption = 'Симетрия Z'
+        OnClick = MenuItem25Click
+      end
+      object MenuItem26: TMenuItem
+        Caption = 'Вверх на 150'
+        OnClick = MenuItem26Click
+      end
     end
     object MenuItem3: TMenuItem
       Caption = 'Поиск'
