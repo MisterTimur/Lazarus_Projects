@@ -19,6 +19,7 @@ type { TForm3 }  TForm3 = class(TForm)
       Shift: TShiftState; X, Y: Integer);
     procedure OpenGLControl1MouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure OpenGLControl1Paint(Sender: TObject);
     procedure OpenGLControl1Resize(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
@@ -1609,6 +1610,9 @@ begin
 end;
 
 {%EndRegion}
+
+
+
 var   {ГРавитация             ===========================}{%Region /FOLD }
                                                            Reg1G:Longint;
 
@@ -4081,7 +4085,8 @@ begin
    end;
    result:=0;
 end;
-
+var
+GlDraw:boolean=false;
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
 x,z:RINT;
@@ -4098,7 +4103,9 @@ Timer1.enabled:=false;// Отключаем запускатор
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@Math,nil,0,HMathTrId);
   HSWAP:=CreateThread(nil,0,@SWAP,nil,0,HSwapTrId);
-  // OpenGl настройки
+  //OpenGl настройки
+  OpenGLControl1.OnPaint:= @OpenGLControl1Paint; // for "mode delphi" this would be "GLBox.OnPaint := GLboxPaint"
+  OpenGLControl1.invalidate;
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_Blend);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -4110,11 +4117,70 @@ Timer1.enabled:=false;// Отключаем запускатор
   Ras3:=-100;
   Timer2.enabled:=true;// Врубаем отрисовку
   Timer3.enabled:=true;// Врубаем подсчет количества кадров в секунду
-
+  GlDraw:=true;
 end;
 procedure TForm3.Timer2Timer(Sender: TObject);// ОТрисовка
+begin
+OpenGLControl1Paint(sender);
+end;
+procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
+begin
+  Caption:=IntToStr(KolKAdVsek)+' '+
+             //FloatToStr(CaU2.X)+' '+
+             //FloatToStr(CaU2.Z)+' '+
+             intToStr(Trunc(Cap2.X))+' '+
+             intToStr(Trunc(Cap2.Y))+' '+
+             IntToStr(Trunc(Cap2.Z))+' '+
+             FloatToStr(RAsN);
+if (KolKAdVsek>33) and (Timer2.interval<50) then Timer2.interval:=Timer2.interval+1;
+if (KolKAdVsek<33) and (Timer2.interval>20) then Timer2.interval:=Timer2.interval-1;
+KolKAdVsek:=0;
+end;
+
+{%EndRegion}
+var   {События формы          ===========================}{%Region /FOLD }
+                                                           Reg15:Longint;
+
+procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  halt;
+end;
+procedure TForm3.OpenGLControl1Click(Sender: TObject);
+begin
+
+end;
+procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
+begin
+  DBUT:=true;
+end;
+procedure TForm3.OpenGLControl1Resize(Sender: TObject);
+begin
+  glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем
+  glMatrixMode(GL_PROJECTION);// Указываем матрицу с котрой будем работать
+  glLoadIdentity;// Сброс в еденичную матрицу
+  gluPerspective(60, OpenGLControl1.Width / OpenGLControl1.Height,MinRAsInMir,MAxRAsInMir);// Устанвока перспективы (Угол обзора в градусах,Соотношение сторон ,Ближний предел ,дальний предел )
+  glMatrixMode(GL_MODELVIEW);// Выбираем модельную матрицу
+  glLoadIdentity();// сброс в еденичную матрицу
+end;
+procedure TForm3.OpenGLControl1MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  if WheelDelta<0
+  Then BEGIN
+  if RAS3+MAx(abs(RAS3/7),0.0001)<0 then
+     RAS3:=RAS3+Max(abs(RAS3/7),0.0001)
+  end
+  else BEGIN
+  if RAS3-Max(abs(RAS3/7),0.0001)>-MAxRAsInMir then
+     RAS3:=RAS3-Max(abs(RAS3/7),0.0001)
+  end;
+end;
+
+procedure TForm3.OpenGLControl1Paint(Sender: TObject);
 var Tr:QWord;f:longint;RC:LongWord;P:TPLO;
 begin
+  if GlDraw then begin
+
   begin // Подготовка в отрисовке
   timer2.Enabled:=false;
   Tr:=GetTickCount64;
@@ -4193,59 +4259,9 @@ begin
   TR:=GetTickCount64-tr;
   timer2.Enabled:=true;
   end;
-end;
-procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
-begin
-  Caption:=IntToStr(KolKAdVsek)+' '+
-             //FloatToStr(CaU2.X)+' '+
-             //FloatToStr(CaU2.Z)+' '+
-             intToStr(Trunc(Cap2.X))+' '+
-             intToStr(Trunc(Cap2.Y))+' '+
-             IntToStr(Trunc(Cap2.Z))+' '+
-             FloatToStr(RAsN);
-if (KolKAdVsek>33) and (Timer2.interval<50) then Timer2.interval:=Timer2.interval+1;
-if (KolKAdVsek<33) and (Timer2.interval>20) then Timer2.interval:=Timer2.interval-1;
-KolKAdVsek:=0;
-end;
-
-{%EndRegion}
-var   {События формы          ===========================}{%Region /FOLD }
-                                                           Reg15:Longint;
-
-procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  halt;
-end;
-procedure TForm3.OpenGLControl1Click(Sender: TObject);
-begin
-
-end;
-procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
-begin
-  DBUT:=true;
-end;
-procedure TForm3.OpenGLControl1Resize(Sender: TObject);
-begin
-  glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем
-  glMatrixMode(GL_PROJECTION);// Указываем матрицу с котрой будем работать
-  glLoadIdentity;// Сброс в еденичную матрицу
-  gluPerspective(60, OpenGLControl1.Width / OpenGLControl1.Height,MinRAsInMir,MAxRAsInMir);// Устанвока перспективы (Угол обзора в градусах,Соотношение сторон ,Ближний предел ,дальний предел )
-  glMatrixMode(GL_MODELVIEW);// Выбираем модельную матрицу
-  glLoadIdentity();// сброс в еденичную матрицу
-end;
-procedure TForm3.OpenGLControl1MouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-begin
-  if WheelDelta<0
-  Then BEGIN
-  if RAS3+MAx(abs(RAS3/7),0.0001)<0 then
-     RAS3:=RAS3+Max(abs(RAS3/7),0.0001)
-  end
-  else BEGIN
-  if RAS3-Max(abs(RAS3/7),0.0001)>-MAxRAsInMir then
-     RAS3:=RAS3-Max(abs(RAS3/7),0.0001)
   end;
 end;
+
 procedure TForm3.OpenGLControl1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin

@@ -21,6 +21,7 @@ object Form3: TForm3
     OnMouseMove = OpenGLControl1MouseMove
     OnMouseUp = OpenGLControl1MouseUp
     OnMouseWheel = OpenGLControl1MouseWheel
+    OnPaint = OpenGLControl1Paint
     OnResize = OpenGLControl1Resize
   end
   object Timer1: TTimer
