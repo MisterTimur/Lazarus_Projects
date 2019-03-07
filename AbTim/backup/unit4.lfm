@@ -1,7 +1,7 @@
 object Form4: TForm4
-  Left = 256
+  Left = 200
   Height = 70
-  Top = 144
+  Top = 487
   Width = 694
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
@@ -278,6 +278,23 @@ object Form4: TForm4
       OnChange = CheckBox1Change
       TabOrder = 0
     end
+    object CheckBox2: TCheckBox
+      Left = 124
+      Height = 19
+      Top = 5
+      Width = 104
+      Caption = 'Камера + 150'
+      TabOrder = 1
+    end
+    object CheckBox3: TCheckBox
+      Left = 400
+      Height = 19
+      Top = 5
+      Width = 90
+      Caption = 'Маршртуный'
+      OnChange = CheckBox3Change
+      TabOrder = 2
+    end
   end
   object Splitter8: TSplitter
     Left = 616
@@ -309,7 +326,7 @@ object Form4: TForm4
     end
   end
   object MainMenu1: TMainMenu
-    left = 280
+    left = 648
     object MenuItem1: TMenuItem
       Caption = 'Файл'
       object MenuItem17: TMenuItem
@@ -350,6 +367,22 @@ object Form4: TForm4
       object MenuItem26: TMenuItem
         Caption = 'Вверх на 150'
         OnClick = MenuItem26Click
+      end
+      object MenuItem27: TMenuItem
+        Caption = 'Вниз на 150'
+        OnClick = MenuItem27Click
+      end
+      object MenuItem28: TMenuItem
+        Caption = 'Создать маршрутную точку'
+        OnClick = MenuItem28Click
+      end
+      object MenuItem29: TMenuItem
+        Caption = 'Удалить не используемые вершины '
+        OnClick = MenuItem29Click
+      end
+      object MenuItem30: TMenuItem
+        Caption = 'Ландшафт'
+        OnClick = MenuItem30Click
       end
     end
     object MenuItem3: TMenuItem
@@ -401,6 +434,11 @@ object Form4: TForm4
         Checked = True
         OnClick = MenuItem14Click
       end
+      object MenuItem31: TMenuItem
+        Caption = 'Маршруты'
+        Checked = True
+        OnClick = MenuItem31Click
+      end
       object MenuItem16: TMenuItem
         Caption = '-'
       end
@@ -412,7 +450,7 @@ object Form4: TForm4
   object FontDialog1: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 240
+    left = 616
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -438,18 +476,18 @@ object Form4: TForm4
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 208
+    left = 584
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text file|*.txt|All File|*.*'
-    left = 176
+    left = 552
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text File|*.txt|All File|*.*'
-    left = 144
+    left = 520
   end
 end

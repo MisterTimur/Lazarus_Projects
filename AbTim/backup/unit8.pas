@@ -160,7 +160,7 @@ end;
 
 procedure TForm8.MenuItem5Click(Sender: TObject);
 begin
-   I_AddVer150();
+   I_AddVer150(Ver);
 end;
 
 procedure TForm8.Panel1Click(Sender: TObject);
