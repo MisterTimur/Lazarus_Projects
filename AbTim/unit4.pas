@@ -5,8 +5,10 @@ type { TForm4 } TForm4 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
+    Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
@@ -42,6 +44,14 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
+    MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
+    MenuItem36: TMenuItem;
+    MenuItem37: TMenuItem;
+    MenuItem38: TMenuItem;
+    MenuItem39: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -51,6 +61,7 @@ type { TForm4 } TForm4 = class(TForm)
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     Panel10: TPanel;
+    Panel11: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -68,6 +79,7 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     Splitter8: TSplitter;
+    Splitter9: TSplitter;
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox3Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
@@ -89,6 +101,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
+    procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
@@ -105,6 +118,9 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem8Click(Sender: TObject);
+    procedure MenuItem9Click(Sender: TObject);
   private
 
   public
@@ -117,6 +133,22 @@ begin
    U_OpenObjects();
    MenuItem5.Enabled:=false;
 end;
+
+procedure TForm4.MenuItem6Click(Sender: TObject);
+begin
+  MenuItem6.Checked:=not MenuItem6.Checked;
+end;
+
+procedure TForm4.MenuItem8Click(Sender: TObject);
+begin
+  MenuItem8.Checked:=not MenuItem8.Checked;
+end;
+
+procedure TForm4.MenuItem9Click(Sender: TObject);
+begin
+  MenuItem9.Checked:=not MenuItem9.Checked;
+end;
+
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   Act:=nil;
@@ -139,6 +171,12 @@ procedure TForm4.MenuItem14Click(Sender: TObject);
 begin
    MenuItem14.Checked:=not MenuItem14.Checked;
 end;
+
+procedure TForm4.MenuItem16Click(Sender: TObject);
+begin
+  MenuItem16.Checked:=not MenuItem16.Checked;
+end;
+
 procedure TForm4.MenuItem17Click(Sender: TObject);// Новый проект
 var lOtv:TModalResult;
 begin
@@ -236,27 +274,22 @@ procedure TForm4.MenuItem27Click(Sender: TObject);
 begin
   I_AddVni150(Act);
 end;
-
 procedure TForm4.MenuItem28Click(Sender: TObject);
 begin
   I_AddVerMar(Act);
 end;
-
 procedure TForm4.MenuItem29Click(Sender: TObject);
 begin
   I_DelNotUseVer;
 end;
-
 procedure TForm4.MenuItem30Click(Sender: TObject);
 begin
  I_AddVerLan(Act) ;
 end;
-
 procedure TForm4.MenuItem31Click(Sender: TObject);
 begin
    MenuItem31.Checked:=not MenuItem31.Checked;
 end;
-
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
@@ -265,12 +298,10 @@ procedure TForm4.CheckBox1Change(Sender: TObject);
 begin
  I_Set_MBUT(CheckBox1.Checked);
 end;
-
 procedure TForm4.CheckBox3Change(Sender: TObject);
 begin
   I_SetM(Act,checkbox3);
 end;
-
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
@@ -320,7 +351,7 @@ begin
 end;
 procedure TForm4.Edit9Change(Sender: TObject);
 begin
-  GStep:=inFloat(Edit9.Text);
+ I_SetN(Act,Edit9);
 end;
 
 end.
