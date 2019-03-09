@@ -71,6 +71,7 @@ procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiObjs(             iLis:TCheckListBox);
 
 procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetM(iVer:Pointer;iEdit:TEdit);
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
@@ -80,7 +81,7 @@ procedure I_GeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
-procedure I_SetM(iVer:Pointer;icheckbox:Tcheckbox);
+procedure I_SetM(iVer:Pointer;iEdit:TEdit);
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
@@ -105,7 +106,11 @@ procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает ко
 procedure I_ADD_ANIMATION(iAni:TCheckListBox);// Созадет кадр анимации
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
 procedure I_DEL_ANIMATION(iAni:TCheckListBox);
-function I_AddVerLan(iEle:Pointer):Pointer;
+function  I_AddVerLan(iEle:Pointer):Pointer;
+function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
+Procedure I_SCENA_ADD_01(var iStr:Ansistring);
+
+
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
 var   {Базa                   ===========================}{%Region /FOLD }
@@ -1805,27 +1810,26 @@ begin
 with form4 do
 if (ACT=NIL) or (TVER(ACT).del)
 Then begin // Если нету активного элмеента либо он удалён
-edit1.Enabled:=false;
-edit2.Enabled:=false;
-edit3.Enabled:=false;
-edit4.Enabled:=false;
-edit5.Enabled:=false;
-edit6.Enabled:=false;
-edit7.Enabled:=false;
-edit8.Enabled:=false;
-edit9.Enabled:=false;
-checkBox3.Enabled:=false;
+edit1.Enabled :=false;edit1.text :='';
+edit2.Enabled :=false;edit2.text :='';
+edit3.Enabled :=false;edit3.text :='';
+edit4.Enabled :=false;edit4.text :='';
+edit5.Enabled :=false;edit5.text :='';
+edit6.Enabled :=false;edit6.text :='';
+edit7.Enabled :=false;edit7.text :='';edit7.color :=clDefault;
+edit8.Enabled :=false;edit8.text :='';
+edit9.Enabled :=false;edit9.text :='';
+edit10.Enabled:=false;edit10.text:='';edit10.color:=clDefault;
 end
 else begin // Если Есть выбраный активный элемент
 // Читаюю координатиы
-edit1.Enabled:=true;I_GETX(Act,Edit1);
-edit2.Enabled:=true;I_GETY(Act,Edit2);
-edit3.Enabled:=true;I_GETZ(Act,Edit3);
-edit7.Enabled:=true;I_GETC(Act,Edit7);
-edit8.Enabled:=true;I_GETA(Act,Edit8);
-edit9.Enabled:=true;I_GETN(Act,Edit9);
-checkBox3.Enabled:=true;
-checkBox3.Checked:=Tver(Act).MAR;
+ edit1.Enabled:=true;I_GETX(Act,Edit1);
+ edit2.Enabled:=true;I_GETY(Act,Edit2);
+ edit3.Enabled:=true;I_GETZ(Act,Edit3);
+ edit7.Enabled:=true;I_GETC(Act,Edit7);
+ edit8.Enabled:=true;I_GETA(Act,Edit8);
+ edit9.Enabled:=true;I_GETN(Act,Edit9);
+edit10.Enabled:=true;I_GETM(Act,edit10);
 // Читаюю углы наклона
 if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
 then begin // Включаю углы наклона
@@ -1876,6 +1880,13 @@ procedure I_GetN(iVer:Pointer;iEdit:TEdit);
 begin
 if iEdit.Text<>TVEr(iVer).NAM then
    iEdit.Text:=TVEr(iVer).NAM;
+end;
+procedure I_GetM(iVer:Pointer;iEdit:TEdit);
+begin
+if (boolToStr(TVEr(iVer).MAR)<>iEdit.TEXT)  then begin
+   if TVEr(iVer).MAR then iEdit.Color:=clred else iEdit.Color:=clDefault;
+   iEdit.Text:=BoolToStr(TVEr(iVer).MAR);
+   end;
 end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 begin
@@ -1930,19 +1941,9 @@ if iEdit.Text<>InString(TEle(iEle).EUGL.Z) then begin
    end;
 end;
 
-procedure I_SetM(iVer:Pointer;icheckbox:Tcheckbox);
-begin
-if (TVEr(iVer).MAR<>icheckbox.Checked) Then begin
-
-G_Change:=true;
-TVEr(iVer).MAR:=icheckbox.Checked;
-I_RefreshActivePrimitiv;
-I_RefreshEditorPrimitiv(iVer);
-
-end;
-end;
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
 
 if I_FinNam(iEdit.Text)=nil
@@ -1959,8 +1960,21 @@ if I_FinNam(iEdit.Text)=nil
 
 end;
 end;
+procedure I_SetM(iVer:Pointer;iEdit:TEdit);
+begin
+if iVer<>Nil Then
+if (boolToStr(TVEr(iVer).MAR)<>iEdit.TEXT) Then begin
+
+G_Change:=true;
+TVEr(iVer).MAR:=StrToBool(iEdit.TEXT);
+I_RefreshActivePrimitiv;
+I_RefreshEditorPrimitiv(iVer);
+
+end;
+end;
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>InString(TVEr(iVer).Loc.X) then begin
    G_Change:=true;
@@ -1971,6 +1985,7 @@ end;
 end;
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TVEr(iVer).Loc.Y) then begin
    G_Change:=true;
@@ -1981,6 +1996,7 @@ end;
 end;
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TVEr(iVer).Loc.Z) then begin
    G_Change:=true;
@@ -1990,6 +2006,7 @@ end;
 end;
 procedure I_SetC(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(RColRgbToInt(TVEr(iVer).COL))  then begin
 
@@ -2005,6 +2022,7 @@ end;
 end;
 procedure I_SetA(iVer:Pointer;iEdit:TEdit);
 begin
+if iVer<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TVEr(iVer).COL.A) then begin
 
@@ -2017,6 +2035,7 @@ end;
 end;
 procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 begin
+if iEle<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TEle(iEle).EUGL.X) then begin
 
@@ -2029,6 +2048,7 @@ end;
 end;
 procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 begin
+if iEle<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TEle(iEle).EUGL.Y) then begin
 
@@ -2041,10 +2061,9 @@ end;
 end;
 procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 begin
-G_Change:=true;
+if iEle<>Nil Then
 if isFloat(iEdit.Text) then
 if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
-
    G_Change:=true;
    TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
@@ -2305,8 +2324,9 @@ if Not MirVers.VERS[f].SEL
 then I_DrVer(MirVers.VERS[f],MirVers.VERS[f].COL)
 else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
 
+
 // Отрисовываю все вершины в игровом мире
-if form4.MenuItem14.Checked then   // Вершины
+if form4.MenuItem16.Checked then   // Вершины
 for f:=1 to MirVers.KolV do
 if(not MirVers.VERS[f].DEL)and(MirVers.VERS[f].MAR)then
 if Not MirVers.VERS[f].SEL
@@ -2420,6 +2440,7 @@ end;
 var   {----------------------- Добавлоение примитива  ===}{%Region /FOLD }
                                                           E_Reg11:Longint;
 
+Procedure I_TOBJ_PUT_01(iObj:TObj;var iStr:Ansistring);forward;
 function I_GetEl(iVer:Pointer):Tele;// Извлекает Элемен в котором находимся
 var REz:Tele;lVer:TVer;
 begin
@@ -2432,17 +2453,6 @@ begin
       if lVer.TIP=T_OBJ Then Rez:=TEle(lVer) else
       ERR(' I_GetEl last else ');
       I_GetEl:=Rez;
-
-end;
-function I_GetOb(iVer:Pointer):TObj;// Извлекает Обьект в котором находимся
-var REz:TObj;lVer:TVer;
-begin
-
-      lVer:=TVer(iVer);
-      if lVer=nil then ERR(' I_GetOb iVer=nil  ') else
-      if lVer.OBJ.TIP=T_OBJ Then Rez:=TObj(lVer.OBJ) else
-      ERR(' I_GetOb iVer.OBJ.TIP<>T_OBJ ');
-      I_GetOb:=Rez;
 
 end;
 function I_AddVerCOP(iEle:Pointer):Pointer;// Создает копию вершины рядом
@@ -2460,6 +2470,42 @@ nVer.Nam:=I_NewNamIdd('V ');
 I_RefAllForm;
 I_AddVerCOP:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
+end;
+function I_AddObjCOP(iEle:Pointer):Pointer;// Создает копию обьекта
+var
+lStr:Ansistring;
+rez:Pointer;
+begin
+I_TOBJ_PUT_01(TObj(iEle),lStr);// превращаем обьект в строку
+rez:=I_SCENA_DOU_01(lStr);// Превращаем строку в обьект
+if rez<>Nil Then  begin
+            Tobj(rez).LOC.x:=Tobj(rez).LOC.x+10;
+            U_OpenObj(rez);
+            end;
+I_AddObjCOP:=Rez;
+end;
+function I_AddPriCop(iPri:Pointer):Pointer;// Создает копию Примитива
+Var
+lVer:Tver;
+Rez:Pointer;
+begin
+lVer:=Tver(iPri)   ;
+if lVer.TIP=T_VER Then Rez:=I_AddVerCOP(iPri) else
+//if lVer.TIP=T_ELE Then Rez:=I_AddEleCOP(iPri) else
+if lVer.TIP=T_OBJ Then Rez:=I_AddObjCOP(iPri) ;
+I_AddPriCop:=Rez;
+end;
+
+function I_GetOb(iVer:Pointer):TObj;// Извлекает Обьект в котором находимся
+var REz:TObj;lVer:TVer;
+begin
+
+      lVer:=TVer(iVer);
+      if lVer=nil then ERR(' I_GetOb iVer=nil  ') else
+      if lVer.OBJ.TIP=T_OBJ Then Rez:=TObj(lVer.OBJ) else
+      ERR(' I_GetOb iVer.OBJ.TIP<>T_OBJ ');
+      I_GetOb:=Rez;
+
 end;
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
@@ -3394,7 +3440,7 @@ else if iStr[lPos]='f' Then begin INC(lPos);
 else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
 end
 end;
-Procedure I_SCENA_DOU_01(var iStr:Ansistring);
+function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
 var
 lPos:Longint;
 lNam:Ansistring;
@@ -3542,7 +3588,8 @@ else if iStr[lPos]='f' Then begin INC(lPos);
      lLin.VERS[2]:=I_FIN_VER(LPri,I_GetSC(lPos,iStr));
      end
 else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
-end
+end;
+I_SCENA_DOU_01:=lObj;
 end;
 Procedure I_SCENA_KAD_01(var iStr:Ansistring);
 var
@@ -3856,7 +3903,7 @@ if iSel
 then MirSels.Add(TVer(iPri))
 else MirSels.Del(TVer(iPri));
 // Выборка активного примитива в данный момент времени -------------------------
-if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1];
+if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1] else form4.Act:=Nil;
 I_RefreshActivePrimitiv;
 // -----------------------------------------------------------------------------
 end;
@@ -4251,7 +4298,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   GlPointSize(25);// размер точек
   GlLineWidth(10);// рзмер Линий
   OpenGLControl1Resize(nil);// Начальное вычисление пропрций
-  Ras3:=-100;
+  Ras3:=-300;
   Timer2.enabled:=true;// Врубаем отрисовку
   Timer3.enabled:=true;// Врубаем подсчет количества кадров в секунду
   GlDraw:=true;

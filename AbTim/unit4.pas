@@ -4,7 +4,6 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
 type { TForm4 } TForm4 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
-    CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
@@ -81,7 +80,8 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter8: TSplitter;
     Splitter9: TSplitter;
     procedure CheckBox1Change(Sender: TObject);
-    procedure CheckBox3Change(Sender: TObject);
+    procedure CheckBox4Change(Sender: TObject);
+    procedure Edit10DblClick(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
@@ -133,22 +133,18 @@ begin
    U_OpenObjects();
    MenuItem5.Enabled:=false;
 end;
-
 procedure TForm4.MenuItem6Click(Sender: TObject);
 begin
   MenuItem6.Checked:=not MenuItem6.Checked;
 end;
-
 procedure TForm4.MenuItem8Click(Sender: TObject);
 begin
   MenuItem8.Checked:=not MenuItem8.Checked;
 end;
-
 procedure TForm4.MenuItem9Click(Sender: TObject);
 begin
   MenuItem9.Checked:=not MenuItem9.Checked;
 end;
-
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   Act:=nil;
@@ -171,12 +167,10 @@ procedure TForm4.MenuItem14Click(Sender: TObject);
 begin
    MenuItem14.Checked:=not MenuItem14.Checked;
 end;
-
 procedure TForm4.MenuItem16Click(Sender: TObject);
 begin
   MenuItem16.Checked:=not MenuItem16.Checked;
 end;
-
 procedure TForm4.MenuItem17Click(Sender: TObject);// Новый проект
 var lOtv:TModalResult;
 begin
@@ -298,9 +292,38 @@ procedure TForm4.CheckBox1Change(Sender: TObject);
 begin
  I_Set_MBUT(CheckBox1.Checked);
 end;
-procedure TForm4.CheckBox3Change(Sender: TObject);
+procedure TForm4.CheckBox4Change(Sender: TObject);
 begin
-  I_SetM(Act,checkbox3);
+ if CheckBox4.Checked
+ then begin
+ MenuItem6.Checked:=false;
+ MenuItem8.Checked:=false;
+ MenuItem9.Checked:=false;
+ MenuItem10.Checked:=true;
+ MenuItem12.Checked:=true;
+ MenuItem13.Checked:=true;
+ MenuItem22.Checked:=true;
+ MenuItem14.Checked:=true;
+ MenuItem31.Checked:=true;
+ MenuItem16.Checked:=true;
+ end
+ else begin
+ MenuItem6.Checked:=true;
+ MenuItem8.Checked:=true;
+ MenuItem9.Checked:=true;
+ MenuItem10.Checked:=false;
+ MenuItem12.Checked:=false;
+ MenuItem13.Checked:=false;
+ MenuItem22.Checked:=false;
+ MenuItem14.Checked:=false;
+ MenuItem31.Checked:=false;
+ MenuItem16.Checked:=false;
+ end;
+end;
+procedure TForm4.Edit10DblClick(Sender: TObject);
+begin
+  if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
+  I_SETM(Act,edit10);
 end;
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);

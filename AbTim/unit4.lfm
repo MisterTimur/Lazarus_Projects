@@ -1,7 +1,7 @@
 object Form4: TForm4
-  Left = 70
+  Left = 54
   Height = 71
-  Top = 295
+  Top = 140
   Width = 841
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
@@ -275,9 +275,7 @@ object Form4: TForm4
       Top = 5
       Width = 111
       Caption = 'Перемещаться.'
-      Checked = True
       OnChange = CheckBox1Change
-      State = cbChecked
       TabOrder = 0
     end
     object CheckBox2: TCheckBox
@@ -288,24 +286,16 @@ object Form4: TForm4
       Caption = 'Камера + 150'
       TabOrder = 1
     end
-    object CheckBox3: TCheckBox
-      Left = 536
-      Height = 19
-      Top = 5
-      Width = 90
-      Caption = 'Маршртуный'
-      OnChange = CheckBox3Change
-      TabOrder = 2
-    end
     object CheckBox4: TCheckBox
-      Left = 236
+      Left = 240
       Height = 19
       Top = 5
-      Width = 104
-      Caption = 'Только сцена'
+      Width = 160
+      Caption = 'Режим редактирования'
       Checked = True
+      OnChange = CheckBox4Change
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 2
     end
   end
   object Splitter8: TSplitter
@@ -333,8 +323,7 @@ object Form4: TForm4
       Alignment = taCenter
       OnChange = Edit9Change
       TabOrder = 0
-      Text = '1'
-      TextHint = 'GStep'
+      TextHint = 'Name'
     end
   end
   object Splitter9: TSplitter
@@ -360,8 +349,10 @@ object Form4: TForm4
       Width = 66
       Align = alTop
       Alignment = taCenter
+      OnDblClick = Edit10DblClick
+      ReadOnly = True
       TabOrder = 0
-      Text = 'Edit10'
+      TextHint = 'MAR'
     end
   end
   object MainMenu1: TMainMenu
@@ -456,12 +447,10 @@ object Form4: TForm4
       end
       object MenuItem6: TMenuItem
         Caption = 'Плоскости.'
-        Checked = True
         OnClick = MenuItem6Click
       end
       object MenuItem8: TMenuItem
         Caption = 'Линии'
-        Checked = True
         OnClick = MenuItem8Click
       end
       object MenuItem9: TMenuItem
@@ -483,10 +472,12 @@ object Form4: TForm4
       end
       object MenuItem13: TMenuItem
         Caption = 'Плоскости'
+        Checked = True
         OnClick = MenuItem13Click
       end
       object MenuItem22: TMenuItem
         Caption = 'Линии'
+        Checked = True
         OnClick = MenuItem22Click
       end
       object MenuItem14: TMenuItem
@@ -504,6 +495,7 @@ object Form4: TForm4
       end
       object MenuItem16: TMenuItem
         Caption = 'Вершины'
+        Checked = True
         OnClick = MenuItem16Click
       end
       object MenuItem39: TMenuItem
