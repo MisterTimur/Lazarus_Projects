@@ -284,10 +284,8 @@ procedure TForm6.MenuItem8Click(Sender: TObject);
 begin
 
    if CheckListBox4.itemindex<CheckListBox4.items.count then
-   if CheckListBox4.itemindex>0 then begin
+   if CheckListBox4.itemindex>0 then
    I_DelEle(CheckListBox4.items.objects[CheckListBox4.itemindex]);
-   I_RefSpiEles(Obj,CheckListBox4);
-   end;
 
 end;
 procedure TForm6.Panel1Click(Sender: TObject);

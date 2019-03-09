@@ -117,6 +117,10 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem29Click(Sender: TObject);
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
+    procedure MenuItem33Click(Sender: TObject);
+    procedure MenuItem34Click(Sender: TObject);
+    procedure MenuItem35Click(Sender: TObject);
+    procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -284,6 +288,22 @@ procedure TForm4.MenuItem31Click(Sender: TObject);
 begin
    MenuItem31.Checked:=not MenuItem31.Checked;
 end;
+procedure TForm4.MenuItem33Click(Sender: TObject);
+begin
+  if Act<>Nil Then I_AddEle(act);
+end;
+procedure TForm4.MenuItem34Click(Sender: TObject);
+begin
+  if Act<>Nil Then I_AddPlo(act);
+end;
+procedure TForm4.MenuItem35Click(Sender: TObject);
+begin
+  if Act<>Nil Then I_AddLin(Act);
+end;
+procedure TForm4.MenuItem36Click(Sender: TObject);
+begin
+  if Act<>Nil Then I_AddVer(Act);
+end;
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
@@ -376,7 +396,6 @@ procedure TForm4.Edit9Change(Sender: TObject);
 begin
  I_SetN(Act,Edit9);
 end;
-
 end.
 
 

@@ -384,15 +384,19 @@ object Form4: TForm4
       Caption = 'Правка'
       object MenuItem36: TMenuItem
         Caption = 'Создать вершину.'
+        OnClick = MenuItem36Click
       end
       object MenuItem35: TMenuItem
         Caption = 'Создать линию.'
+        OnClick = MenuItem35Click
       end
       object MenuItem34: TMenuItem
         Caption = 'Создать плоскость'
+        OnClick = MenuItem34Click
       end
       object MenuItem33: TMenuItem
         Caption = 'Создать элемент.'
+        OnClick = MenuItem33Click
       end
       object MenuItem32: TMenuItem
         Caption = 'Создать обьект.'

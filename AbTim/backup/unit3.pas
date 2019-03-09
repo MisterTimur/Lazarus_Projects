@@ -54,7 +54,7 @@ function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричн�
 function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
 function I_AddVer150(iEle:Pointer):Pointer;// Создает симетричную вершину
 function I_AddVni150(iEle:Pointer):Pointer;// Создает симетричную вершину
-function I_AddVerMar(iEle:Pointer):Pointer;// Создает симетричную вершину
+function I_AddVerMar(iPlo:Pointer):Pointer;// Создает симетричную вершину
 
 
 function I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
@@ -2118,7 +2118,6 @@ glVertex3f(GMin.X,GMax.Y,GMin.Z);
 glVertex3f(GMin.X,GMax.Y,GMax.Z);
 end;
 
-
 procedure I_DrVer   (iVer:TVer;iCol:RCol);// Вывод   Вершины
 begin
 glColor4ub(iCol.R,iCol.G,iCol.B,iCol.A);
@@ -2480,7 +2479,7 @@ I_TOBJ_PUT_01(TObj(iEle),lStr);// превращаем обьект в стро�
 rez:=I_SCENA_DOU_01(lStr);// Превращаем строку в обьект
 if rez<>Nil Then  begin
             Tobj(rez).LOC.x:=Tobj(rez).LOC.x+10;
-            U_OpenObj(rez);
+            U_OpenObject(rez);
             end;
 I_AddObjCOP:=Rez;
 end;
@@ -2577,41 +2576,43 @@ I_RefAllForm;
 I_AddVni150:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVerMar(iEle:Pointer):Pointer;// Создает симетричную вершину
+function I_AddVerMar(iPlo:Pointer):Pointer;// Создает  Маршрутные вершину
 Var
-rEle:TEle;
-nVer:TVer;
-HX,Hz:Double;
-procedure ZZZ;
+rEle:TEle;la,lb,lc,ld:RCS3;lPlo:Tplo;
+procedure Center(ia,ib,ic,id:RCS3;iG:Longint);
+var
+LAC,LAB,LBC,LCD,LDA:RCS3;nVer:TVer;
 begin
+LAC:=SerRCS3(ia,ic);
+LAB:=SerRCS3(ia,ib);
+LBC:=SerRCS3(ib,ic);
+LCD:=SerRCS3(ic,id);
+LDA:=SerRCS3(id,ia);
+nVer:=rEle.V(LAC.x,LAC.y,LAC.z);
 nVer.Nam:=I_NewNamIdd('V ');
-nVer.Col:=TVER(iEle).Col;
-nVer.Mar:=true;
+nVer.Col:=CreRcol(Random(100),Random(150)+100,100,255);
+nVer.MAR:=True;
+if iG<2 then begin
+Center(LDA,ia,lAB,lAC,ig+1);
+Center(LAB,ib,lBC,lAC,ig+1);
+Center(LBC,ic,lCD,lAC,ig+1);
+Center(LCD,id,lDA,lAC,ig+1);
+end;
 end;
 begin
+if Tver(iPlo).TIP=T_PLO then begin
 G_Change:=true;
-rEle:=I_GetOb(iEle);// ПОлучаю родительский элемент
-if Tver(iEle).TIP=T_PLO then begin
-
-HX:=((TVER(iEle).GMAX.x-TVER(iEle).GMIN.x)/3);
-HZ:=((TVER(iEle).GMAX.z-TVER(iEle).GMIN.z)/3);
-
-nVer:=rEle.V(TVER(iEle).REA.x-(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z-(HZ));ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x     ,TVER(iEle).REA.y+25,TVER(iEle).REA.z-(HZ));ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x+(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z-(HZ));ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x-(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z     );ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x+(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z     );ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x-(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z+(HZ));ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x     ,TVER(iEle).REA.y+25,TVER(iEle).REA.z+(HZ));ZZZ;
-nVer:=rEle.V(TVER(iEle).REA.x+(HX),TVER(iEle).REA.y+25,TVER(iEle).REA.z+(HZ));ZZZ;
-TVer(iEle).MAR:=true;
-
+rEle:=I_GetOb(iPlo);// ПОлучаю родительский элемент
+lPlo:=TPlo(iPlo);
+lA:=lPlo.VERS[1].Rea;
+lB:=lPlo.VERS[2].Rea;
+lC:=lPlo.VERS[3].Rea;
+lD:=lPlo.VERS[4].Rea;
+center(la,lb,lc,ld,0);
 I_RefAllForm;
-I_AddVerMar:=nVer;
-//U_OpenPoint(nVer,nVer.Ele);
 end;
 end;
-function I_AddVerLan(iEle:Pointer):Pointer;// Создает симетричную вершину
+function I_AddVerLan(iEle:Pointer):Pointer;// Создает Ландшафтные вершины
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2649,10 +2650,10 @@ nPl:=TObj(rEle).P(
 nPl.Nam:=I_NewNamIdd('P ');
 nPl.Col:=TVER(iEle).Col;
 end;
+
 I_RefAllForm;
 end;
 end;
-
 
 function  I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
@@ -3953,7 +3954,7 @@ var f:Longint;
 begin
 for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
 end;
-procedure Grav;// Опредение кем будем управлять
+procedure GRAV;// Опредение кем будем управлять
 var fo,fg,fv:Longint;
 begin
 //------------------------------------------------------------------------------
@@ -4210,6 +4211,55 @@ end;
 
 {%EndRegion}
 
+procedure TForm3.OpenGLControl1Paint(Sender: TObject);
+var Tr:QWord;
+begin
+if GlDraw then begin
+
+  begin // Подготовка в отрисовке
+  timer2.Enabled:=false;
+  Tr:=GetTickCount64;
+  //----------------------------------------------------------------------------
+  Cap2:=SerRcs8(cap2,cap3);
+  CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
+  CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
+  RasN:=((Ras3-RasN)/16)+RasN;
+  //----------------------------------------------------------------------------
+  glLoadIdentity();// Сброс матрицы
+  GlpushMatrix();
+  glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
+  glRotateD(CaU2.X,1,0,0);// Поворот по оси X
+  glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
+  if   form4.CheckBox2.Checked
+  then glTranslateD(-CaP2.x,-CaP2.y-100,-CaP2.z)// Координаты камеры
+  else glTranslateD(-CaP2.x,-CaP2.y,-CaP2.z);// Координаты камеры
+  end;
+  //----------------------------------------------------------------------------
+  if LBut then Begin
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  GlDisable(GL_Blend);// Выключаю смешивание цветов
+  I_EDITDRAWIDDEDI;// ----------------------------------------------------------
+  I_EDITDRAWIDDSCE;//-----------------------------------------------------------
+  GlEnable(GL_Blend);// Включаю смешивание цветов
+  glEnableClientState(GL_COLOR_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  LBut:=false;
+  end;
+  //----------------------------------------------------------------------------
+  // Отрисовка сцены
+  I_EDITDRAWCOLSCE;//-----------------------------------------------------------
+  I_EDITDRAWCOLEDI;//-----------------------------------------------------------
+  //----------------------------------------------------------------------------
+  begin // Завершение отрисовки
+  OpenGLControl1.SwapBuffers;
+  KolKAdVsek:=KolKAdVsek+1;
+  TR:=GetTickCount64-tr;
+  timer2.Enabled:=true;
+  end;
+
+end;
+end;
 function  TheadMath(Par:Pointer):DWORD;stdcall;// Вычисление
 var F:Longint;
 begin
@@ -4271,7 +4321,6 @@ begin
    end;
    result:=0;
 end;
-
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
 x,z:RINT;
@@ -4306,53 +4355,6 @@ end;
 procedure TForm3.Timer2Timer(Sender: TObject);// ОТрисовка
 begin
 OpenGLControl1Paint(sender);
-end;
-procedure TForm3.OpenGLControl1Paint(Sender: TObject);
-var Tr:QWord;f:longint;
-begin
-  if GlDraw then begin
-  begin // Подготовка в отрисовке
-  timer2.Enabled:=false;
-  Tr:=GetTickCount64;
-  //----------------------------------------------------------------------------
-  Cap2:=SerRcs8(cap2,cap3);
-  CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
-  CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
-  RasN:=((Ras3-RasN)/16)+RasN;
-  //----------------------------------------------------------------------------
-  glLoadIdentity();// Сброс матрицы
-  GlpushMatrix();
-  glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
-  glRotateD(CaU2.X,1,0,0);// Поворот по оси X
-  glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
-  if form4.CheckBox2.Checked
-  then glTranslateD(-CaP2.x,-CaP2.y-100,-CaP2.z)// Координаты камеры
-  else glTranslateD(-CaP2.x,-CaP2.y,-CaP2.z);// Координаты камеры
-  end;
-  //----------------------------------------------------------------------------
-  if LBut then Begin
-  glDisableClientState(GL_COLOR_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
-  GlDisable(GL_Blend);// Выключаю смешивание цветов
-  I_EDITDRAWIDDEDI;// ----------------------------------------------------------
-  I_EDITDRAWIDDSCE;//-----------------------------------------------------------
-  GlEnable(GL_Blend);// Включаю смешивание цветов
-  glEnableClientState(GL_COLOR_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  LBut:=false;
-  end;
-  //----------------------------------------------------------------------------
-  // Отрисовка сцены
-  I_EDITDRAWCOLSCE;//------------------------------------------------------------
-  I_EDITDRAWCOLEDI;//-----------------------------------------------------------
-  //----------------------------------------------------------------------------
-  begin // Завершение отрисовки
-  OpenGLControl1.SwapBuffers;
-  KolKAdVsek:=KolKAdVsek+1;
-  TR:=GetTickCount64-tr;
-  timer2.Enabled:=true;
-  end;
-  end;
 end;
 procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
 begin
