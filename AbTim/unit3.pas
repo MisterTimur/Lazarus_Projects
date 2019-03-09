@@ -9,6 +9,9 @@ type { TForm3 }  TForm3 = class(TForm)
     Timer2: TTimer;
     Timer3: TTimer;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure OpenGLControl1Click(Sender: TObject);
     procedure OpenGLControl1DblClick(Sender: TObject);
     procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -109,7 +112,7 @@ procedure I_DEL_ANIMATION(iAni:TCheckListBox);
 function  I_AddVerLan(iEle:Pointer):Pointer;
 function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
 Procedure I_SCENA_ADD_01(var iStr:Ansistring);
-
+procedure I_DelDel(iPri:POinter);
 
 {%EndRegion}
 implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
@@ -2909,6 +2912,15 @@ MirObjs.AddD(lObj);
 I_RefAllForm;
 end else ERR(' I_DelObj Попытка удалить уже удаленный обьект');
 end;
+procedure I_DelDel(iPri:POinter);
+begin
+if      iPri<>Nil       then
+if TVER(iPri).TIP=T_VER then I_DelVer(iPri) else
+if TVER(iPri).TIP=T_LIN then I_DelLin(iPri) else
+if TVER(iPri).TIP=T_PLO then I_DelPlo(iPri) else
+if TVER(iPri).TIP=T_ELE then I_DelEle(iPri) else
+if TVER(iPri).TIP=T_OBJ then I_DelObj(iPri) ;
+end;
 
 procedure I_DelNotUseVer;// Удаляет не используемые вершины
 var fv,fp,fl,kd:Longint;d:Boolean;
@@ -2919,22 +2931,26 @@ if MirVers.VerS[Fv].Del=false then
 begin
 d:=true;
 fp:=1;
-while  (fp<=MirPlos.KolP) and (d=true)do if MirPlos.PLOS[Fp].DEL=false  then
-begin
+while  (fp<=MirPlos.KolP) and (d=true)do begin
+if  MirPlos.PLOS[Fp].DEL=false  then begin
 if  MirPlos.PLOS[Fp].VERS[1]=MirVers.VerS[Fv] then d:=false;
 if  MirPlos.PLOS[Fp].VERS[2]=MirVers.VerS[Fv] then d:=false;
 if  MirPlos.PLOS[Fp].VERS[3]=MirVers.VerS[Fv] then d:=false;
 if  MirPlos.PLOS[Fp].VERS[4]=MirVers.VerS[Fv] then d:=false;
+end;
 fp:=fp+1;
 end;
+
+
 fl:=1;
-while  (fl<=MirLINs.KolL) and (d=true)do if MirLins.LinS[Fl].DEL=false  then
+while  (fl<=MirLINs.KolL) and (d=true)do begin
+if MirLins.LinS[Fl].DEL=false  then
 begin
 if  MirLins.LINS[Fl].VERS[1]=MirVers.VerS[Fv] then d:=false;
 if  MirLins.LINS[Fl].VERS[2]=MirVers.VerS[Fv] then d:=false;
+end;
 fl:=fl+1;
 end;
-
 if d then  begin I_DelVer(MirVers.VerS[Fv]);KD:=KD+1;end;
 end;
 FV:=FV+1;
@@ -3954,17 +3970,15 @@ var f:Longint;
 begin
 for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
 end;
-procedure GRAV;// Опредение кем будем управлять
+procedure GRAV;// ГРавитация
 var fo,fg,fv:Longint;
 begin
 //------------------------------------------------------------------------------
 for fo:=1 to MirObjs.KOlO do
 for fg:=1 to MirObjs.KOlO do if (fg<>fo) then
-if VhoditObjObj(MirObjs.Objs[fo],MirObjs.Objs[Fg]) then
-begin
+if VhoditObjObj(MirObjs.Objs[fo],MirObjs.Objs[Fg]) then begin
 if MirObjs.Objs[fo].GOb<>Nil Then
 TObj(MirObjs.Objs[fo].GOb).DelDels(MirObjs.Objs[fo]);
-
 MirObjs.Objs[Fg].AddDels(MirObjs.Objs[fo]);
 MirObjs.Objs[fo].Gob:=MirObjs.Objs[Fg];
 end;
@@ -3973,32 +3987,32 @@ for fo:=1 to MirObjs.KOlO do
 if  MirObjs.Objs[fo].OPER then
 if  MirObjs.Objs[fo].GOb<>Nil Then
 for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
-if  VhoditObjPlo(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg]) then begin
-
-
+if  VhoditObjPlo(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
 MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
-
 if MirObjs.Objs[fo].LOC.Y<
-TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
-then
+TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC) then
 MirObjs.Objs[fo].LOC.Y:=
 TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
 else
 MirObjs.Objs[fo].LOC.Y:=
 MirObjs.Objs[fo].LOC.Y+
 (TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
--MirObjs.Objs[fo].LOC.Y)/2
-//123
-
-
-
+-MirObjs.Objs[fo].LOC.Y)/2;
 end;
+//------------------------------------------------------------------------------
+for fo:=1 to MirObjs.KOlO do
+if not MirObjs.OBJS[Fo].DEL Then
+for fV:=1 to MirObjs.OBJS[Fo].KOlV do
+if not MirObjs.OBJS[Fo].VERS[fv].DEL Then
+if     MirObjs.OBJS[Fo].VERS[fv].MAR Then
+MirObjs.OBJS[Fo].VERS[fv].GPL:=FinPlos(MirObjs.OBJS[Fo].VERS[fv].REA);
 //------------------------------------------------------------------------------
 end;
 procedure DOPL;// Всякая ерунда
 var f:Longint;
 begin
 for f:=1 to MirObjs.KolO do begin
+if form4.CheckBox3.Checked then
 if MirObjs.OBJS[f].NAM='Человечек' then begin
                                         PER:=MirObjs.OBJS[f];
                                         PER.OPER:=true;
@@ -4378,6 +4392,24 @@ procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
 end;
+
+procedure TForm3.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+  );
+begin
+  //showmessage(intToStr(key));
+end;
+
+procedure TForm3.FormKeyPress(Sender: TObject; var Key: char);
+begin
+
+
+end;
+
+procedure TForm3.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if key=46 then I_DelDel(form4.Act);
+end;
+
 procedure TForm3.OpenGLControl1Click(Sender: TObject);
 begin
 
@@ -4386,6 +4418,11 @@ procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
 begin
   DBUT:=true;
 end;
+
+
+
+
+
 procedure TForm3.OpenGLControl1Resize(Sender: TObject);
 begin
   glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем

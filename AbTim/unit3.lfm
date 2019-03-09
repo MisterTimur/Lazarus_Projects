@@ -7,6 +7,9 @@ object Form3: TForm3
   ClientHeight = 312
   ClientWidth = 385
   OnClose = FormClose
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  OnKeyUp = FormKeyUp
   Position = poScreenCenter
   LCLVersion = '1.8.4.0'
   object OpenGLControl1: TOpenGLControl

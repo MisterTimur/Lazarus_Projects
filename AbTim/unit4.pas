@@ -4,6 +4,7 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
 type { TForm4 } TForm4 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
@@ -52,6 +53,8 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
     MenuItem4: TMenuItem;
+    MenuItem40: TMenuItem;
+    MenuItem41: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -121,6 +124,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
+    procedure MenuItem40Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -304,6 +308,12 @@ procedure TForm4.MenuItem36Click(Sender: TObject);
 begin
   if Act<>Nil Then I_AddVer(Act);
 end;
+
+procedure TForm4.MenuItem40Click(Sender: TObject);
+begin
+  I_DelDel(Act);
+end;
+
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);

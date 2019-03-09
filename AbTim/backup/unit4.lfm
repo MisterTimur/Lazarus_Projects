@@ -382,6 +382,13 @@ object Form4: TForm4
     end
     object MenuItem2: TMenuItem
       Caption = 'Правка'
+      object MenuItem40: TMenuItem
+        Caption = 'Удалить.'
+        OnClick = MenuItem40Click
+      end
+      object MenuItem41: TMenuItem
+        Caption = '-'
+      end
       object MenuItem36: TMenuItem
         Caption = 'Создать вершину.'
         OnClick = MenuItem36Click
