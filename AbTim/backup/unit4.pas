@@ -4,7 +4,9 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
 type { TForm4 } TForm4 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit10: TEdit;
@@ -98,6 +100,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
@@ -307,12 +310,10 @@ procedure TForm4.MenuItem36Click(Sender: TObject);
 begin
   if Act<>Nil Then I_AddVer(Act);
 end;
-
 procedure TForm4.MenuItem40Click(Sender: TObject);
 begin
   I_DelDel(Act);
 end;
-
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
@@ -405,6 +406,12 @@ procedure TForm4.Edit9Change(Sender: TObject);
 begin
  I_SetN(Act,Edit9);
 end;
+
+procedure TForm4.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+
+end;
+
 end.
 
 

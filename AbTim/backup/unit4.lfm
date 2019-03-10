@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 54
-  Height = 71
-  Top = 140
-  Width = 841
+  Left = 84
+  Height = 70
+  Top = 162
+  Width = 919
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
-  ClientHeight = 52
-  ClientWidth = 841
+  ClientHeight = 51
+  ClientWidth = 919
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -14,17 +14,18 @@ object Form4: TForm4
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   Menu = MainMenu1
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   LCLVersion = '1.8.4.0'
   Visible = True
   object Panel1: TPanel
     Left = 0
-    Height = 26
+    Height = 25
     Top = 26
     Width = 77
     Align = alLeft
     Caption = 'Panel1'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 77
     TabOrder = 0
     object Edit1: TEdit
@@ -44,18 +45,18 @@ object Form4: TForm4
   end
   object Splitter1: TSplitter
     Left = 77
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel2: TPanel
     Left = 82
-    Height = 26
+    Height = 25
     Top = 26
     Width = 78
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 78
     TabOrder = 2
     object Edit2: TEdit
@@ -75,18 +76,18 @@ object Form4: TForm4
   end
   object Splitter2: TSplitter
     Left = 160
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel3: TPanel
     Left = 165
-    Height = 26
+    Height = 25
     Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel3'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 75
     TabOrder = 4
     object Edit3: TEdit
@@ -106,18 +107,18 @@ object Form4: TForm4
   end
   object Splitter3: TSplitter
     Left = 240
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel4: TPanel
     Left = 245
-    Height = 26
+    Height = 25
     Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel4'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 75
     TabOrder = 6
     object Edit4: TEdit
@@ -137,18 +138,18 @@ object Form4: TForm4
   end
   object Splitter4: TSplitter
     Left = 320
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel5: TPanel
     Left = 325
-    Height = 26
+    Height = 25
     Top = 26
     Width = 66
     Align = alLeft
     Caption = 'Panel5'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 66
     TabOrder = 8
     object Edit5: TEdit
@@ -168,18 +169,18 @@ object Form4: TForm4
   end
   object Splitter5: TSplitter
     Left = 391
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel6: TPanel
     Left = 396
-    Height = 26
+    Height = 25
     Top = 26
     Width = 68
     Align = alLeft
     Caption = 'Panel6'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 68
     TabOrder = 10
     object Edit6: TEdit
@@ -199,18 +200,18 @@ object Form4: TForm4
   end
   object Splitter6: TSplitter
     Left = 464
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel7: TPanel
     Left = 469
-    Height = 26
+    Height = 25
     Top = 26
     Width = 67
     Align = alLeft
     Caption = 'Panel7'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 67
     TabOrder = 12
     object Edit7: TEdit
@@ -231,18 +232,18 @@ object Form4: TForm4
   end
   object Splitter7: TSplitter
     Left = 536
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel8: TPanel
     Left = 541
-    Height = 26
+    Height = 25
     Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel8'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 75
     TabOrder = 14
     object Edit8: TEdit
@@ -264,10 +265,10 @@ object Form4: TForm4
     Left = 0
     Height = 26
     Top = 0
-    Width = 841
+    Width = 919
     Align = alTop
     ClientHeight = 26
-    ClientWidth = 841
+    ClientWidth = 919
     TabOrder = 15
     object CheckBox1: TCheckBox
       Left = 8
@@ -297,21 +298,39 @@ object Form4: TForm4
       State = cbChecked
       TabOrder = 2
     end
+    object CheckBox3: TCheckBox
+      Left = 744
+      Height = 19
+      Top = 5
+      Width = 167
+      Caption = 'Привязать к персонажу'
+      TabOrder = 3
+    end
+    object CheckBox5: TCheckBox
+      Left = 408
+      Height = 19
+      Top = 5
+      Width = 76
+      Caption = 'Selected'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
   end
   object Splitter8: TSplitter
     Left = 616
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel10: TPanel
     Left = 621
-    Height = 26
+    Height = 25
     Top = 26
     Width = 74
     Align = alLeft
     Caption = 'Panel10'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 74
     TabOrder = 17
     object Edit9: TEdit
@@ -328,18 +347,18 @@ object Form4: TForm4
   end
   object Splitter9: TSplitter
     Left = 695
-    Height = 26
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel11: TPanel
     Left = 700
-    Height = 26
+    Height = 25
     Top = 26
     Width = 68
     Align = alLeft
     Caption = 'Panel11'
-    ClientHeight = 26
+    ClientHeight = 25
     ClientWidth = 68
     TabOrder = 19
     object Edit10: TEdit
@@ -356,7 +375,8 @@ object Form4: TForm4
     end
   end
   object MainMenu1: TMainMenu
-    left = 488
+    left = 152
+    top = 64
     object MenuItem1: TMenuItem
       Caption = 'Файл'
       object MenuItem17: TMenuItem
@@ -520,7 +540,8 @@ object Form4: TForm4
   object FontDialog1: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 448
+    left = 120
+    top = 64
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -546,18 +567,21 @@ object Form4: TForm4
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 408
+    left = 88
+    top = 64
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text file|*.txt|All File|*.*'
-    left = 368
+    left = 48
+    top = 64
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.txt'
     FileName = 'test'
     Filter = 'Text File|*.txt|All File|*.*'
-    left = 336
+    left = 8
+    top = 64
   end
 end
