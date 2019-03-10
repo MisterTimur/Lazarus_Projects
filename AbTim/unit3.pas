@@ -2204,354 +2204,6 @@ glEnd();
 end;
 
 
-procedure I_EDITDRAWIDDVIS;// Делает не видимыми мешающие стеки
-var f:LongWord;RC:LongWord;lCap2:RCS3;
-begin
-lCap2:=Cap2;
-if   form4.CheckBox2.Checked then
-begin
-lCap2.X:=Cap2.X;
-lCap2.Y:=Cap2.Y+100;
-lCap2.Z:=Cap2.Z;
-end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
-for f:=1 to MirPlos.KolP do // пребираю всеплоскости
-if not TOBJ(MirPlos.PLOS[f].OBJ).OPER then
-if not MirPlos.PLOS[f].DEL then  // если он не удален
-if     MirPlos.PLOS[f].VIS then begin // Это не важно видимость обьекта
-MirPLos.PLOS[f].VVI:=true; // Изначально все плоскости видимы
-I_DrPlo(MirPLos.PLOS[f],intToCol(1000));// РИсую плоскость
-RC:=0; glReadPixels(trunc(form3.ClientWidth/2),trunc(form3.ClientHeight/2)
-             ,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if RC<>2000 then begin // Если плоскость загораживает обьект
-//glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-//glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-glDisable(GL_DEPTH_TEST); // Отключаю буфер глубины
-MirPLos.PLOS[f].VVI:=False;
-I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
-glEnable(GL_DEPTH_TEST);// включаю буфер глубины
-end;
-end;
-end;
-
-procedure I_EDITDRAWIDDEDI;// ОТрисо IDшник редктируемых   примитивов
-var f:LongWord;RC,SC:LongWord;
-begin
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-//------------------------------------------------------------------------------
-SC:=MaxKOlPriInMir   ; begin // Рисую   обьекты
-if form4.MenuItem10.Checked then
-for f:=1 to MirObjs.KolO do
-if not MirObjs.OBJS[f].DEL then
-if     MirObjs.OBJS[f].VIS then
-I_DrObj(MirObjs.OBJS[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlObjInMir; begin // Рисую  элементы
-if form4.MenuItem12.Checked then
-for f:=1 to MirEles.KolE do
-if not MirEles.ELES[f].DEL then
-if     MirEles.ELES[f].VIS then
-I_DrEle(MirEles.ELES[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlEleInMir; begin // Рисую Плоскости
-if form4.MenuItem13.Checked then
-for f:=1 to MirPlos.KolP do
-if not MirPlos.PLOS[f].DEL then
-if     MirPlos.PLOS[f].VIS then
-if     MirPlos.PLOS[f].VVI then
-I_DrPlo(MirPLos.PLOS[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlPloInMir; begin // Рисую     Линии
-if form4.MenuItem22.Checked then
-for f:=1 to MirLins.KolL do
-if not MirLins.LINS[f].DEL then
-if     MirLins.LINS[f].VIS then
-if Not MirLins.LINS[f].MAR then
-I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlLinInMir; begin // Рисую МАР Линии
-if form4.MenuItem31.Checked then
-for f:=1 to MirLins.KolL do  // Маршрутные линии
-if not  MirLins.LINS[f].DEL then
-if      MirLins.LINS[f].VIS then
-if      MirLins.LINS[f].MAR then
-I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlLinInMir; begin // Рисую   Вершины
-if form4.MenuItem14.Checked then
-for f:=1 to MirVers.KolV do
-if not  MirVers.VERS[f].DEL then
-if      MirVers.VERS[f].VIS then
-if not  MirVers.VERS[f].MAR then
-I_DrVer(MirVers.VERS[f],IntToCol(f+SC)); end;
-//------------------------------------------------------------------------------
-SC:=SC+MaxKOlVerInMir; begin // Рисую   Вершины
-if form4.MenuItem16.Checked then
-for f:=1 to MirVers.KolV do
-if not MirVers.VERS[f].DEL then
-if     MirVers.VERS[f].VIS then
-if     MirVers.VERS[f].MAR then
-I_DrVer(MirVers.VERS[f],IntToCol(f+SC));
-end;
-//------------------------------------------------------------------------------
-RC:=0;
-glReadPixels(MouD.X,form3.ClientHeight-MouD.Z,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if RC=0 then // Если ничего не выбрано
-while MirSels.Kol<>0 do I_SetSel(MirSels.sels[MirSels.Kol],false);
-RC:=RC-MaxKOlPriInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirObjs.KolO) then begin // Если выбран обьект
-if form4.CheckBox5.Checked then begin
-MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
-I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
-end;
-if MBUT THEN begin CaP3:=MirObjs.Objs[RC].ECR;end;
-if DBUT THEN begin U_OpenObject(MirObjs.Objs[RC]);DBUT:=False;end;
-end;RC:=RC-MaxKOlObjInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirEles.KolE) then begin // Если выбран Элемент
-if form4.CheckBox5.Checked then begin
-MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
-I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
-end;
-if MBUT THEN begin CaP3:=MirEles.Eles[RC].ECR;end;
-if DBUT THEN begin U_OpenElement(MirEles.Eles[RC]);DBUT:=False;end;
-end;RC:=RC-MaxKOlEleInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirPlos.KolP) then begin // Если выбрана плоскость
-if form4.CheckBox5.Checked then begin
-MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
-I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
-end;
-if MBUT THEN begin CaP3:=MirPlos.Plos[RC].ECR;end;
-if DBUT THEN begin
-U_OpenPlos(MirPLOs.PLos[RC],TELE(MirPlos.Plos[RC]).ELE);DBUT:=False;end;
-end;RC:=RC-MaxKOlPLoInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
-if form4.CheckBox5.Checked then begin
-MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
-I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
-end;
-if MBUT THEN begin CaP3:=MirLins.Lins[RC].ECR;end;
-if DBUT THEN begin
-U_OpenLine(MirLins.Lins[RC],TELE(MirLins.Lins[RC]).ELE);DBUT:=False;end;
-end;RC:=RC-MaxKOlLinInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
-if form4.CheckBox5.Checked then begin
-MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
-I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
-end;
-if MBUT THEN begin CaP3:=MirLins.Lins[RC].ECR;end;
-if DBUT THEN begin
-U_OpenLine(MirLins.Lins[RC],TELE(MirLins.Lins[RC]).ELE);DBUT:=False;end;
-end;RC:=RC-MaxKOlLinInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
-if form4.CheckBox5.Checked then begin
-MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
-I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
-end;
-if MBUT THEN begin CaP3:=MirVers.Vers[RC].ECR;end;
-if DBUT THEN begin
-U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);DBUT:=False;end;
-end;RC:=RC-MaxKOlVerInMir;
-//------------------------------------------------------------------------------
-if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
-if form4.CheckBox5.Checked then begin
-MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
-I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
-end;
-if MBUT THEN begin CaP3:=MirVers.Vers[RC].ECR;end;
-if DBUT THEN begin
-U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);DBUT:=False;end;
-end;RC:=RC-MaxKOlVerInMir;
-//------------------------------------------------------------------------------
-end;
-procedure I_EDITDRAWIDDSCE;// Отрисовка игровой сцены IDшнгиками
-
-procedure Ploskost(iVer1,iVer2,iVer3,iVer4:RCS3;C:RCOL);
-begin
-glColor3ub(C.R,C.G,C.B);
-glBegin(GL_TRIANGLES);
-
-glVertex3f(iVer1.x,iVer1.y,iVer1.z);
-glVertex3f(iVer2.x,iVer2.y,iVer2.z);
-glVertex3f(iVer3.x,iVer3.y,iVer3.z);
-glVertex3f(iVer3.x,iVer3.y,iVer3.z);
-glVertex3f(iVer4.x,iVer4.y,iVer4.z);
-glVertex3f(iVer1.x,iVer1.y,iVer1.z);
-
-glEnd();
-end;
-function  OpredelitCoo(x,y:Longint;iVer1,iVer2,iVer3,iVer4:RCS3;g:Longint):RCS3;
-var
-Rez:RCS3;
-iVer0,iVer12,iVer23,iVer34,iVer41:RCS3;
-Rc:LongWord=0;
-begin
-iVer0:=SerRCS3(iVer1,iVer3);
-if (g>0) then begin
-// Разбиваю на 4 плоскости
-iVer12:=SerRCS3(iVer1,iVer2);
-iVer23:=SerRCS3(iVer2,iVer3);
-iVer34:=SerRCS3(iVer3,iVer4);
-iVer41:=SerRCS3(iVer4,iVer1);
-// РИсую 4 плоскости
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-ploskost(iVer1 ,iVer12,iVer0 ,iVer41,IntToCol(1000));
-ploskost(iVer12,iVer2 ,iVer23,iVer0 ,IntToCol(2000));
-ploskost(iVer0 ,iVer23,iVer3 ,iVer34,IntToCol(3000));
-ploskost(iVer41,iVer0 ,iVer34,iVer4 ,IntToCol(4000));
-// читаю цвет плоскости
-glReadPixels(X,Y, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@Rc);
-// смотря в какую плоскость попали
-if (Rc=1000) then Rez:=OpredelitCoo(X,Y,iVer1 ,iVer12,iVer0 ,iVer41,g-1) else
-if (Rc=2000) then Rez:=OpredelitCoo(X,y,iVer12,iVer2 ,iVer23,iVer0 ,g-1) else
-if (Rc=3000) then Rez:=OpredelitCoo(X,y,iVer0 ,iVer23,iVer3 ,iVer34,g-1) else
-if (Rc=4000) then Rez:=OpredelitCoo(X,y,iVer41,iVer0 ,iVer34,iVer4 ,g-1) else Rez:=iVer0;
-end else Rez:=iVer0;
-OpredelitCoo:=Rez;
-end;
-procedure OpredelitCoo(iPlo:Tplo);// Определяет координату нажатой мышки
-var iVer1,iVer2,iVer3,iVer4:RCS3;
-begin
-if Iplo<>Nil Then begin
-iver1:=iPlo.VERS[1].ECR;
-iver2:=iPlo.VERS[2].ECR;
-iver3:=iPlo.VERS[3].ECR;
-iver4:=iPlo.VERS[4].ECR;
-
-if MBUT then begin
-        CaP3:=OpredelitCoo(
-               MouD.X,
-               form3.ClientHeight-MouD.Z,
-               iver1,
-	       iver2,
-	       iver3,
-	       iver4,
-	       16
-	       );
-        CaP3.Y:=CaP3.Y+10;
-        if PER<>NIL then PER.OCEL:=CaP3;
-        end;
-end;
-end;
-var f:Longint;RC:Longword;P:TPLO;
-begin
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-for f:=1 to MirPlos.KolP do
-if   not MirPLos.Plos[f].DEL then
-if       MirPLos.Plos[f].VVI then
-if       MirPLos.Plos[f].VIS then
-with MirPLos.Plos[f] do
-ploskost(VERS[1].ECR,VERS[2].ECR,VERS[3].ECR,VERS[4].ECR,IntToCol(f));
-RC:=0;
-glReadPixels(MouD.X,form3.ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if (RC>0) and (RC<=MirPlos.KolP) then
-begin P:=MirPlos.PLos[RC];OpredelitCoo(P);end else P:=Nil;
-
-end;
-
-procedure I_EDITDRAWCOLSCE;// Отрисовка игровой сцены Цветами
-begin
-glClearColor(GFon.R*(1/255),GFon.G*(1/255),GFon.B*(1/255),GFon.A*(1/255)); // Задаем фон
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);// очистка экрана
-glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
-glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-if form4.MenuItem6.Checked then
-glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
-glDisableClientState(GL_COLOR_ARRAY);
-glColor4ub(0,0,0,255);
-if form4.MenuItem8.Checked then
-glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
-glEnableClientState(GL_COLOR_ARRAY);
-end;
-procedure I_EDITDRAWCOLEDI;// Отрисв цветам редактируемых  примитивов
-var f:Longint;
-Begin // Отрисовка редактора
-// Отрисовываю все ОБьекты в игровом мире
-if form4.MenuItem10.Checked then // ОБьекты
-for f:=1 to MirObjs.KolO do
-if     MirObjs.OBJS[f].DEL then
-if     MirObjs.OBJS[f].VIS then
-if Not MirObjs.OBJS[f].SEL
-then  I_DrObj(MirObjs.OBJS[f],MirObjs.OBJS[f].Col)
-else  I_DrObj(MirObjs.OBJS[f],CreRCol(255,0,0,255));//RanRCol
-
-// Отрисовываю все элементы  в игровом мире
-if form4.MenuItem12.Checked then // Элемент
-for f:=1 to MirEles.KolE do
-if not MirEles.ELES[f].DEL then
-if     MirEles.ELES[f].VVI then
-if Not MirEles.ELES[f].SEL
-Then I_DrEle(MirEles.ELES[f],MirEles.ELES[f].COL)
-else I_DrEle(MirEles.ELES[f],CreRCol(255,0,0,255));
-
-// Отрисовываю все Плоскости в игровом мире
-if form4.MenuItem13.Checked then // Плоскос
-for f:=1 to MirPlos.KolP do
-if not MirPlos.PLOS[f].DEL then
-if     MirPlos.PLOS[f].VIS then
-if     MirPlos.PLOS[f].VVI then
-if Not MirPlos.PLOS[f].SEL
-then I_DrPlo(MirPlos.PLOS[f],MirPlos.PLOS[f].Col)
-else I_DrPlo(MirPlos.PLOS[f],CreRCol(255,0,0,255));
-
-
-// Отрисовываю все Линии в игровом мире
-if form4.MenuItem22.Checked then // Линии
-for f:=1 to MirLins.KolL do
-if not MirLins.LINS[f].DEL then
-if     MirLins.LINS[f].VIS then
-if not MirLins.LINS[f].MAR then
-if Not MirLins.LinS[f].SEL
-then I_DrLin(MirLins.LinS[f],MirLins.LinS[f].COL)
-else I_DrLin(MirLins.LinS[f],CreRCol(255,0,0,255));
-
-
-// Отрисовываю все маршпутные Линии в игровом мире
-if form4.MenuItem31.Checked then // Линии
-for f:=1 to MirLins.KolL do
-if not MirLins.LINS[f].DEL then
-if     MirLins.LINS[f].VIS then
-if     MirLins.LINS[f].MAR then
-if Not MirLins.LinS[f].SEL
-then I_DrLin(MirLins.LinS[f],MirLins.LinS[f].COL)
-else I_DrLin(MirLins.LinS[f],CreRCol(255,0,0,255));
-
-
-// Отрисовываю все вершины в игровом мире
-if form4.MenuItem14.Checked then   // Вершины
-for f:=1 to MirVers.KolV do
-if not MirVers.VERS[f].DEL then
-if     MirVers.VERS[f].VIS then
-if not MirVers.VERS[f].MAR then
-if Not MirVers.VERS[f].SEL
-then I_DrVer(MirVers.VERS[f],MirVers.VERS[f].COL)
-else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
-
-
-// Отрисовываю все вершины в игровом мире
-if form4.MenuItem16.Checked then   // Вершины
-for f:=1 to MirVers.KolV do
-if not MirVers.VERS[f].DEL then
-if     MirVers.VERS[f].VIS then
-if     MirVers.VERS[f].MAR then
-if Not MirVers.VERS[f].SEL
-then I_DrVer(MirVers.VERS[f],MirVers.VERS[f].COL)
-else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
-
-
-
-end;
 
 
 {%EndRegion}
@@ -4060,21 +3712,20 @@ end;
 var   {Таймеры                ===========================}{%Region /FOLD }
                                                            Reg14:Longint;
 
-function  VhoditObjObj(iPer,iObj:TObj):Boolean;
-var Rez:Boolean;
-begin
-Rez:=False;
-if iPer.OB3<iObj.Ob3 then
-if Vhodit3D(iPer.REA,iObj.GMin,iObj.GMax) then
-rez:=true;
-VhoditObjObj:=REz;
-end;
-function  VhoditObjPlo(iPer:TObj;iPLo:TPlo):Boolean;
+
+function  VhoditObjPlo3d(iPer:TObj;iPLo:TPlo):Boolean;
 var Rez:Boolean;
 begin
 Rez:=False;
 if Vhodit3D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
-VhoditObjPlo:=REz;
+VhoditObjPlo3d:=REz;
+end;
+function  VhoditObjPlo2d(iPer:TObj;iPLo:TPlo):Boolean;
+var Rez:Boolean;
+begin
+Rez:=False;
+if Vhodit2D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
+VhoditObjPlo2d:=REz;
 end;
 function  FinPlos(iCoo:Rcs3):TPlo;// Ищит плоскость в котрой принадлежит КОО
 var REz:Tplo;f:Longint;
@@ -4094,22 +3745,49 @@ for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
 end;
 procedure GRAV;// ГРавитация
 var fo,fg,fv,fl,f1,f2:Longint;
+lPer,ldom:Tobj;
 begin
 //------------------------------------------------------------------------------
-for fo:=1 to MirObjs.KOlO do
-for fg:=1 to MirObjs.KOlO do if (fg<>fo) then
-if VhoditObjObj(MirObjs.Objs[fo],MirObjs.Objs[Fg]) then begin
-if MirObjs.Objs[fo].GOb<>Nil Then
-TObj(MirObjs.Objs[fo].GOb).DelDels(MirObjs.Objs[fo]);
-MirObjs.Objs[Fg].AddDels(MirObjs.Objs[fo]);
-MirObjs.Objs[fo].Gob:=MirObjs.Objs[Fg];
+// Какой обьект находиться в каком
+for fo:=1 to MirObjs.KOlO do if  not MirObjs.OBJS[fo].DEL then
+for fg:=1 to MirObjs.KOlO do if  not MirObjs.OBJS[fg].DEL then
+if (fg<>fo) then begin
+lPer:=MirObjs.OBJS[fo];
+lDom:=MirObjs.OBJS[fg];
+      //---------------------------------------------------------
+      // ПРоверка
+      if lPer.Gob<>nil then
+      if not Vhodit3D(lPer.REA,lPer.Gob.GMin,lPer.Gob.GMax) then
+      begin TObj(lPer.GOb).DelDels(lPer);lPer.Gob:=Nil;end;
+      //---------------------------------------------------------
+      if lPer.OB3<lDom.Ob3 then // Если обьект меньше
+      if (lPer.GOb=nil) or (lPer.GOb.OB3>lDom.Ob3) then // Если его грав >
+      if Vhodit3D(lPer.REA,lDom.GMin,lDom.GMax) then begin
+            if lPer.GOb<>Nil Then TObj(lPer.GOb).DelDels(lPer);
+            //---------------------------------------------------
+            lDom.AddDels(lPer);
+            lPer.Gob:=lDom;
+      end;
 end;
 //------------------------------------------------------------------------------
-for fo:=1 to MirObjs.KOlO do
+// НА какой плоскости находиться обьект
+
+for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
+if  MirObjs.Objs[fo].OPER then
+if  MirObjs.Objs[fo].GOb<>Nil Then
+if  MirObjs.Objs[fo].GPl<>Nil Then
+if  not VhoditObjPlo3d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
+if  not VhoditObjPlo2d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
+MirObjs.Objs[fo].gpl:=nil;
+
+
+
+for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
 if  MirObjs.Objs[fo].OPER then
 if  MirObjs.Objs[fo].GOb<>Nil Then
 for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
-if  VhoditObjPlo(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
+if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
+if  VhoditObjPlo3d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
 MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
 if MirObjs.Objs[fo].LOC.Y<
 TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC) then
@@ -4121,7 +3799,31 @@ MirObjs.Objs[fo].LOC.Y+
 (TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
 -MirObjs.Objs[fo].LOC.Y)/2;
 end;
+
+for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
+if  MirObjs.Objs[fo].OPER then
+if  MirObjs.Objs[fo].GOb<>Nil Then
+if  MirObjs.Objs[fo].GPl=Nil Then
+for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
+if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
+if  VhoditObjPlo2d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
+MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
+if MirObjs.Objs[fo].LOC.Y<
+TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC) then
+MirObjs.Objs[fo].LOC.Y:=
+TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
+else
+MirObjs.Objs[fo].LOC.Y:=
+MirObjs.Objs[fo].LOC.Y+
+(TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
+-MirObjs.Objs[fo].LOC.Y)/2;
+end;
+
+
+
+
 //------------------------------------------------------------------------------
+// Установка в какой плоскости находитсья мршрутная точка
 for fo:=1 to MirObjs.KOlO do
 if not MirObjs.OBJS[Fo].DEL Then
 for fV:=1 to MirObjs.OBJS[Fo].KOlV do
@@ -4129,6 +3831,7 @@ if not MirObjs.OBJS[Fo].VERS[fv].DEL Then
 if     MirObjs.OBJS[Fo].VERS[fv].MAR Then
 MirObjs.OBJS[Fo].VERS[fv].GPL:=FinPlos(MirObjs.OBJS[Fo].VERS[fv].REA);
 //------------------------------------------------------------------------------
+// Устнаовка маршрутных линий
 for fl:=1 to MirLins.KOlL do
 if not MirLins.LINS[fl].DEL Then
 if not MirLins.LINS[fl].VERS[1].DEL Then
@@ -4279,6 +3982,7 @@ MRAS:RSIN;
 Rez:TVer;
 begin
  Rez:=Nil;MRAS:=1000000;
+ if iObj<>Nil then
  for f:=1 to iObj.KolV do
  if not iObj.VERS[f].DEL then
  if     iObj.VERS[f].MAR then begin
@@ -4298,7 +4002,7 @@ MRAS:RSIN;
 Rez:TVer;
 begin
  Rez:=Nil;MRAS:=1000000;
- if iPLo<>Nil Then
+ if (iObj<>nil)and(iPLo<>Nil)Then
  for f:=1 to iObj.KolV do if (not iObj.VERS[f].DEL)and(iObj.VERS[f].MAR)then
  begin
     LRAS:=RasRCS3(iCoo,iObj.VERS[f].REA);
@@ -4341,6 +4045,9 @@ if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
    // Если персонаж и цель на одной плоскости
    if (not ex) and (lCPl=lPer.Gpl) Then begin PEr.OMOV:=Per.OCEL;ex:=true;end;
    //---------------------------------------------------------------------------
+   // Если маршрутные точки ближнии к цели и персонажу совпдают
+   if (not ex) and (lPMr=lCMr) Then begin PEr.OMOV:=Per.OCEL;ex:=true;end;
+   //---------------------------------------------------------------------------
    if (not ex) then begin
    MPER:=Nil; MRAS:=10000000;
    for F2:=1 to lDom.KolL do
@@ -4368,6 +4075,369 @@ if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
 end;
 
 {%EndRegion}
+
+
+
+
+procedure I_EDITDRAWIDDEDI;// ОТрисо IDшник редктируемых   примитивов
+var f:LongWord;RC,SC:LongWord;
+begin
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+//------------------------------------------------------------------------------
+SC:=MaxKOlPriInMir   ; begin // Рисую   обьекты
+if form4.MenuItem10.Checked then
+for f:=1 to MirObjs.KolO do
+if not MirObjs.OBJS[f].DEL then
+if     MirObjs.OBJS[f].VIS then
+I_DrObj(MirObjs.OBJS[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlObjInMir; begin // Рисую  элементы
+if form4.MenuItem12.Checked then
+for f:=1 to MirEles.KolE do
+if not MirEles.ELES[f].DEL then
+if     MirEles.ELES[f].VIS then
+I_DrEle(MirEles.ELES[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlEleInMir; begin // Рисую Плоскости
+if form4.MenuItem13.Checked then
+for f:=1 to MirPlos.KolP do
+if not MirPlos.PLOS[f].DEL then
+if     MirPlos.PLOS[f].VIS then
+if     MirPlos.PLOS[f].VVI then
+I_DrPlo(MirPLos.PLOS[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlPloInMir; begin // Рисую     Линии
+if form4.MenuItem22.Checked then
+for f:=1 to MirLins.KolL do
+if not MirLins.LINS[f].DEL then
+if     MirLins.LINS[f].VIS then
+if Not MirLins.LINS[f].MAR then
+I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlLinInMir; begin // Рисую МАР Линии
+if form4.MenuItem31.Checked then
+for f:=1 to MirLins.KolL do  // Маршрутные линии
+if not  MirLins.LINS[f].DEL then
+if      MirLins.LINS[f].VIS then
+if      MirLins.LINS[f].MAR then
+I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlLinInMir; begin // Рисую   Вершины
+if form4.MenuItem14.Checked then
+for f:=1 to MirVers.KolV do
+if not  MirVers.VERS[f].DEL then
+if      MirVers.VERS[f].VIS then
+if not  MirVers.VERS[f].MAR then
+I_DrVer(MirVers.VERS[f],IntToCol(f+SC)); end;
+//------------------------------------------------------------------------------
+SC:=SC+MaxKOlVerInMir; begin // Рисую   Вершины
+if form4.MenuItem16.Checked then
+for f:=1 to MirVers.KolV do
+if not MirVers.VERS[f].DEL then
+if     MirVers.VERS[f].VIS then
+if     MirVers.VERS[f].MAR then
+I_DrVer(MirVers.VERS[f],IntToCol(f+SC));
+end;
+//------------------------------------------------------------------------------
+RC:=0;
+glReadPixels(MouD.X,form3.ClientHeight-MouD.Z,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if RC=0 then // Если ничего не выбрано
+while MirSels.Kol<>0 do I_SetSel(MirSels.sels[MirSels.Kol],false);
+RC:=RC-MaxKOlPriInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirObjs.KolO) then begin // Если выбран обьект
+if form4.CheckBox5.Checked then begin
+MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
+I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
+end;
+if MBUT THEN begin CaP3:=MirObjs.Objs[RC].ECR;end;
+if DBUT THEN begin U_OpenObject(MirObjs.Objs[RC]);DBUT:=False;end;
+end;RC:=RC-MaxKOlObjInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirEles.KolE) then begin // Если выбран Элемент
+if form4.CheckBox5.Checked then begin
+MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
+I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
+end;
+if MBUT THEN begin CaP3:=MirEles.Eles[RC].ECR;end;
+if DBUT THEN begin U_OpenElement(MirEles.Eles[RC]);DBUT:=False;end;
+end;RC:=RC-MaxKOlEleInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirPlos.KolP) then begin // Если выбрана плоскость
+if form4.CheckBox5.Checked then begin
+MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
+I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
+end;
+if MBUT THEN begin CaP3:=MirPlos.Plos[RC].ECR;end;
+if DBUT THEN begin
+U_OpenPlos(MirPLOs.PLos[RC],TELE(MirPlos.Plos[RC]).ELE);DBUT:=False;end;
+end;RC:=RC-MaxKOlPLoInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
+if form4.CheckBox5.Checked then begin
+MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
+I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
+end;
+if MBUT THEN begin CaP3:=MirLins.Lins[RC].ECR;end;
+if DBUT THEN begin
+U_OpenLine(MirLins.Lins[RC],TELE(MirLins.Lins[RC]).ELE);DBUT:=False;end;
+end;RC:=RC-MaxKOlLinInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
+if form4.CheckBox5.Checked then begin
+MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
+I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
+end;
+if MBUT THEN begin CaP3:=MirLins.Lins[RC].ECR;end;
+if DBUT THEN begin
+U_OpenLine(MirLins.Lins[RC],TELE(MirLins.Lins[RC]).ELE);DBUT:=False;end;
+end;RC:=RC-MaxKOlLinInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
+if form4.CheckBox5.Checked then begin
+MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
+I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
+end;
+if MBUT THEN begin CaP3:=MirVers.Vers[RC].ECR;end;
+if DBUT THEN begin
+U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);DBUT:=False;end;
+end;RC:=RC-MaxKOlVerInMir;
+//------------------------------------------------------------------------------
+if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
+if form4.CheckBox5.Checked then begin
+MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
+I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
+end;
+if MBUT THEN begin CaP3:=MirVers.Vers[RC].ECR;end;
+if DBUT THEN begin
+U_OpenPoint(MirVers.Vers[RC],TELE(MirVers.Vers[RC]).ELE);DBUT:=False;end;
+end;RC:=RC-MaxKOlVerInMir;
+//------------------------------------------------------------------------------
+end;
+procedure I_EDITDRAWCOLEDI;// Отрисв цветам редактируемых  примитивов
+var f:Longint;
+Begin // Отрисовка редактора
+// Отрисовываю все ОБьекты в игровом мире
+if form4.MenuItem10.Checked then // ОБьекты
+for f:=1 to MirObjs.KolO do
+if not MirObjs.OBJS[f].DEL then
+if     MirObjs.OBJS[f].VIS then
+if Not MirObjs.OBJS[f].SEL
+then  I_DrObj(MirObjs.OBJS[f],MirObjs.OBJS[f].Col)
+else  I_DrObj(MirObjs.OBJS[f],CreRCol(255,0,0,255));//RanRCol
+
+// Отрисовываю все элементы  в игровом мире
+if form4.MenuItem12.Checked then // Элемент
+for f:=1 to MirEles.KolE do
+if not MirEles.ELES[f].DEL then
+if     MirEles.ELES[f].VVI then
+if Not MirEles.ELES[f].SEL
+Then I_DrEle(MirEles.ELES[f],MirEles.ELES[f].COL)
+else I_DrEle(MirEles.ELES[f],CreRCol(255,0,0,255));
+
+// Отрисовываю все Плоскости в игровом мире
+if form4.MenuItem13.Checked then // Плоскос
+for f:=1 to MirPlos.KolP do
+if not MirPlos.PLOS[f].DEL then
+if     MirPlos.PLOS[f].VIS then
+if     MirPlos.PLOS[f].VVI then
+if Not MirPlos.PLOS[f].SEL
+then I_DrPlo(MirPlos.PLOS[f],MirPlos.PLOS[f].Col)
+else I_DrPlo(MirPlos.PLOS[f],CreRCol(255,0,0,255));
+
+
+// Отрисовываю все Линии в игровом мире
+if form4.MenuItem22.Checked then // Линии
+for f:=1 to MirLins.KolL do
+if not MirLins.LINS[f].DEL then
+if     MirLins.LINS[f].VIS then
+if not MirLins.LINS[f].MAR then
+if Not MirLins.LinS[f].SEL
+then I_DrLin(MirLins.LinS[f],MirLins.LinS[f].COL)
+else I_DrLin(MirLins.LinS[f],CreRCol(255,0,0,255));
+
+
+// Отрисовываю все маршпутные Линии в игровом мире
+if form4.MenuItem31.Checked then // Линии
+for f:=1 to MirLins.KolL do
+if not MirLins.LINS[f].DEL then
+if     MirLins.LINS[f].VIS then
+if     MirLins.LINS[f].MAR then
+if Not MirLins.LinS[f].SEL
+then I_DrLin(MirLins.LinS[f],MirLins.LinS[f].COL)
+else I_DrLin(MirLins.LinS[f],CreRCol(255,0,0,255));
+
+
+// Отрисовываю все вершины в игровом мире
+if form4.MenuItem14.Checked then   // Вершины
+for f:=1 to MirVers.KolV do
+if not MirVers.VERS[f].DEL then
+if     MirVers.VERS[f].VIS then
+if not MirVers.VERS[f].MAR then
+if Not MirVers.VERS[f].SEL
+then I_DrVer(MirVers.VERS[f],MirVers.VERS[f].COL)
+else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
+
+
+// Отрисовываю все вершины в игровом мире
+if form4.MenuItem16.Checked then   // Вершины
+for f:=1 to MirVers.KolV do
+if not MirVers.VERS[f].DEL then
+if     MirVers.VERS[f].VIS then
+if     MirVers.VERS[f].MAR then
+if Not MirVers.VERS[f].SEL
+then I_DrVer(MirVers.VERS[f],MirVers.VERS[f].COL)
+else I_DrVer(MirVers.VERS[f],CreRCol(255,0,0,255));
+
+
+
+end;
+//------------------------------------------------------------------------------
+procedure I_EDITDRAWIDDSCE;// Отрисовка игровой сцены IDшнгиками
+
+procedure Ploskost(iVer1,iVer2,iVer3,iVer4:RCS3;C:RCOL);
+begin
+glColor3ub(C.R,C.G,C.B);
+glBegin(GL_TRIANGLES);
+
+glVertex3f(iVer1.x,iVer1.y,iVer1.z);
+glVertex3f(iVer2.x,iVer2.y,iVer2.z);
+glVertex3f(iVer3.x,iVer3.y,iVer3.z);
+glVertex3f(iVer3.x,iVer3.y,iVer3.z);
+glVertex3f(iVer4.x,iVer4.y,iVer4.z);
+glVertex3f(iVer1.x,iVer1.y,iVer1.z);
+
+glEnd();
+end;
+function  OpredelitCoo(x,y:Longint;iVer1,iVer2,iVer3,iVer4:RCS3;g:Longint):RCS3;
+var
+Rez:RCS3;
+iVer0,iVer12,iVer23,iVer34,iVer41:RCS3;
+Rc:LongWord=0;
+begin
+iVer0:=SerRCS3(iVer1,iVer3);
+if (g>0) then begin
+// Разбиваю на 4 плоскости
+iVer12:=SerRCS3(iVer1,iVer2);
+iVer23:=SerRCS3(iVer2,iVer3);
+iVer34:=SerRCS3(iVer3,iVer4);
+iVer41:=SerRCS3(iVer4,iVer1);
+// РИсую 4 плоскости
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+ploskost(iVer1 ,iVer12,iVer0 ,iVer41,IntToCol(1000));
+ploskost(iVer12,iVer2 ,iVer23,iVer0 ,IntToCol(2000));
+ploskost(iVer0 ,iVer23,iVer3 ,iVer34,IntToCol(3000));
+ploskost(iVer41,iVer0 ,iVer34,iVer4 ,IntToCol(4000));
+// читаю цвет плоскости
+glReadPixels(X,Y, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@Rc);
+// смотря в какую плоскость попали
+if (Rc=1000) then Rez:=OpredelitCoo(X,Y,iVer1 ,iVer12,iVer0 ,iVer41,g-1) else
+if (Rc=2000) then Rez:=OpredelitCoo(X,y,iVer12,iVer2 ,iVer23,iVer0 ,g-1) else
+if (Rc=3000) then Rez:=OpredelitCoo(X,y,iVer0 ,iVer23,iVer3 ,iVer34,g-1) else
+if (Rc=4000) then Rez:=OpredelitCoo(X,y,iVer41,iVer0 ,iVer34,iVer4 ,g-1) else Rez:=iVer0;
+end else Rez:=iVer0;
+OpredelitCoo:=Rez;
+end;
+procedure OpredelitCoo(iPlo:Tplo);// Определяет координату нажатой мышки
+var iVer1,iVer2,iVer3,iVer4:RCS3;
+begin
+if Iplo<>Nil Then begin
+iver1:=iPlo.VERS[1].ECR;
+iver2:=iPlo.VERS[2].ECR;
+iver3:=iPlo.VERS[3].ECR;
+iver4:=iPlo.VERS[4].ECR;
+
+if MBUT then begin
+        CaP3:=OpredelitCoo(
+               MouD.X,
+               form3.ClientHeight-MouD.Z,
+               iver1,
+	       iver2,
+	       iver3,
+	       iver4,
+	       16
+	       );
+        CaP3.Y:=CaP3.Y+10;
+        if PER<>NIL then PER.OCEL:=CaP3;
+        end;
+end;
+end;
+var f:Longint;RC:Longword;P:TPLO;
+begin
+if form4.MenuItem6.Checked then begin
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+for f:=1 to MirPlos.KolP do
+if   not MirPLos.Plos[f].DEL then
+if       MirPLos.Plos[f].VVI then
+if       MirPLos.Plos[f].VIS then
+with MirPLos.Plos[f] do
+ploskost(VERS[1].ECR,VERS[2].ECR,VERS[3].ECR,VERS[4].ECR,IntToCol(f));
+RC:=0;
+glReadPixels(MouD.X,form3.ClientHeight-MouD.Z, 1, 1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if (RC>0) and (RC<=MirPlos.KolP) then
+begin P:=MirPlos.PLos[RC];OpredelitCoo(P);end else P:=Nil;
+end;
+end;
+procedure I_EDITDRAWCOLSCE;// Отрисовка игровой сцены Цветами
+begin
+glClearColor(GFon.R*(1/255),GFon.G*(1/255),GFon.B*(1/255),GFon.A*(1/255)); // Задаем фон
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);// очистка экрана
+glVertexPointer(3, GL_FLOAT, 0, @MirVers.ECOO2);
+glColorPointer (4, GL_UNSIGNED_BYTE, 0,@MirVers.ECOL2);
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+if form4.MenuItem6.Checked then
+glDrawElements(GL_TRIANGLES,MirPlos.DrKP*6,GL_UNSIGNED_INT,@MirPlos.EPlo2[1]);
+if form4.MenuItem8.Checked then begin
+glDisableClientState(GL_COLOR_ARRAY);
+glColor4ub(0,0,0,255);
+glTranslateD(0,0,2);// Отодвигаем камеру на нужное растояние
+glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+glTranslateD(0,0,-4);// Отодвигаем камеру на нужное растояние
+glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+glTranslateD(2,0,2);// Отодвигаем камеру на нужное растояние
+glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+glTranslateD(-4,0,0);// Отодвигаем камеру на нужное растояние
+glDrawElements(GL_LINES    ,MirLins.DrKl*2,GL_UNSIGNED_INT,@MirLins.ELin2[1]);
+glEnableClientState(GL_COLOR_ARRAY);
+end;
+end;
+//------------------------------------------------------------------------------
+procedure I_EDITDRAWIDDVIS;// Делает не видимыми мешающие стеки
+var f:LongWord;RC:LongWord;lCap2:RCS3;
+begin
+lCap2:=Cap2;
+if   form4.CheckBox2.Checked then
+begin
+lCap2.X:=Cap2.X;
+lCap2.Y:=Cap2.Y+100;
+lCap2.Z:=Cap2.Z;
+end;
+glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
+for f:=1 to MirPlos.KolP do // пребираю всеплоскости
+if not TOBJ(MirPlos.PLOS[f].OBJ).OPER then
+if not MirPlos.PLOS[f].DEL then  // если он не удален
+if     MirPlos.PLOS[f].VIS then begin // Это не важно видимость обьекта
+MirPLos.PLOS[f].VVI:=true; // Изначально все плоскости видимы
+I_DrPlo(MirPLos.PLOS[f],intToCol(1000));// РИсую плоскость
+RC:=0; glReadPixels(trunc(form3.ClientWidth/2),trunc(form3.ClientHeight/2)
+             ,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
+if RC<>2000 then begin // Если плоскость загораживает обьект
+//glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
+//glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+glDisable(GL_DEPTH_TEST); // Отключаю буфер глубины
+MirPLos.PLOS[f].VVI:=False;
+I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
+glEnable(GL_DEPTH_TEST);// включаю буфер глубины
+end;
+end;
+end;
+
+
 
 procedure TForm3.OpenGLControl1Paint(Sender: TObject);
 var Tr:QWord;lCap2:RCS3;
@@ -4641,10 +4711,8 @@ end.
 
 
 // 1.Чай 5 мин
-// 2.Сделать маршрутизацию  а процессе ........
-// 3.Сделать язык програмирования
-// 3.Не забуть доделать удаление по Признаку DEL  оформить место для анимации
-// 4.Пропуск () "" '' {} и неизвестных знаков
-// 5.Добавить сворачивание блоков       { }
-// 6.Создаить окно найтроек
+// 2.Сделать язык програмирования
+// 3.Пропуск () "" '' {} и неизвестных знаков
+// 4.Добавить сворачивание блоков       { }
+// 5.Создаить окно найтроек
 
