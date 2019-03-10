@@ -1,23 +1,23 @@
 object Form3: TForm3
-  Left = 202
-  Height = 312
-  Top = 151
-  Width = 385
+  Left = 24
+  Height = 510
+  Top = 31
+  Width = 921
   Caption = 'Form3'
-  ClientHeight = 312
-  ClientWidth = 385
+  ClientHeight = 510
+  ClientWidth = 921
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
-  Position = poScreenCenter
+  Position = poDefault
   LCLVersion = '1.8.4.0'
   object OpenGLControl1: TOpenGLControl
     Left = 0
-    Height = 312
+    Height = 510
     Top = 0
-    Width = 385
+    Width = 921
     Align = alClient
     OnClick = OpenGLControl1Click
     OnDblClick = OpenGLControl1DblClick

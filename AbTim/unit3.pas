@@ -205,6 +205,15 @@ begin
 if A<B then result:=b else result:=a;
 end;
 
+function  GRAD (x,y:Single):Single;// Поворот коориднаты на заданый угол
+var REz:Single;
+begin
+REz:=arctan(y/x);
+if X<0 then rez:=Rez+pi;
+//if Y<0 then rez:=Rez+(2*pi);
+if REz<0 then rez:=Rez+(2*pi);
+GRAD:=Rez;
+end;
 procedure UGOL(var x,y,u:RSIN);// Поворот коориднаты на заданый угол
 var x1,y1:Rsin;
 begin
@@ -4143,6 +4152,14 @@ if form4.CheckBox3.Checked then
 if MirObjs.OBJS[f].NAM='Человечек' then begin
                                         PER:=MirObjs.OBJS[f];
                                         PER.OPER:=true;
+                                        if RasRcs2(PER.OMOV,PER.loc)>1 Then
+                                        PER.ELES[1].EUGL.y:=
+                                        GRAD(
+                                            (PER.OMOV.x-PER.loc.x),
+                                            (PER.OMOV.z-PER.loc.z)
+                                           )+(pi/2);
+                                        //PER.ELES[1].EUGL.y:=
+                                        //PER.ELES[1].EUGL.y+0.1;
                                         PER.loc:=MovRCS3(PER.loc,PER.OMOV,5);
                                         end;
 
@@ -4151,8 +4168,6 @@ end;
 
 var   {Маршрутизация          ===========================}{%Region /FOLD }
                                                            Reg1M:Longint;
-
-
 
 Type TR=record // Опсиание ребра
   Ver1:Longint;// номер вершины 1
@@ -4256,17 +4271,12 @@ end;//==============================================================
 
 DEKS:=V[NV(iVer2)].Ras;
 end;
-function  Ravno(iCoo1,iCoo2:RCS3):Boolean;//
-var rez:Boolean;
-begin
-rez:=false;
-if abs(iCoo1.X-iCoo2.x)<1 then
-if abs(iCoo1.y-iCoo2.y)<1 then
-if abs(iCoo1.z-iCoo2.z)<1 then rez:=true;
-Ravno:=Rez;
-end;
-function  FindMar(iObj:TObj;iCoo:RCS3;iPlo:Tplo):TVer;// Ищим маршрутную точку ближ к
-var f:Longint;LRAS,MRAS:RSIN;Rez:TVer;
+function  FindMar(iObj:TObj;iCoo:RCS3):TVer;// Ищим маршрутную точку ближ к
+var
+f:Longint;
+LRAS:RSIN;
+MRAS:RSIN;
+Rez:TVer;
 begin
  Rez:=Nil;MRAS:=1000000;
  for f:=1 to iObj.KolV do
@@ -4280,82 +4290,82 @@ begin
  end;
  FindMar:=REz;
 end;
+function  FindMar(iObj:TObj;iCoo:RCS3;iPlo:Tplo):TVer;// Ищим маршрутную точку ближ к
+var
+f:Longint;
+LRAS:RSIN;
+MRAS:RSIN;
+Rez:TVer;
+begin
+ Rez:=Nil;MRAS:=1000000;
+ if iPLo<>Nil Then
+ for f:=1 to iObj.KolV do if (not iObj.VERS[f].DEL)and(iObj.VERS[f].MAR)then
+ begin
+    LRAS:=RasRCS3(iCoo,iObj.VERS[f].REA);
+    if(iObj.VERS[f].Gpl=iPLo)and(LRAS<MRAS)
+    then begin MRAS:=LRAS;REz:=iObj.VERS[f];end;
+ end;
+ if rez=nil then rez:=FindMar(iObj,iCoo);
+ FindMar:=REz;
+end;
 procedure GoGo;// Маршрутизация персонажа
 var
 f,f2:longint;// Для циклов
-Cel_Plo:TPlo;// Плоскость на которой находиться цель
-Per:TObj;// Персонаж
-GRA:TObj;// ОБьект в котром находиться персонаж
-MCEL,MPER,MPER2:Tver;// Маршрутные точки Цель Персонаж
+lDom:TObj;// ОБьект в котром находиться персонаж
+lPer:TObj;// Персонаж
+lPMr:Tver;//
+lCPl:TPlo;// Плоскость на которой находиться цель
+lCMr:Tver;// Маршрутная точка рядом с целью
+MPER:Tver;// Маршрутные точки куда нужно двигаться
 LRAS:RSIN;// Растояние лоакльное для цикла
 MRAS:RSIN;// МИниамльное растояние найденое
+Ex:Boolean;
 begin
 for f:=1 to MirObjs.KolO do
 if not MirObjs.OBJS[f].DEL then // если обьект неудален
 if    MirObjs.OBJS[f].OPER then // если обьект персонаж   // Если мы не на месте
-if not Ravno(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL) then begin
+if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
    //---------------------------------------------------------------------------
-   Per:=MirObjs.OBJS[f];// Персонаж с котроым рабоатем
-   GRA:=Tobj(Per.GOB);// Обьект в котором находиться персонаж
-   // Per.GPL - Плоскость на котрой находиться песронаж
-   Cel_Plo:=FinPlos(Per.OCEL);// Ищим плоскотсь в корой находиться цель
-   MCEL:=FindMar(GRA,PER.OCEL,Cel_Plo); // Ищи мар точку рядом с цель
+   Ex:=false;
+   //---------------------------------------------------------------------------
+   lPer:=MirObjs.OBJS[f]  ;// Персонаж с котроым рабоатем
+   lDom:=Tobj(Per.GOB)    ;// Обьект в котором находиться персонаж
+   lPMr:=FindMar(lDom,PER.REA,TPlo(PER.Gpl)); // Ищи мар точку рядом с песронажем
+   //---------------------------------------------------------------------------
+   lCPl:=FinPlos(Per.OCEL);// Ищим плоскотсь в которой находиться цель
+   lCMr:=FindMar(lDom,PER.OCEL,lCPl); // Ищи мар точку рядом с целью
+   //---------------------------------------------------------------------------
+   // Если на одной плоскости с персонажем нету маршрутных точек
+   if lPMr=nil Then begin PEr.OMOV:=Per.OCEL;ex:=true;end;
+   //---------------------------------------------------------------------------
+   // Если персонаж и цель на одной плоскости
+   if (not ex) and (lCPl=lPer.Gpl) Then begin PEr.OMOV:=Per.OCEL;ex:=true;end;
+   //---------------------------------------------------------------------------
+   if (not ex) then begin
    MPER:=Nil; MRAS:=10000000;
-   //---------------------------------------------------------------------------
-   // Ищим маршрутнуюб точку ведущию самым коротким путем к цели
-   for f2:=1 to GRA.KolV do // Перебираем вершины в обььекте в котром находитс
-   if not GRA.Vers[f2].Del then // Если это не удаленная точка
-   if     GRA.Vers[f2].MAR then      // Если это маршрутная точка
-   if     GRA.Vers[f2].Gpl=Per.GPl then begin // Если на 1 плоскости с персонажем
-   LRAS:=DEKS(GRA,GRA.Vers[f2],MCEL); // Считаем растояние до цели по путям
-   if MRAS>LRAS then begin // Если растояние оказалось меньше того котрое было
-      MRAS:=LRAS;// Запорминаем новое растояние
-      MPER:=GRA.Vers[f2];// Маршрутная точка через котрую нужно пройти
-   end;
-   end;
-   //---------------------------------------------------------------------------
-   // MPER - Маршрутная точка ближайшая к персонажу
-   if MPER=NIL
-   then Begin { Идем просто к цели }
-      PEr.LOC:=MovRCS3(PEr.LOC,PEr.OCEL,5);
-   end
-   else Begin { Ищим следующию маршрутную точку }
-   // Ищим следующию маршртуную точку
-   MPER2:=Nil;
-   MRAS:=10000000;
-   for F2:=1 to GRA.KolL do
-   if Not GRA.LINS[f2].DEL then
-   if     GRA.LINS[f2].MAR then begin
-
-   if  GRA.LINS[f2].VERS[1]=MPER then begin
-   LRAS:=DEKS(GRA,GRA.LINS[f2].VERS[2],MCEL); // Рстояние от
+   for F2:=1 to lDom.KolL do
+   if(Not lDom.LINS[f2].DEL)and(lDom.LINS[f2].MAR)then begin
+   if  lDom.LINS[f2].VERS[1]=lPMr then begin
+   LRAS:=DEKS(lDom,lDom.LINS[f2].VERS[2],lCMr); // Рстояние от
    if MRAS>LRAS then begin
       MRAS:=LRAS;// Запорминаем новое растояние
-      MPER2:=GRA.LINS[f2].VERS[2];// Маршрутная точка через котрую нужно пройти
+      MPER:=lDom.LINS[f2].VERS[2];// Маршрутная точка через котрую нужно пройти
    end;end;
-
-   if  GRA.LINS[f2].VERS[2]=MPER then begin
-   LRAS:=DEKS(GRA,GRA.LINS[f2].VERS[1],MCEL); // Рстояние от
+   if  lDom.LINS[f2].VERS[2]=lPMr then begin
+   LRAS:=DEKS(lDom,lDom.LINS[f2].VERS[1],lCMr); // Рстояние от
    if MRAS>LRAS then begin
       MRAS:=LRAS;// Запорминаем новое растояние
-      MPER2:=GRA.LINS[f2].VERS[1];// Маршрутная точка через котрую нужно пройти
+      MPER:=lDom.LINS[f2].VERS[1];// Маршрутная точка через котрую нужно пройти
    end;end;
-
+   end;
+   //---------------------------------------------------------------------------
    // MPER - Маршрутная точка к котрой нужно перемещаться
+   if MPER<>NIL Then PEr.OMOV:=MPER.REA;
+   //---------------------------------------------------------------------------
    end;
-
-   if MPER<>NIL Then begin
-   PEr.OMOV.X:=MPER2.REA.X;
-   PEr.OMOV.Y:=MPER2.REA.Y-25;
-   PEr.OMOV.Z:=MPER2.REA.Z;
-   end;
-
    //---------------------------------------------------------------------------
    end;
 end;
-
-end;
-
 
 {%EndRegion}
 
