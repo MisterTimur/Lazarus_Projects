@@ -3724,7 +3724,7 @@ function  VhoditObjPlo2d(iPer:TObj;iPLo:TPlo):Boolean;
 var Rez:Boolean;
 begin
 Rez:=False;
-if Vhodit3D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
+if Vhodit2D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
 VhoditObjPlo2d:=REz;
 end;
 function  FinPlos(iCoo:Rcs3):TPlo;// Ищит плоскость в котрой принадлежит КОО
@@ -4582,6 +4582,8 @@ Timer1.enabled:=false;// Отключаем запускатор
   OpenGLControl1.invalidate;
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_Blend);
+
+  glDepthFunc(GL_LEQUAL);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);

@@ -1,0 +1,57 @@
+object Form12: TForm12
+  Left = 297
+  Height = 240
+  Top = 324
+  Width = 320
+  Caption = 'Form12'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 320
+    Align = alTop
+    Caption = 'Panel1'
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 190
+    Top = 50
+    Width = 104
+    Align = alLeft
+    Caption = 'Panel2'
+    ClientHeight = 190
+    ClientWidth = 104
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 21
+      Top = 1
+      Width = 102
+      Align = alTop
+      Alignment = taCenter
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 104
+    Height = 190
+    Top = 50
+    Width = 5
+  end
+  object Memo1: TMemo
+    Left = 109
+    Height = 190
+    Top = 50
+    Width = 211
+    Align = alClient
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 3
+  end
+end

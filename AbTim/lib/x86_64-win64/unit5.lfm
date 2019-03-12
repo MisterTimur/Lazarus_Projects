@@ -1,12 +1,12 @@
 object Form5: TForm5
-  Left = 361
+  Left = 306
   Height = 357
-  Top = 151
-  Width = 283
+  Top = 135
+  Width = 435
   BorderStyle = bsSizeToolWin
   Caption = 'Form5'
   ClientHeight = 357
-  ClientWidth = 283
+  ClientWidth = 435
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -20,7 +20,7 @@ object Form5: TForm5
     Left = 0
     Height = 34
     Top = 0
-    Width = 283
+    Width = 435
     Align = alTop
     Caption = 'Обьекты.'
     TabOrder = 0
@@ -51,8 +51,8 @@ object Form5: TForm5
     Left = 133
     Height = 323
     Top = 34
-    Width = 150
-    Align = alClient
+    Width = 139
+    Align = alLeft
     Items.Strings = (
       'Animation'
     )
@@ -68,6 +68,28 @@ object Form5: TForm5
     Height = 323
     Top = 34
     Width = 5
+  end
+  object Splitter2: TSplitter
+    Left = 272
+    Height = 323
+    Top = 34
+    Width = 5
+  end
+  object CheckListBox3: TCheckListBox
+    Left = 277
+    Height = 323
+    Top = 34
+    Width = 158
+    Align = alClient
+    Items.Strings = (
+      'Scripts'
+    )
+    ItemHeight = 15
+    PopupMenu = PopupMenu3
+    TabOrder = 5
+    Data = {
+      0100000000
+    }
   end
   object PopupMenu1: TPopupMenu
     left = 16
@@ -105,6 +127,16 @@ object Form5: TForm5
     object MenuItem6: TMenuItem
       Caption = 'Применить'
       OnClick = MenuItem6Click
+    end
+  end
+  object PopupMenu3: TPopupMenu
+    left = 284
+    top = 64
+    object MenuItem9: TMenuItem
+      Caption = 'Добавить.'
+    end
+    object MenuItem10: TMenuItem
+      Caption = 'Удалить.'
     end
   end
 end

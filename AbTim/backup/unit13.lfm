@@ -1,0 +1,30 @@
+object Form13: TForm13
+  Left = 439
+  Height = 292
+  Top = 368
+  Width = 422
+  Caption = 'Form13'
+  ClientHeight = 292
+  ClientWidth = 422
+  LCLVersion = '1.8.4.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 422
+    Align = alTop
+    Caption = 'Panel1'
+    TabOrder = 0
+  end
+  object Memo1: TMemo
+    Left = 0
+    Height = 242
+    Top = 50
+    Width = 422
+    Align = alClient
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 1
+  end
+end

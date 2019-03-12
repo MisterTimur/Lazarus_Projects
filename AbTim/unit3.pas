@@ -4582,6 +4582,8 @@ Timer1.enabled:=false;// Отключаем запускатор
   OpenGLControl1.invalidate;
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_Blend);
+
+  glDepthFunc(GL_LEQUAL);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -4711,7 +4713,6 @@ end.
 
 
 // 1.Чай 5 мин
-// 2.Сделать язык програмирования
 // 3.Пропуск () "" '' {} и неизвестных знаков
 // 4.Добавить сворачивание блоков       { }
 // 5.Создаить окно найтроек

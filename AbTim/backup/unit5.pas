@@ -9,7 +9,9 @@ type
   TForm5 = class(TForm)
     CheckListBox1: TCheckListBox;
     CheckListBox2: TCheckListBox;
+    CheckListBox3: TCheckListBox;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -17,10 +19,13 @@ type
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
     PopupMenu2: TPopupMenu;
+    PopupMenu3: TPopupMenu;
     Splitter1: TSplitter;
+    Splitter2: TSplitter;
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -97,7 +102,7 @@ procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Коп
 begin
   if CheckListBox1.itemindex<CheckListBox1.items.count then
   if CheckListBox1.itemindex>0 then  begin
-  I_DoubleObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+  I_DoubleObject(CheckListBox1.items.objects[CheckListBox1.itemindex],CheckListBox1);
   end;
 end;
 procedure TForm5.MenuItem6Click(Sender: TObject);
