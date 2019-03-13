@@ -33,7 +33,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="16">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -130,6 +130,7 @@
         <Filename Value="unit12.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form12"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit12"/>
       </Unit12>
@@ -141,6 +142,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit13"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="unit14.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form14"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit14"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="unit15.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form15"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit15"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

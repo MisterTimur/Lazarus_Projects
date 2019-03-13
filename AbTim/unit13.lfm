@@ -1,11 +1,12 @@
 object Form13: TForm13
-  Left = 413
+  Left = 358
   Height = 292
-  Top = 244
+  Top = 124
   Width = 422
   Caption = 'Form13'
   ClientHeight = 292
   ClientWidth = 422
+  FormStyle = fsStayOnTop
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
@@ -33,6 +34,7 @@ object Form13: TForm13
       Width = 120
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end
@@ -52,6 +54,7 @@ object Form13: TForm13
     Lines.Strings = (
       'Memo1'
     )
+    OnChange = Memo1Change
     TabOrder = 3
   end
 end

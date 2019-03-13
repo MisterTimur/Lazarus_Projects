@@ -50,7 +50,8 @@ procedure I_DelLin(iLin:Pointer);// Удаление Линии
 procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
 procedure I_DelEle(iEle:Pointer);// Удаление Элемента
 procedure I_DelObj(iObj:pointer);// Удаление обьекта
-
+procedure I_DelAni(iAni:POinter);// Удаление Анимации
+procedure I_DelScr(iScr:POinter);// Удаление Скрипта
 
 function I_AddVerCOP(iEle:Pointer):Pointer;// Создает симетричную вершину
 function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
@@ -61,11 +62,13 @@ function I_AddVni150(iEle:Pointer):Pointer;// Создает симетричн�
 function I_AddVerMar(iPlo:Pointer):Pointer;// Создает симетричную вершину
 
 
-function I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
-function I_AddLin(iObj:Pointer):Pointer;// Создает Линии
-function I_AddPlo(iObj:Pointer):Pointer;// Создает Плоскости
-function I_AddEle(iEle:Pointer):Pointer;// Создает новый Элемент
-function I_AddObj:POinter;// Создает новый обьект
+function  I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
+function  I_AddLin(iObj:Pointer):Pointer;// Создает Линии
+function  I_AddPlo(iObj:Pointer):Pointer;// Создает Плоскости
+function  I_AddEle(iEle:Pointer):Pointer;// Создает новый Элемент
+function  I_AddObj:POinter;// Создает новый обьект
+function  I_AddAni:Pointer;// Добавить Анимацию
+function  I_AddScr:Pointer;// Добавить скрипт
 procedure I_DelNotUseVer;// Удаляет не используемые вершины
 
 procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);
@@ -73,8 +76,11 @@ procedure I_RefSpiLins(iObj:POinter;iLis:TCheckListBox);
 procedure I_RefSpiPlos(iObj:POinter;iLis:TCheckListBox);
 procedure I_RefSpiEles(iEle:POinter;iLis:TCheckListBox);
 procedure I_RefSpiObjs(             iLis:TCheckListBox);
+procedure I_RefSpiAnis(             iLis:TCheckListBox);
+procedure I_RefSpiScrs(             iLis:TCheckListBox);
 
-procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetN(iPri:Pointer;iEdit:TEdit);
+procedure I_GetT(iPri:Pointer;iMemo:TMemo);
 procedure I_GetM(iVer:Pointer;iEdit:TEdit);
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
@@ -86,6 +92,7 @@ procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
 procedure I_SetM(iVer:Pointer;iEdit:TEdit);
+procedure I_SetT(iVer:Pointer;iMemo:TMemo);
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
 procedure I_SetY(iVer:Pointer;iEdit:TEdit);
@@ -107,9 +114,7 @@ procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает копию обьекта
-procedure I_ADD_ANIMATION(iAni:TCheckListBox);// Созадет кадр анимации
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
-procedure I_DEL_ANIMATION(iAni:TCheckListBox);
 function  I_AddVerLan(iEle:Pointer):Pointer;
 function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
 Procedure I_SCENA_ADD_01(var iStr:Ansistring);
@@ -117,7 +122,8 @@ procedure I_DelDel(iPri:POinter);
 procedure I_CLOSE;
 
 {%EndRegion}
-implementation {$R *.lfm} uses unit4,unit5,unit6,unit7,unit8,unit9,unit10;
+implementation {$R *.lfm}
+uses unit4,unit5,unit6,unit7,unit8,unit9,unit10,unit12,unit13;
 var   {Базa                   ===========================}{%Region /FOLD }
                                                            BAS01:Longint;
 
@@ -137,7 +143,8 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKOlPloInMir=1024*64;//Максимальное количество Плоскостей в игровом мире
   MaxKOlEleInMir=1024*64;//Максимальное количество Элементов в игровом мире
   MaxKOlObjInMir=1024*64;//Максимальное количество Обьектов в игровом мире
-
+  MaxKOlAniInMir=1024* 1;// Максимальнео количество Анимаций в игровом мире
+  MaxKOlScrInMir=1024* 1;// Максимальнео количество скриптов в игровом мире
   MaxKOlPriInMir=MaxKOlVerInMir+MaxKOlLinInMir+MaxKOlPloInMir+MaxKOlEleInMir+
                  MaxKOlObjInMir;// Иаксимальнео количество примитивово
 
@@ -146,12 +153,16 @@ const {Базовые Константы      ===========================}{%Regi
   MinKolDelPlos=1024*4;// Минимальный размер очереди на удаление Плоскотей
   MinKolDelEles=1024*4;// Минимальный размер очереди на удаление Элементов
   MinKolDelObjs=1024*4;// Минимальный размер очереди на удаление Обьектов
+  MinKolDelAnis=1024*4;// Минимальный размер очереди на удаление Анимаций
+  MinKolDelScrs=1024*4;// Минимальный размер очереди на удаление Скриптов
 
   MaxKolDelVers=1024*64;// Максимальный размер очереди на удаление Вершин
   MaxKolDelLins=1024*64;// Максимальный размер очереди на удаление Линий
   MaxKolDelPlos=1024*64;// Максимальный размер очереди на удаление Плоскотей
   MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление Элементов
   MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
+  MaxKolDelAnis=1024*64;// Минимальный размер очереди на удаление Анимаций
+  MaxKolDelScrs=1024*64;// Минимальный размер очереди на удаление Скриптов
 
   MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
@@ -160,6 +171,15 @@ const {Базовые Константы      ===========================}{%Regi
   T_LIN=3;// Линия
   T_ELE=4;// Элементы
   T_OBJ=5;// Обьекеты
+  T_ANI=6;// Анимации
+  T_SCR=7;// Скрипты
+  //-----------------------
+  LN=Chr(13)+Chr(10);
+
+  TI_SLO=10;// Слово
+  TI_CIF=20;// Цифра
+  TI_ZNA=30;// Знаки
+  TI_KAV=40;// Квычки
 
 {%EndRegion}
 var   {Базовые типы данных    ===========================}{%Region /FOLD }
@@ -192,9 +212,7 @@ END;
 Type RPLO=RECORD   // ТИп описывающий Плоскость
   VERS:Array[1..6] of RLON; // Номера вершин
 END;
-type TStr=class
-TXT:Ansistring;
-end;
+
 
 function  Min(a,b:RSIN):RSIN;
 begin
@@ -576,6 +594,7 @@ var   {Описание Вершины       ===========================}{%Regio
 TYPE TVER=CLASS  // Опсиание вершиины
 
   NAM:RSTR;// Наименование элемента
+  TXT:RSTR;// Текст
   VIS:RBOL;// Видимость примитива
   VVI:RBOL;// Видимость примитива если он не мешает видеть персонажа
 
@@ -1515,6 +1534,598 @@ KolD:=0;
 end;
 
 {%EndRegion}
+var   {Анимации               ===========================}{%Region /FOLD }
+                                                           RegA0:Longint;
+
+TYpe  TAni=class(Tver)
+end;
+
+TYPE TAniS=CLASS
+KOLA:Longint;
+KOLD:Longint;
+AniS:Array[1..MaxKOlScrInMir] of TAni;
+DELA:Array[1..MaxKolDelScrs ] of TAni;
+Function    AddA(iAni:TAni):TAni;
+procedure   AddD(iAni:TAni);
+Constructor Create;
+end;
+var  MirAnis:TAniS;
+procedure   TAniS.AddD(iAni:TAni);
+Var F:Longint;
+begin
+   if not iAni.Del then begin
+   iAni.Del:=true;
+   if KolD+1>MaxKolDelAnis then
+   ERR('МАсив с удаленными анимациями переполнен');
+   DELA[KolD+1]:=iAni;
+   KolD:=KolD+1;
+   end else ERR('Попытка удалить уже удаленную анимацию ');
+end;
+function    TAniS.AddA(iAni:TAni):TAni;
+var F:Longint;Ex:Boolean;
+begin
+Ex:=False;
+//------------------------------------------------------------------------------
+if KolD>MinKolDelAnis then begin Ex:=True;
+iAni.Nom:=DelA[1].NOM;
+AniS[iAni.Nom]:=iAni;
+DelA[1].Free;
+for f:=1 to KolD-1 Do DelA[F]:=DelA[F+1];
+KOlD:=KolD-1;
+end;
+//------------------------------------------------------------------------------
+if Not Ex then Begin
+if KolA+1>MaxkolScrinMir Then
+ERR(' TScrS.AddS(iScr:TScr) KolS+1>MaxkolScrinMir');
+iAni.Nom:=KolA+1;
+KolA:=KolA+1;
+AniS[iAni.Nom]:=iAni;
+end;
+AddA:=IAni;
+end;
+Constructor TAniS.Create;
+begin
+KolA:=0;
+KolD:=0;
+end;
+
+
+{%EndRegion}
+var   {Интепретатор           ===========================}{%Region /FOLD }
+                                                           RegI0:Longint;
+
+Type  TEl=Class  // Элемент исполнения
+  TXT:Ansistring;// Текс слова
+  Zna:Ansistring;// Значение
+  TIP:LongWord;  // ТИп элемента
+  FUN:Boolean;   // Если этот элемент являетсья описанием Функции;
+  Rod:Tel;// Родительский элемент
+  BLO:Tel;// Первый элемент вложеного списка элементов
+  NEX:Tel;// Следующий элемент
+  PRE:Tel;// Предыдущий элемент
+  Function  Lst:Tel;// Возвращает последний элемент из списка
+  Function  Add(El:Tel):Tel;// Добавляет элемент в конец списка
+  Function  Add(S:AnsiString;T:LongWord):Tel;// Создает и Добавляет элемент в конец списка
+  Function  Del:Tel;// Создает и Добавляет элемент в конец списка
+
+  procedure VlogitSc(S1,S2:Ansistring); // Вложение скобок
+  Procedure VlogitPA;// Вложение параметров
+  Procedure VlogitBl;// Вложкение Исполнительных блоков
+  Procedure VlogitMa(S:Ansistring);// Вложение математических операций   '+-'
+
+  Function  FinFun(N:Ansistring):Tel;// ПОиск функции или переменной
+
+  Procedure Cle;// Очистка элемента
+  Function  Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
+  Procedure TRuns;// Выполняет структуру
+  Procedure TRun;// Выполняет 1 елемент
+  Procedure RunFun;// Найти и выполнить пользовательскую функцию
+
+  Procedure Op_Mat;
+  Procedure Op_Let;
+  Procedure Op_Sco;
+  Procedure Op_WHI;
+  Procedure Op_Con;
+
+end;
+TYpe  TScr=class(Tver)
+PRG:Tel;// ПРограмма
+Function  ReadPars(S:Ansistring):Tel;
+Procedure ViewElem(E:Tel;O:Ansistring);
+Procedure ProgStru;
+end;
+
+Function  Tel.Del:Tel;// Изятие элемента из списка
+var
+Pr,Ne:TEl;
+Begin
+Pr:=Pre;
+Ne:=Nex;
+If pr<>Nil Then Pr.Nex:=Ne;
+If Ne<>Nil Then Ne.Pre:=Pr;
+If (Rod<>Nil) and (Rod.Blo=Self) Then Rod.Blo:=Ne;
+Nex:=Nil;
+Pre:=Nil;
+Rod:=Nil;
+Del:=Self;
+end;
+Function  Tel.Lst:Tel;// Возвращает последний элемент из списка
+Var
+rez:Tel;
+Begin
+Rez:=Blo;
+If REz<>Nil Then
+While REz.Nex<>Nil do REz:=Rez.Nex;
+Lst:=Rez;
+end;
+Function  Tel.Add(El:Tel):Tel;// Добавить существующий элемент в список
+Begin
+El.Del;// Изымаем элемент
+El.Rod:=Self;// Указываем родителя
+El.Pre:=Lst;// Указываем элементе предыдущий
+if Lst<>Nil
+Then Lst.NEX:=El // Присоеденяемс к посоледнему элементу вновь созданый
+Else Blo:=El;    // Указываем себя как первый элемент в списке
+Add:=El;
+end;
+Function  Tel.Add(S:AnsiString;T:LongWord):Tel;// Создает и Добавляет элемент в конец списка
+Var
+Rez:Tel;
+begin
+Rez:=nil;
+If S<>'' then
+begin
+ Rez:=Tel.Create;
+ Rez.TXT:=S;
+ Rez.ZNA:=S;
+ REz.Tip:=T;// Указываем тип прочитаного элемента
+ add(Rez);  // Добавляем внось созданый элемент
+end;
+Add:=Rez;
+end;
+//------------------------------------------------------------------------------
+Procedure Tel.VlogitSc(S1,S2:Ansistring);// Вложение скобок
+var
+Kon,   // Контенер Куда складываем элементы
+Uka,   // Указатель на элемент
+Ne:Tel;// Следующий элемент
+begin
+Kon:=Self;
+Uka:=Blo;
+While Uka<>Nil do
+ begin
+  NE:=UKA.Nex;// Запоминаем следующий элемент
+  If  (Kon<>Self) and (Uka.Txt<>S2) then Kon.add(Uka);
+  if   Uka.Txt=S1 Then Kon:=Uka;
+  if   Uka.Txt=s2 Then begin Kon:=Kon.Rod;Uka.Del;end;
+  Uka:=Ne;
+ end;
+end;
+Procedure TEl.VlogitPA;// Вложкение параметров
+var
+UKA:Tel;
+Begin
+UKA:=Blo;
+While UKA<>NIL do
+begin
+If (UKA.TIP=TI_SLO) THEN
+If (UKA.NEX<>NIL) AND (UKA.NEX.TXT='(')
+Then UKA.Add(UKA.NEX)
+Else UKA.Add('(',TI_ZNA);
+Uka.VlogitPA;
+UKA:=UKA.NEX;
+end;
+end;
+Procedure TEl.VlogitBl;// Вложкение Исполнительных блоков
+var
+UKA:Tel;
+Begin
+UKA:=Blo;
+While UKA<>NIL do
+begin
+If (UKA.TIP=TI_SLO) THEN
+If (UKA.NEX<>NIL) AND (UKA.NEX.TXT='{')
+Then begin UKA.Add(UKA.NEX);if UKA.TXT<>'WHILE' Then UKA.FUN:=True; end
+Else UKA.Add('(',TI_ZNA);
+Uka.VlogitBl;
+UKA:=UKA.NEX;
+end;
+end;
+Procedure TEl.VlogitMa(S:Ansistring);// Вложение математических операций   '+-'
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+if (Uka.pre<>nil) and (Uka.nex<>nil) and (POs(Uka.TXT,S)<>0) Then
+   begin
+   Uka.Add(UKA.Pre);
+   Uka.Add(UKA.Nex);
+   end;
+UKA.VlogitMa(s);
+Uka:=Uka.Nex;
+end;
+
+end;
+//------------------------------------------------------------------------------
+Procedure Tel.Cle;// Очистка элемента
+var
+L1,L2:Tel;
+Begin
+L2:=Blo;
+While L2<>Nil do
+   begin
+   L1:=L2;
+   L1.Cle;
+   L2:=L1.Nex;
+   L1.Free;
+   end;
+end;
+Function  Tel.Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
+Var
+Rez,Ne,Pr:Tel;
+Begin
+REz:=Tel.Create;
+REz.TXT:=Txt;
+REz.Zna:=Zna;
+REz.Tip:=Tip;
+Rez.Fun:=Fun;
+
+REz.Rod:=IRod;
+REz.Pre:=IPre;
+Rez.NEX:=Nil;
+Rez.Blo:=Nil;
+
+If Blo<>Nil  Then
+begin
+   Rez.Blo:=Blo.Cop(REz,Nil);
+   Ne:=Blo.Nex;
+   pr:=Rez.BLO;
+   While NE<>Nil do
+   begin
+   Pr.Nex:=Ne.Cop(Rez,Pr);
+   Ne:=Ne.Nex;
+   Pr:=Pr.Nex;
+   end;
+end;
+Cop:=Rez;
+end;
+Procedure TEl.TRuns;// Выполняет структуру
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+ If (Not UKA.FUN)    or
+    (Uka.Txt='WHILE')or
+    (UKA.Txt='IF')   Then Uka.TRun;
+Uka:=Uka.Nex;
+end;
+end;
+Procedure Tel.TRun;// Выполняет 1 елемент
+Begin
+if Pos(Txt,'*/+-<>')<>0 Then Op_Mat else
+if Txt='='              Then Op_Let else
+if Txt='('              Then Op_Sco else
+if Txt='{'              Then TRuns  else
+if Txt='WHILE'          Then Op_WHI else
+if Txt='PRINT'          Then Op_Con else
+if Tip=Ti_Slo           Then RunFun;
+end;
+Function  Tel.FinFun(N:Ansistring):Tel;// ПОиск функции или переменной
+var
+l,REz:Tel;
+Begin
+REz:=Nil;
+// Не нашли ли ?вдруг это и етсь искомый элемент
+If Fun and (TXT=N) Then REz:=Self;
+L:=Pre;// поиск переменой или функции в предыдыдущих элементах
+While (REz=nil) and (L<>Nil) Do
+begin
+if (l.Tip=Ti_Slo) and
+   (L.Fun)        and
+   (L.Txt=N)      Then Rez:=L;
+
+L:=L.Pre;
+end;
+// ПОиск переменной внутри параметров функции
+If  (REz=Nil)         and
+    (Rod<>Nil)        and
+    (Rod.Fun)         And
+    (Rod.Blo.Txt='(') And
+    (Rod.Blo.Blo<>Nil)Then
+    begin
+    L:=Rod.Blo.Blo;
+    While (L<>Nil) and (rez=nil)Do
+    begin
+     if L.TXT=N Then  REz:=L;
+     L:=L.Nex;
+    end;
+    end;
+
+
+// Посик Функции или переменой в родительском элементе
+if (REz=Nil) and (Rod<>Nil) Then REz:=Rod.FinFun(n);
+FinFun:=REz;
+end;
+Procedure Tel.RunFun;// Найти и выполнить пользовательскую функцию
+var
+F,Ru,l1,l2:Tel;
+begin
+F:=FinFun(Txt);
+if F<>Nil Then
+          begin
+          Ru:=F.Cop(Rod,Pre);
+          Blo.TRun;
+          L1:=Ru.Blo.Blo;
+          L2:=Blo.Blo;
+          While (l1<>Nil) and (L2<>Nil) do
+                Begin
+                L1.Zna:=L2.Zna;
+                L1:=L1.Nex;
+                L2:=L2.Nex;
+                end;
+          Ru.Blo.Nex.TRun;
+          Zna:=Ru.Zna;
+          Ru.Cle;
+          Ru.Free;
+          end;
+end;
+//------------------------------------------------------------------------------
+Function  EtoCif(s:Ansistring):boolean;
+var
+f:Longint;
+rez:Boolean;
+begin
+rez:=true;
+
+for f:=1 to Length(s) do
+if (s[f]<'0') or (s[f]>'9')then begin rez:=false;break end;
+
+If Length(s)=0 Then Rez:=False;
+EtoCif:=REz;
+end;
+Procedure Tel.Op_Mat;
+Begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ Then
+ if TXT='+' then zna:=FloatToStr(StrToFloat(Blo.zna)+StrToFloat(Blo.nex.zna)) else
+ if TXT='-' then zna:=FloatToStr(StrToFloat(Blo.zna)-StrToFloat(Blo.nex.zna)) else
+ if TXT='*' then zna:=FloatToStr(StrToFloat(Blo.zna)*StrToFloat(Blo.nex.zna)) else
+ if TXT='/' then zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
+ if TXT='>' then begin if (StrToFloat(Blo.zna)>StrToFloat(Blo.nex.zna))            Then zna:='1'else zna:='0';end else
+ if TXT='<' then begin if (StrToFloat(Blo.zna)<StrToFloat(Blo.nex.zna))            Then zna:='1'else zna:='0';end
+ else
+ if TXT='+' then zna:=Blo.zna+Blo.nex.zna else
+ if TXT='=' then begin if Blo.zna=Blo.nex.zna  then zna:='1' else zna:='0' end else
+ if TXT='>' then begin if Blo.zna>Blo.nex.zna then zna:='1' else zna:='0' end else
+ if TXT='<' then begin if Blo.zna<Blo.nex.zna then zna:='1' else zna:='0' end;
+end;
+End;
+Procedure Tel.Op_Let; // = Операция присваивания значения
+Var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+Blo.nex.TRun;
+F:=FinFun(Blo.TXT);
+if F<>Nil Then F.Zna:=Blo.nex.Zna;
+end;
+end;
+Procedure Tel.Op_Sco; // Выполняет скобку
+var
+l:TEl;
+rez:Ansistring;
+begin
+rez:='';l:=Blo;
+while l<>nil do
+begin
+l.TRun;
+rez:=rez+l.zna;
+l:=l.nex;
+end;
+zna:=rez;
+end;
+Procedure Tel.Op_WHI; // Оператор WHITE
+var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+Blo.TRun;
+While Blo.zna='1' do
+begin
+Blo.nex.TRun;
+Blo.TRun;
+end;
+end;
+end;
+Procedure Tel.Op_Con; // Вывод в консоль
+var
+l:Tel;
+Co:Ansistring;
+begin
+if Blo<>nil then
+begin
+l:=Blo.Blo;
+while l<>nil do
+begin
+l.TRun;
+Co:=Co+l.zna;
+L:=l.nex;
+end;
+end;
+Writeln(co);
+end;
+//------------------------------------------------------------------------------
+Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
+var
+  REZ:Tel;     // Списко слов на которые разита программа
+  UKA:LongWord;// указатель на читаемый символ
+  LEN:LongWord;// Длина Строки
+
+Function REadSlo:Ansistring;// ДЛя чтения Операторов
+Var
+  REz:Ansistring;
+begin
+REz:='';
+While (UKA<=LEN) and ((S[UKA]>='A') and (S[UKA]<='Z')) do
+      begin
+      REZ:=REZ+S[UKA];
+      UKA:=UKA+1;
+      end;
+REadSlo:=Rez;
+end;
+Function REadCif:Ansistring;// ДЛя чтения цифер
+Var
+  REz:Ansistring;
+begin
+REz:='';
+While (UKA<=LEN) and ((S[UKA]>='0') and (S[UKA]<='9')) do
+      begin
+      REZ:=REZ+S[UKA];
+      UKA:=UKA+1;
+      end;
+REadCif:=Rez;
+end;
+Function REadZna:Ansistring;// ДЛя чтения Знаков
+Var
+  REz:Ansistring;
+begin
+REz:='';
+If (UKA<=LEN) Then
+If
+  (S[UKA]='+') or
+  (S[UKA]='-') or
+  (S[UKA]='*') or
+  (S[UKA]='/') or
+  (S[UKA]='(') or
+  (S[UKA]=')') or
+  (S[UKA]='{') or
+  (S[UKA]='}') or
+  (S[UKA]='>') or
+  (S[UKA]='<') or
+  (S[UKA]='=')
+      Then
+      begin
+      REZ:=REZ+S[UKA];
+      UKA:=UKA+1;
+      end;
+REadZna:=Rez;
+end;
+Function REadKav:Ansistring;// ДЛя чтения Кавычки
+Var
+  REz:Ansistring;
+begin
+REz:='';
+If (s[UKA]='"') Then
+      begin
+      UKA:=UKA+1;
+      While (UkA<=LEN) and (S[UKA]<>'"') do
+            Begin
+            REZ:=REZ+S[UKA];
+            UKA:=UKA+1;
+            end;
+      end;
+REadKav:=Rez;
+end;
+
+begin
+REZ:=TEl.Create;
+REZ.TXT:='Program';
+UKA:=1;
+LEN:=Length(S);
+While UKA<=LEN Do
+      If REZ.ADD(REadSlo,TI_SLO)=nil Then
+      If REZ.ADD(REadCif,TI_Cif)=nil Then
+      If REZ.ADD(REadZna,TI_ZNA)=nil Then
+      If REZ.ADD(REadKav,TI_KAv)=nil Then UKA:=UKA+1;
+ReadPars:=Rez;
+end;
+Procedure TScr.ViewElem(E:Tel;O:Ansistring); // Выводит на печать содержимое элемента
+Var
+L:TEl;
+begin
+L:=E.BLO;
+While L<>Nil Do
+ begin
+ Writeln(O+L.TXT);
+ if l.Blo<>Nil Then ViewElem(l,O+' ');
+ L:=L.Nex;
+ end;
+end;
+Procedure TScr.ProgStru;// Формирует структуру программы
+begin
+PRG.VlogitSc('(',')');
+PRG.VlogitSc('{','}');
+PRG.VlogitPA;
+PRG.VlogitBl;
+PRG.VlogitMA('+-');
+PRG.VlogitMA('*/');
+PRG.VlogitMA('<>');
+PRG.VlogitMA('=');
+end;
+
+TYPE TScrS=CLASS
+SEL:Boolean;
+KOLS:Longint;
+KOLD:Longint;
+SCRS:Array[1..MaxKOlScrInMir] of TSCR;
+DELS:Array[1..MaxKolDelScrs ] of TSCR;
+Function    AddS(iScr:TSCR):TSCR;
+procedure   AddD(iScr:TSCR);
+Constructor Create;
+end;
+var  MirScrs:TScrS;
+procedure   TScrS.AddD(iScr:TScr);
+Var F:Longint;
+begin
+   if not iScr.Del then begin
+   iScr.Del:=true;
+   if KolD+1>MaxKolDelScrs then
+   ERR('МАсив с удаленными скриптами переполнен');
+   DELS[KolD+1]:=iScr;
+   KolD:=KolD+1;
+   end else ERR('Попытка удалить уже удаленный скрипт');
+end;
+function    TScrS.AddS(iScr:TScr):TScr;
+var F:Longint;Ex:Boolean;
+begin
+Ex:=False;
+//------------------------------------------------------------------------------
+if KolD>MinKolDelScrs then begin Ex:=True;
+iScr.Nom:=DelS[1].NOM;
+ScrS[iScr.Nom]:=iScr;
+DelS[1].Free;
+for f:=1 to KolD-1 Do DelS[F]:=DelS[F+1];
+KOlD:=KolD-1;
+end;
+//------------------------------------------------------------------------------
+if Not Ex then Begin
+if KolS+1>MaxkolScrinMir Then
+ERR(' TScrS.AddS(iScr:TScr) KolS+1>MaxkolScrinMir');
+iScr.Nom:=KolS+1;
+KolS:=KolS+1;
+ScrS[iScr.Nom]:=iScr;
+end;
+AddS:=IScr;
+end;
+Constructor TScrS.Create;
+begin
+KolS:=0;
+KolD:=0;
+end;
+
+
+{%EndRegion}
 var   {Буфер обмена           ===========================}{%Region /FOLD }
                                                            Reg10:Longint;
 
@@ -1532,6 +2143,8 @@ function  SELLINS:TSels;// Возвращает Список выделеных 
 function  SELPLOS:TSels;// Возвращает Список выделеных Плоскостей
 function  SELELES:TSels;// Возвращает Список выделеных Элементов
 function  SELOBJS:TSels;// Возвращает Список выделеных Обьект
+function  SELANIS:TSels;// Возвращает Список выделеных Анимаций
+function  SELSCRS:TSels;// Возвращает Список выделеных Скриптов
 constructor Create;
 
 end;
@@ -1615,6 +2228,22 @@ begin
  if (SELS[f].TIP=T_OBJ) then REz.Add(SELS[f]);
  SELOBJS:=Rez;
 end;
+function  TSels.SELANIS:TSels;// Возвращает Список выделеных Анимаций
+var Rez:TSels;f:longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f].TIP=T_ANI) then REz.Add(SELS[f]);
+ SELANIS:=Rez;
+end;
+function  TSels.SELScrS:TSels;// Возвращает Список выделеных Скриптов
+var Rez:TSels;f:longint;
+begin
+ REz:=TSels.Create;
+ for f:=1 to Kol do
+ if (SELS[f].TIP=T_SCR) then REz.Add(SELS[f]);
+ SELScrS:=Rez;
+end;
 
 {%EndRegion}
 
@@ -1652,9 +2281,23 @@ REz:TVer;
 f:longint;
 begin
 REz:=Nil;f:=1;
+
+
 while (f<=MirObjs.KolO) and (REz=Nil) do begin
 Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);f:=f+1;
 end;
+
+while (f<=MirAnis.KolA) and (REz=Nil) do begin
+if MirANIs.ANIS[f].NAM=iNam Then Rez:=MirANIs.ANIS[f];
+f:=f+1;
+end;
+
+while (f<=MirScrs.KolS) and (REz=Nil) do begin
+if MirScrs.ScrS[f].NAM=iNam Then Rez:=MirScrs.ScrS[f];
+f:=f+1;
+end;
+
+
 I_FinNam:=Rez;
 end;
 function  I_NewNamIdd(iStr:Ansistring):Ansistring;
@@ -1807,6 +2450,68 @@ iLis.items.delete(iLis.count-1);
 
 
 end;
+procedure I_RefSpiAnis(             iLis:TCheckListBox);//Список анимац
+var
+f:longint;// лдя циклов
+NomItems:Longint;// Перебирать записи в листбоксе
+begin
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to MirAnis.KolA do
+if Not MirAnis.AniS[f].DEL then begin // Если Анимация не удалена
+NomItems:=NomItems+1;
+if NomItems<iLis.Items.count then begin
+// Изменяем записи в списке только если обьект в списке изменился
+   iLis.selected[NomItems]:=MirAnis.ANIS[f].Sel;
+   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
+   iLis.Items[NomItems]:=MirANis.ANIS[f].NAM;
+if iLis.Items.Objects[NomItems]<>MirAnis.ANIS[f] then
+   iLis.Items.Objects[NomItems]:=MirAnis.ANIS[f];
+end
+else
+begin
+iLis.Items.AddObject(MirANis.ANiS[f].Nam,MirANis.ANiS[f]);
+iLis.selected[iLis.Count-1]:=MirANis.ANiS[f].Sel;
+end
+
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+
+
+end;
+procedure I_RefSpiScrs(             iLis:TCheckListBox);//Список скрипт
+var
+f:longint;// лдя циклов
+NomItems:Longint;// Перебирать записи в листбоксе
+begin
+NomItems:=0;// Для перебора обье4ктов в списке
+for f:=1 to MirScrs.KolS do
+if Not MirScrs.ScrS[f].DEL then begin // Если обьект не удалён
+NomItems:=NomItems+1;
+if NomItems<iLis.Items.count then begin
+// Изменяем записи в списке только если обьект в списке изменился
+   iLis.selected[NomItems]:=MirScrs.ScrS[f].Sel;
+   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
+   iLis.Items[NomItems]:=MirScrs.ScrS[f].NAM;
+if iLis.Items.Objects[NomItems]<>MirScrs.ScrS[f] then
+   iLis.Items.Objects[NomItems]:=MirScrs.ScrS[f];
+end
+else
+begin
+iLis.Items.AddObject(MirScrs.ScrS[f].Nam,MirScrs.ScrS[f]);
+iLis.selected[iLis.Count-1]:=MirScrs.ScrS[f].Sel;
+end
+
+end;
+
+// Удаляем лишнии записи в конце списка
+while iLis.count-1>NomItems do
+iLis.items.delete(iLis.count-1);
+
+
+end;
 procedure I_RefAllForm;
 var f:Longint;
 begin
@@ -1814,6 +2519,8 @@ begin
      for f:=0 to application.ComponentCount-1 do
      if  (application.Components[f] is tform5 ) then begin
      I_RefSpiObjs((application.Components[f] as tform5) .CheckListBox1);
+     I_RefSpiAnis((application.Components[f] as tform5) .CheckListBox2);
+     I_RefSpiScrs((application.Components[f] as tform5) .CheckListBox3);
      end
 else if  (application.Components[f] is tform6 ) then begin
      (application.Components[f] as tform6 ).U_RefreshObj;
@@ -1829,6 +2536,15 @@ else if  (application.Components[f] is tform9 ) then begin
      end
 else if  (application.Components[f] is tform10) then begin
      (application.Components[f] as tform10).U_RefreshPlo;
+     end
+else if  (application.Components[f] is tform10) then begin
+     (application.Components[f] as tform10).U_RefreshPlo;
+     end
+else if  (application.Components[f] is tform12) then begin
+     (application.Components[f] as tform12).U_RefreshAni;
+     end
+else if  (application.Components[f] is tform13) then begin
+     (application.Components[f] as tform13).U_RefreshScr;
      end
 
 end;
@@ -1883,6 +2599,10 @@ var
  form6:TForm6;
  form7:TForm7;
  form8:TForm8;
+ form9:TForm9;
+ form10:TForm10;
+ form12:TForm12;
+ form13:TForm13;
 begin
  form5 :=I_FindFormObjs      ;if Form5 <>nil Then begin // Обьекты
  Form5.U_RefreshObjs;
@@ -1892,26 +2612,42 @@ begin
  end;
  form7 :=I_FindFormEle (iver);if Form7 <>nil Then begin // Элемент
  Form7.U_RefreshEle;
- I_RefreshEditorPrimitiv(TEle(iver).Ele);
+ I_RefreshEditorPrimitiv(TEle(iver).Ele);// Обновить родительский элемент
  end;
  form8 :=I_FindFormVer (iver);if Form8 <>nil Then begin // Вершина
  Form8.U_RefreshVer;
- I_RefreshEditorPrimitiv(TVer(iver).Ele);
+ I_RefreshEditorPrimitiv(TVer(iver).Ele);// Обновить родительский элемент
  end;
  form9 :=I_FindFormLin (iver);if Form9 <>nil Then begin //   Линия
  Form9.U_RefreshLin;
- I_RefreshEditorPrimitiv(TLin(iver).Ele);
+ I_RefreshEditorPrimitiv(TLin(iver).Ele);// Обновить родительский элемент
  end;
  form10:=I_FindFormPlo (iver);if Form10<>nil Then begin // Плоскос
  Form10.U_RefreshPlo;
- I_RefreshEditorPrimitiv(TPlo(iver).Ele);
+ I_RefreshEditorPrimitiv(TPlo(iver).Ele);// Обновить родительский элемент
+ end;
+ form12:=I_FindFormAni (TAni(iver));if Form12<>nil Then begin // Анимация
+ Form12.U_RefreshAni;
+ Form5.U_RefreshObjs;
+ end;
+ form13:=I_FindFormScr (TScr(iver));if Form13<>nil Then begin // Скрипт
+ Form13.U_RefreshScr;
+ Form5.U_RefreshObjs;
  end;
 end;
-
-procedure I_GetN(iVer:Pointer;iEdit:TEdit);
+procedure I_GetN(iPri:Pointer;iEdit:TEdit);
 begin
-if iEdit.Text<>TVEr(iVer).NAM then
-   iEdit.Text:=TVEr(iVer).NAM;
+
+if (Tobject(iPri) is Tver) then
+if iEdit.Text<>TVEr(iPri).NAM then iEdit.Text:=TVEr(iPri).NAM;
+
+end;
+procedure I_GetT(iPri:Pointer;iMemo:TMemo);
+begin
+
+if (Tobject(iPri) is Tver) then
+if iMemo.Text<>TVEr(iPri).txt then iMemo.Text:=TVEr(iPri).Txt;
+
 end;
 procedure I_GetM(iVer:Pointer;iEdit:TEdit);
 begin
@@ -1978,7 +2714,7 @@ begin
 if iVer<>Nil Then
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
 
-if I_FinNam(iEdit.Text)=nil
+if (I_FinNam(iEdit.Text)=nil)or(pointer(I_FinNam(iEdit.Text))=iVer)
    then begin
    G_Change:=true;
    TVEr(iVer).NAM:=iEdit.Text;
@@ -1990,6 +2726,16 @@ if I_FinNam(iEdit.Text)=nil
    iEdit.Color:=RGBToColor(255,0,0)
    end;
 
+end else iEdit.Color:=clDefault;
+end;
+procedure I_SetT(iVer:Pointer;iMemo:TMemo);
+begin
+if iVer<>Nil Then
+if (TVEr(iVer).Txt<>iMemo.Text) Then begin
+  G_Change:=true;
+  TVEr(iVer).Txt:=iMemo.Text;
+  I_RefreshActivePrimitiv;
+  I_RefreshEditorPrimitiv(iVer);
 end;
 end;
 procedure I_SetM(iVer:Pointer;iEdit:TEdit);
@@ -2210,9 +2956,9 @@ end;
 
 var   {----------------------- Добавлоение примитива  ===}{%Region /FOLD }
                                                           E_Reg11:Longint;
-
-Procedure I_TOBJ_PUT_01(iObj:TObj;var iStr:Ansistring);forward;
-function I_GetEl(iVer:Pointer):Tele;// Извлекает Элемен в котором находимся
+Procedure  I_TOBJ_ANI_01(iObj1,iObj2:TObj;var iStr:Ansistring);forward;
+Procedure  I_TOBJ_PUT_01(iObj:TObj;var iStr:Ansistring);forward;
+function   I_GetEl(iVer:Pointer):Tele;// Извлекает Элемен в котором находимся
 var REz:Tele;lVer:TVer;
 begin
       lVer:=TVer(iVer);
@@ -2226,7 +2972,7 @@ begin
       I_GetEl:=Rez;
 
 end;
-function I_AddVerCOP(iEle:Pointer):Pointer;// Создает копию вершины рядом
+function   I_AddVerCOP(iEle:Pointer):Pointer;// Создает копию вершины рядом
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2242,7 +2988,7 @@ I_RefAllForm;
 I_AddVerCOP:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddObjCOP(iEle:Pointer):Pointer;// Создает копию обьекта
+function   I_AddObjCOP(iEle:Pointer):Pointer;// Создает копию обьекта
 var
 lStr:Ansistring;
 rez:Pointer;
@@ -2255,7 +3001,7 @@ if rez<>Nil Then  begin
             end;
 I_AddObjCOP:=Rez;
 end;
-function I_AddPriCop(iPri:Pointer):Pointer;// Создает копию Примитива
+function   I_AddPriCop(iPri:Pointer):Pointer;// Создает копию Примитива
 Var
 lVer:Tver;
 Rez:Pointer;
@@ -2266,8 +3012,7 @@ if lVer.TIP=T_VER Then Rez:=I_AddVerCOP(iPri) else
 if lVer.TIP=T_OBJ Then Rez:=I_AddObjCOP(iPri) ;
 I_AddPriCop:=Rez;
 end;
-
-function I_GetOb(iVer:Pointer):TObj;// Извлекает Обьект в котором находимся
+function   I_GetOb(iVer:Pointer):TObj;// Извлекает Обьект в котором находимся
 var REz:TObj;lVer:TVer;
 begin
 
@@ -2278,7 +3023,7 @@ begin
       I_GetOb:=Rez;
 
 end;
-function I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
+function   I_AddVerSYX(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2292,7 +3037,7 @@ I_RefAllForm;
 I_AddVerSYX:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
+function   I_AddVerSYY(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2306,7 +3051,7 @@ I_RefAllForm;
 I_AddVerSYY:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
+function   I_AddVerSYZ(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2320,7 +3065,7 @@ I_RefAllForm;
 I_AddVerSYZ:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVer150(iEle:Pointer):Pointer;// Создает симетричную вершину
+function   I_AddVer150(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2334,7 +3079,7 @@ I_RefAllForm;
 I_AddVer150:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVni150(iEle:Pointer):Pointer;// Создает симетричную вершину
+function   I_AddVni150(iEle:Pointer):Pointer;// Создает симетричную вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2348,7 +3093,7 @@ I_RefAllForm;
 I_AddVni150:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
 end;
-function I_AddVerMar(iPlo:Pointer):Pointer;// Создает  Маршрутные вершину
+function   I_AddVerMar(iPlo:Pointer):Pointer;// Создает  Маршрутные вершину
 Var
 rEle:TEle;la,lb,lc,ld:RCS3;lPlo:Tplo;
 procedure Center(ia,ib,ic,id:RCS3;iG:Longint);
@@ -2385,7 +3130,7 @@ center(la,lb,lc,ld,0);
 I_RefAllForm;
 end;
 end;
-function  I_AddVerLan(iEle:Pointer):Pointer;// Создает Ландшафтные вершины
+function   I_AddVerLan(iEle:Pointer):Pointer;// Создает Ландшафтные вершины
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2427,7 +3172,7 @@ end;
 I_RefAllForm;
 end;
 end;
-function  I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
+function   I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
 rEle:TEle;
 nVer:TVer;
@@ -2439,7 +3184,7 @@ nVer.Nam:=I_NewNamIdd('V ');
 I_RefAllForm;
 I_AddVer:=nVer;
 end;
-function  I_AddLin(iObj:Pointer):Pointer;// Доабвляет   Линию
+function   I_AddLin(iObj:Pointer):Pointer;// Доабвляет   Линию
 Var
 rObj:TObj;
 nLin:TLin;
@@ -2457,7 +3202,7 @@ lSel.free;
 I_RefAllForm;
 I_AddLin:=nLin;
 end;
-function  I_AddPLi(iObj:Pointer):Pointer;// Доабвляет пустую  Линию
+function   I_AddPLi(iObj:Pointer):Pointer;// Доабвляет пустую  Линию
 Var
 rObj:TObj;
 nLin:TLin;
@@ -2469,7 +3214,7 @@ nLin:=rObj.L(rObj,rObj);
 nLin.Nam:=I_NewNamIdd('L ');
 I_AddPLi:=nLin;
 end;
-function  I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
+function   I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
 Var
 rObj:TObj;
 nPLo:TPlo;
@@ -2488,7 +3233,7 @@ end;
 lSel.free;
 I_AddPlo:=nPlo;
 end;
-function  I_AddPPl(iObj:Pointer):Pointer;// Доаб пуст Плоскос
+function   I_AddPPl(iObj:Pointer):Pointer;// Доаб пуст Плоскос
 Var
 rObj:TObj;
 nPLo:TPlo;
@@ -2499,7 +3244,7 @@ nPlo:=rObj.P(rObj,rObj,rObj,rObj);
 nPlo.Nam:=I_NewNamIdd('P ');
 I_AddPPl:=nPlo;
 end;
-function  I_AddEle(iEle:Pointer):Pointer;// Доабвляет Элемент
+function   I_AddEle(iEle:Pointer):Pointer;// Доабвляет Элемент
 Var
 rEle:TEle;
 nEle:TEle;
@@ -2510,7 +3255,7 @@ nEle:=rEle.E(0,0,0);
 nEle.Nam:=I_NewNamIDd('E ');
 I_AddEle:=nEle;
 end;
-function  I_AddObj:Pointer;// Добавляет новый обьект
+function   I_AddObj:Pointer;// Добавляет новый обьект
 Var nObj:TObj;
 begin
 G_Change:=true;
@@ -2519,6 +3264,35 @@ nObj.Nam:=I_NewNamiDd('O ');
 MirObjs.AddO(nObj);
 I_RefAllForm;
 I_AddObj:=nObj;
+end;
+function   I_AddAni:Pointer;// Добавить Анимацию
+var
+nAni:TAni;
+lSelObjs:TSels;
+begin
+nAni:=Nil;
+lSelObjs:=MirSels.SELOBJS;
+if lSelObjs.KOl=2 then begin
+G_Change:=true;
+nAni:=TAni.Create;
+nAni.Nam:=I_NewNamiDd('A ');
+I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),nAni.TXT);
+MirAnis.AddA(nAni);
+I_RefAllForm;
+I_AddAni:=nAni;
+end;
+lSelObjs.free;
+nAni:=nAni;
+end;
+function   I_AddScr:Pointer;// Добавить скрипт
+var nScr:TScr;
+begin
+G_Change:=true;
+nScr:=TScr.Create;
+nScr.Nam:=I_NewNamiDd('S ');
+MirScrs.AddS(nScr);
+I_RefAllForm;
+I_AddScr:=nScr;
 end;
 
 {%EndRegion}
@@ -2612,6 +3386,28 @@ begin
     lForm6:=I_FindFormObj(iObj);
     end;
 end;
+procedure I_DelFormsAni(iAni:TAni);// Удаляет формы связаную с   Анимацие
+var
+f:Longint;
+lForm12:TForm12;
+begin
+    lForm12:=I_FindFormANi(iAni);
+    while lForm12<>Nil do begin
+    lForm12.close;
+    lForm12:=I_FindFormAni(iAni);
+    end;
+end;
+procedure I_DelFormsScr(iScr:TScr);// Удаляет формы связаную с   Скриптам
+var
+f:Longint;
+lForm13:TForm13;
+begin
+    lForm13:=I_FindFormScr(iScr);
+    while lForm13<>Nil do begin
+    lForm13.close;
+    lForm13:=I_FindFormScr(iScr);
+    end;
+end;
 
 procedure I_DelVer(iVer:POinter);// Удаление Вершины
 begin
@@ -2681,6 +3477,31 @@ MirObjs.AddD(lObj);
 I_RefAllForm;
 end else ERR(' I_DelObj Попытка удалить уже удаленный обьект');
 end;
+procedure I_DelAni(iAni:POinter);// Удаление Анимаци
+var f:Longint;lANi:TAni;
+begin
+lAni:=TAni(iAni);
+if not lAni.Del then begin
+G_Change:=true;
+I_SetSel(lAni,false);// Снимаю выделение если оно есть
+I_DelFormsAni(lAni);
+MirAnis.AddD(lAni);
+I_RefAllForm;
+end else ERR(' I_DelAni Попытка удалить уже удаленную анимацию ');
+end;
+procedure I_DelScr(iScr:POinter);// Удаление Скрипта
+var f:Longint;lScr:TScr;
+begin
+lScr:=TScr(iScr);
+if not lScr.Del then begin
+G_Change:=true;
+I_SetSel(lScr,false);// Снимаю выделение если оно есть
+I_DelFormsScr(lScr);
+MirScrs.AddD(lScr);
+I_RefAllForm;
+end else ERR(' I_DelScr Попытка удалить уже удаленный скрипт');
+end;
+
 procedure I_DelDel(iPri:POinter);
 begin
 if      iPri<>Nil       then
@@ -3548,50 +4369,24 @@ else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
 end
 end;
 
-procedure I_DEL_ANIMATION(iAni:TCheckListBox);
-var
-f:Longint;
-m:Tstr;
-begin
-f:=iAni.Items.Count-1;
-while f>1 do begin
-if iAni.Selected[f] then begin
-   M:=TStr(iAni.Items.Objects[iAni.itemindex]);
-   M.Free;
-   iAni.items.delete(f);
-   end;
-f:=f-1;
-end
-end;
-procedure I_ADD_ANIMATION(iAni:TCheckListBox);
-var
-lSelObjs:TSels;
-M:TStr;
-begin
-lSelObjs:=MirSels.SELOBJS;
-if lSelObjs.KOl=2 then begin
-M:=TStr.Create;
-I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),M.TXT);
-iAni.Items.AddObject(I_NewNamIdd('A '),M);
-end;
-lSelObjs.free;
-end;
+
+
 procedure I_SET_ANIMATION(iAni:TCheckListBox);
 var
 fa,fo:Longint;
-lSelObjs:TSels;
-lStr:Tstr;
-lAni:AnsiString;
+lSelAnis:TSels;
+lAni:TAni;
+sAni:AnsiString;
 begin
-lSelObjs:=MirSels.SELOBJS;
+lSelAnis:=MirSels.SELAniS;
 for fa:=1 to iAni.Items.count-1 do
 if iAni.Selected[fa]     then
-for fo:=1 to lSelObjs.KOl do begin
-lStr:=TStr(iAni.Items.Objects[fa]);
-lAni:='O('+lSelObjs.Sels[fo].NAM+')'+lStr.TXT;
-I_SCENA_KAD_01(lAni);
+for fo:=1 to lSelAnis.KOl do begin
+lAni:=TAni(iAni.Items.Objects[fa]);
+sAni:='O('+lSelAnis.Sels[fo].NAM+')'+lAni.TXT;
+I_SCENA_KAD_01(sAni);
 end;
-lSelObjs.free;
+lSelAnis.free;
 end;
 
 procedure I_SaveScena(iNamFile:Ansistring);
@@ -4574,6 +5369,8 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirEles:=TELES.Create;// Создаем списки элементов
   MirObjs:=TOBJS.Create;// Создаем списки Обьектов
   MirSels:=TSELS.Create;// Создаем Буфер обмена
+  MirAnis:=TAniS.Create;// Создаем списки анимаций
+  MirScrs:=TScrS.Create;// Создаем списки скриптов
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
   HSWAP:=CreateThread(nil,0,@TheadSWAP,nil,0,HSwapTrId);

@@ -1,7 +1,7 @@
 unit Unit5;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus,Unit3,unit6,unit7,unit8, StdCtrls;
+  CheckLst, Menus,Unit3,unit6,unit7,unit8,unit13,StdCtrls;
 type
 
   { TForm5 }
@@ -28,14 +28,17 @@ type
     Splitter2: TSplitter;
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox3DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem9Click(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
     procedure Panel1DblClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -73,6 +76,8 @@ end;
 procedure TForm5.U_RefreshObjs;
 begin
  I_RefSpiObjs(CheckListBox1);
+ I_RefSpiAnis(CheckListBox2);
+ I_RefSpiScrs(CheckListBox3);
 end;
 procedure TForm5.MenuItem1Click(Sender: TObject);
 begin
@@ -92,11 +97,15 @@ begin
 end;
 procedure TForm5.MenuItem3Click(Sender: TObject); // Добавить анимацию
 begin
-  I_ADD_ANIMATION(CheckListBox2);
+  I_AddAni;
 end;
 procedure TForm5.MenuItem4Click(Sender: TObject);// Удалить анимацию
 begin
-  I_DEL_ANIMATION(CheckListBox2);
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then begin
+  i_DelAni(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+  I_RefSpiAnis(CheckListBox2);
+  end;
 end;
 procedure TForm5.MenuItem5Click(Sender: TObject); // создаеться Копия обьекта
 begin
@@ -110,6 +119,10 @@ var
   m:Tmemo;
 begin
   I_SET_ANIMATION(CheckListBox2);
+end;
+procedure TForm5.MenuItem9Click(Sender: TObject);// Создать скрипт
+begin
+  I_AddScr;
 end;
 procedure TForm5.Panel1Click(Sender: TObject);
 begin
@@ -140,6 +153,12 @@ begin
  for f:=1 to CheckListBox1.items.Count-1 do
  I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
+procedure TForm5.CheckListBox3DblClick(Sender: TObject);
+begin
+  if CheckListBox3.itemindex<CheckListBox3.items.count then
+  if CheckListBox3.itemindex>0 then
+  U_OpenScript(CheckListBox3.items.objects[CheckListBox3.itemindex]);
+end;
 procedure TForm5.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   form4.MenuItem5.Enabled:=true;
@@ -150,5 +169,14 @@ begin
   left:=form3.left+form3.width-width-10;
   top :=form3.top+30;
 end;
+procedure TForm5.MenuItem10Click(Sender: TObject); // удалить скрипт
+begin
+  if CheckListBox3.itemindex<CheckListBox3.items.count then
+  if CheckListBox3.itemindex>0 then begin
+  i_DelScr(CheckListBox3.items.objects[CheckListBox3.itemindex]);
+  I_RefSpiScrs(CheckListBox3);
+  end;
+end;
+
 end.
 
