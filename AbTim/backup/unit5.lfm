@@ -1,7 +1,7 @@
 object Form5: TForm5
-  Left = 105
+  Left = 347
   Height = 357
-  Top = 245
+  Top = 179
   Width = 435
   BorderStyle = bsSizeToolWin
   Caption = 'Form5'
@@ -59,6 +59,7 @@ object Form5: TForm5
     ItemHeight = 15
     ItemIndex = 0
     MultiSelect = True
+    OnDblClick = CheckListBox2DblClick
     PopupMenu = PopupMenu2
     TabOrder = 2
     Data = {

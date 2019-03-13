@@ -8,6 +8,7 @@ type  { TForm12 }  TForm12 = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Splitter1: TSplitter;
+    procedure Memo1Change(Sender: TObject);
   private
 
   public
@@ -16,6 +17,7 @@ type  { TForm12 }  TForm12 = class(TForm)
   end;
 var Form12: TForm12;
 function  I_FindFormAni(iAni:Pointer):Tform12;// Ищим форму с Анимацией
+procedure U_OpenAnimation(iAni:Pointer);
 implementation  {$R *.lfm}
 function  I_FindFormAni(iAni:Pointer):Tform12;// Ищим форму с Анимацией
 var Rez:Tform12;f:Longint;
@@ -37,9 +39,16 @@ begin
   lForm12.Ani:=iAni;
   lForm12.U_RefreshAni;
   end else I_FindFormAni(iAni).SetFocus; end;
+
+procedure TForm12.Memo1Change(Sender: TObject);
+begin
+    I_SetT(Ani,memo1);
+end;
+
 procedure TForm12.U_RefreshAni;
 begin
 I_GetN(ANI,Edit1 );
+I_GetT(ANI,Memo1 );
 end;
 
 end.

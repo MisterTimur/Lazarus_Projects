@@ -36,10 +36,7 @@ type { TForm3 }  TForm3 = class(TForm)
 var Form3: TForm3;
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg00:Longint;
-CR:AnsiString=chr(13)+chr(10);
-GStep:REal=1            ;// Шаг для Колеса мышки
-MinRAsInMir:REal=1      ;// Минимальнео растояние в игровом мире и для рамки
-MAxRAsInMir:Real=1024*32;// Максимальное растояние в игровом мире от камеры
+gStep:Longint=1;
 G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False  ;// В проекте есть не сохраненные изменения
 GlDraw:boolean=false    ;// Разрешение отрисовки
@@ -62,6 +59,7 @@ function I_AddVni150(iEle:Pointer):Pointer;// Создает симетричн�
 function I_AddVerMar(iPlo:Pointer):Pointer;// Создает симетричную вершину
 
 
+function  I_RUN(iScr:Pointer;iMemo:TMemo):POinter;// Выполнить скрипт
 function  I_AddVer(iEle:Pointer):Pointer;// Создает Вершины
 function  I_AddLin(iObj:Pointer):Pointer;// Создает Линии
 function  I_AddPlo(iObj:Pointer):Pointer;// Создает Плоскости
@@ -69,6 +67,7 @@ function  I_AddEle(iEle:Pointer):Pointer;// Создает новый Элеме
 function  I_AddObj:POinter;// Создает новый обьект
 function  I_AddAni:Pointer;// Добавить Анимацию
 function  I_AddScr:Pointer;// Добавить скрипт
+
 procedure I_DelNotUseVer;// Удаляет не используемые вершины
 
 procedure I_RefSpiVers(iEle:POinter;iLis:TCheckListBox);
@@ -123,28 +122,30 @@ procedure I_CLOSE;
 
 {%EndRegion}
 implementation {$R *.lfm}
-uses unit4,unit5,unit6,unit7,unit8,unit9,unit10,unit12,unit13;
+uses unit4,unit5,unit6,unit7,unit8,unit9,unit10,unit12,unit13,unit15;
 var   {Базa                   ===========================}{%Region /FOLD }
                                                            BAS01:Longint;
 
 const {Базовые Константы      ===========================}{%Region /FOLD }
 
-  GMAxRAsInMir=1024*16;// Растояние на котором вершину не видно
 
+  MinRAsInMir=1;// Минимальнео растояние в игровом мире от камеры
+  MAxRAsInMir=1024* 32;// Максимальное растояние в игровом мире от камеры
+ GMAxRAsInMir=1024*512;// МАксимально возможное растояние в движке
 
   MaxKolVerInEle=512;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=512;// Максимальное количество Линий в Элементе
   MaxKolPloInObj=512;// Максимальное количество Плоскостей в Элементе
   MaxKolObjInObj=128;// Максимальное количество Плоскостей в Элементе
-  MaxKolEleInEle=128;// Максимальное количество Обьектов в Элементе
+  MaxKolEleInEle= 16;// Максимальное количество Обьектов в Элементе
 
   MaxKOlVerInMir=1024*64;//Максимальное количество Вершин в игровом мире
   MaxKOlLinInMir=1024*64;//Максимальное количество Линий в игровом мире
   MaxKOlPloInMir=1024*64;//Максимальное количество Плоскостей в игровом мире
   MaxKOlEleInMir=1024*64;//Максимальное количество Элементов в игровом мире
   MaxKOlObjInMir=1024*64;//Максимальное количество Обьектов в игровом мире
-  MaxKOlAniInMir=1024* 1;// Максимальнео количество Анимаций в игровом мире
-  MaxKOlScrInMir=1024* 1;// Максимальнео количество скриптов в игровом мире
+  MaxKOlAniInMir=1024* 4;// Максимальнео количество Анимаций в игровом мире
+  MaxKOlScrInMir=1024* 4;// Максимальнео количество скриптов в игровом мире
   MaxKOlPriInMir=MaxKOlVerInMir+MaxKOlLinInMir+MaxKOlPloInMir+MaxKOlEleInMir+
                  MaxKOlObjInMir;// Иаксимальнео количество примитивово
 
@@ -153,16 +154,16 @@ const {Базовые Константы      ===========================}{%Regi
   MinKolDelPlos=1024*4;// Минимальный размер очереди на удаление Плоскотей
   MinKolDelEles=1024*4;// Минимальный размер очереди на удаление Элементов
   MinKolDelObjs=1024*4;// Минимальный размер очереди на удаление Обьектов
-  MinKolDelAnis=1024*4;// Минимальный размер очереди на удаление Анимаций
-  MinKolDelScrs=1024*4;// Минимальный размер очереди на удаление Скриптов
+  MinKolDelAnis=1024*1;// Минимальный размер очереди на удаление Анимаций
+  MinKolDelScrs=1024*1;// Минимальный размер очереди на удаление Скриптов
 
-  MaxKolDelVers=1024*64;// Максимальный размер очереди на удаление Вершин
-  MaxKolDelLins=1024*64;// Максимальный размер очереди на удаление Линий
-  MaxKolDelPlos=1024*64;// Максимальный размер очереди на удаление Плоскотей
-  MaxKolDelEles=1024*64;// Максимальный размер очереди на удаление Элементов
-  MaxKolDelObjs=1024*64;// Максимальный размер очереди на удаление Обьектов
-  MaxKolDelAnis=1024*64;// Минимальный размер очереди на удаление Анимаций
-  MaxKolDelScrs=1024*64;// Минимальный размер очереди на удаление Скриптов
+  MaxKolDelVers=1024*8;// Максимальный размер очереди на удаление Вершин
+  MaxKolDelLins=1024*8;// Максимальный размер очереди на удаление Линий
+  MaxKolDelPlos=1024*8;// Максимальный размер очереди на удаление Плоскотей
+  MaxKolDelEles=1024*8;// Максимальный размер очереди на удаление Элементов
+  MaxKolDelObjs=1024*8;// Максимальный размер очереди на удаление Обьектов
+  MaxKolDelAnis=1024*8;// Минимальный размер очереди на удаление Анимаций
+  MaxKolDelScrs=1024*8;// Минимальный размер очереди на удаление Скриптов
 
   MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
@@ -1543,7 +1544,7 @@ end;
 TYPE TAniS=CLASS
 KOLA:Longint;
 KOLD:Longint;
-AniS:Array[1..MaxKOlScrInMir] of TAni;
+AniS:Array[1..MaxKOlAniInMir] of TAni;
 DELA:Array[1..MaxKolDelScrs ] of TAni;
 Function    AddA(iAni:TAni):TAni;
 procedure   AddD(iAni:TAni);
@@ -1963,7 +1964,7 @@ Co:=Co+l.zna;
 L:=l.nex;
 end;
 end;
-Writeln(co);
+Form15.PRI(co);
 end;
 //------------------------------------------------------------------------------
 Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
@@ -2057,7 +2058,7 @@ begin
 L:=E.BLO;
 While L<>Nil Do
  begin
- Writeln(O+L.TXT);
+ form15.memo1.Lines.add(O+L.TXT);
  if l.Blo<>Nil Then ViewElem(l,O+' ');
  L:=L.Nex;
  end;
@@ -2068,8 +2069,8 @@ PRG.VlogitSc('(',')');
 PRG.VlogitSc('{','}');
 PRG.VlogitPA;
 PRG.VlogitBl;
-PRG.VlogitMA('+-');
 PRG.VlogitMA('*/');
+PRG.VlogitMA('+-');
 PRG.VlogitMA('<>');
 PRG.VlogitMA('=');
 end;
@@ -3129,6 +3130,7 @@ lD:=lPlo.VERS[4].Rea;
 center(la,lb,lc,ld,0);
 I_RefAllForm;
 end;
+I_AddVerMar:=Nil;
 end;
 function   I_AddVerLan(iEle:Pointer):Pointer;// Создает Ландшафтные вершины
 Var
@@ -3171,6 +3173,7 @@ end;
 
 I_RefAllForm;
 end;
+I_AddVerLan:=Nil;
 end;
 function   I_AddVer(iEle:Pointer):Pointer;// Добавляет Вершину
 Var
@@ -3274,10 +3277,18 @@ nAni:=Nil;
 lSelObjs:=MirSels.SELOBJS;
 if lSelObjs.KOl=2 then begin
 G_Change:=true;
+
+// Следующие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
 I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),nAni.TXT);
 MirAnis.AddA(nAni);
+// Предыдущие состояние
+nAni:=TAni.Create;
+nAni.Nam:=I_NewNamiDd('A ');
+I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),nAni.TXT);
+MirAnis.AddA(nAni);
+
 I_RefAllForm;
 I_AddAni:=nAni;
 end;
@@ -3294,7 +3305,17 @@ MirScrs.AddS(nScr);
 I_RefAllForm;
 I_AddScr:=nScr;
 end;
-
+function   I_RUN(iScr:Pointer;iMemo:TMemo):POinter;// Выполнить скрипт
+var lScr:TScr;
+begin
+lScr:=TScr(iScr);
+if lScr.PRG<>nil Then lScr.PRG.Cle;
+lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
+lScr.ProgStru;// Формирование структуры программы
+//lScr.ViewElem(lScr.PRG,''); Для отладки вывод структуры
+lScr.PRG.TRUNS;
+I_RUN:=Nil;
+end;
 {%EndRegion}
 var   {----------------------- Удалание  примитивов   ===}{%Region /FOLD }
                                                           F_Reg11:Longint;
@@ -3653,7 +3674,7 @@ iStr:=iStr+'G('+IntToStr(iVer.COL.G)+')';// Цвет Зеленый
 iStr:=iStr+'B('+IntToStr(iVer.COL.B)+')';// Цвет Голубой
 iStr:=iStr+'A('+IntToStr(iVer.COL.A)+')';// Прозрачность
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 
 end;
 Procedure I_TLIN_PUT_01(iLin:TLin;var iStr:Ansistring);
@@ -3670,7 +3691,7 @@ iStr:=iStr+'A('+IntToStr(iLin.COL.A)+')';// Прозрачность
 iStr:=iStr+'e('+iLin.VERS[1].NAm+')';// Вершина 1
 iStr:=iStr+'f('+iLin.VERS[2].NAm+')';// Вершина 2
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 
 end;
 Procedure I_TPLO_PUT_01(iPlo:TPLo;var iStr:Ansistring);
@@ -3689,7 +3710,7 @@ iStr:=iStr+'b('+iPlo.VERS[2].NAm+')';// Вершина 2
 iStr:=iStr+'c('+iPlo.VERS[3].NAm+')';// Вершина 3
 iStr:=iStr+'d('+iPlo.VERS[4].NAm+')';// Вершина 4
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 
 end;
 Procedure I_TELE_PUT_01(iEle:TEle;var iStr:Ansistring);
@@ -3710,7 +3731,7 @@ iStr:=iStr+'G('+IntToStr(iEle.COL.G)+')';// Цвет Зеленый
 iStr:=iStr+'B('+IntToStr(iEle.COL.B)+')';// Цвет Голубой
 iStr:=iStr+'A('+IntToStr(iEle.COL.A)+')';// Прозрачность
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 
 for f:=1 to iEle.KOlV do
 if NOT iEle.Vers[f].DEL THEN I_TVER_PUT_01(iEle.Vers[f],iStr);
@@ -3739,7 +3760,7 @@ iStr:=iStr+'G('+IntToStr(iObj.COL.G)+')';// Цвет Зеленый
 iStr:=iStr+'B('+IntToStr(iObj.COL.B)+')';// Цвет Голубой
 iStr:=iStr+'A('+IntToStr(iObj.COL.A)+')';// Прозрачность
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 
 for f:=1 to iObj.KOlV do
 if NOT iObj.Vers[f].DEL Then I_TVER_PUT_01(iObj.Vers[f],iStr);
@@ -3761,16 +3782,16 @@ if iVer.TIP=T_LIN THEN I_TLIN_PUT_01(TLin(iVer),iStr) else
 if iVer.TIP=T_PLO THEN I_TPLO_PUT_01(TPlo(iVer),iStr) else
 if iVer.TIP=T_ELE THEN I_TELE_PUT_01(TELE(iVer),iStr) else
 if iVer.TIP=T_OBJ THEN I_TOBJ_PUT_01(TObj(iVer),iStr) ;
-iStr:=iStr+CR;
-iStr:=iStr+CR;
+iStr:=iStr+LN;
+iStr:=iStr+LN;
 end;
 Procedure I_OBJS_PUT_01(var iStr:Ansistring);
 var f:Longint;
 begin
 for f:=1 to MirObjs.KOLO do
 if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
-iStr:=iStr+CR;
-iStr:=iStr+CR;
+iStr:=iStr+LN;
+iStr:=iStr+LN;
 end;
 
 // Сравнение структур
@@ -3788,6 +3809,26 @@ if iver1.COL.A<>iver2.COL.A then rez:=false;
 I_RAV_VER:=Rez;
 end;
 function  I_RAV_ELE(iEle1,iEle2:TEle):Boolean;
+var
+lVer:Tver;
+lEle:Tele;
+Rez:Boolean;
+F:Longint;
+begin
+Rez:=true;
+if iEle1.LOC.x <>iEle2.LOC.x  then rez:=false;
+if iEle1.LOC.y <>iEle2.LOC.y  then rez:=false;
+if iEle1.LOC.z <>iEle2.LOC.z  then rez:=false;
+if iEle1.EUGL.x<>iEle2.EUGL.x then rez:=false;
+if iEle1.EUGL.y<>iEle2.EUGL.y then rez:=false;
+if iEle1.EUGL.z<>iEle2.EUGL.z then rez:=false;
+if iEle1.COL.R <>iEle2.COL.R  then rez:=false;
+if iEle1.COL.G <>iEle2.COL.G  then rez:=false;
+if iEle1.COL.B <>iEle2.COL.B  then rez:=false;
+if iEle1.COL.A <>iEle2.COL.A  then rez:=false;
+I_RAV_Ele:=Rez;
+end;
+function  I_RAV_ELES(iEle1,iEle2:TEle):Boolean;
 var
 lVer:Tver;
 lEle:Tele;
@@ -3821,7 +3862,7 @@ f:=1;while (f<=iEle2.KOlE) and (rez=true) do
      f:=f+1;
      end;
 //--------------------------------------------
-I_RAV_Ele:=Rez;
+I_RAV_ElES:=Rez;
 end;
 
 // Сохраниение анимации
@@ -3846,7 +3887,7 @@ if iVer.COL.G<>lVer.COL.G then iStr:=iStr+'G('+IntToStr(iVer.COL.G)+')';
 if iVer.COL.B<>lVer.COL.B then iStr:=iStr+'B('+IntToStr(iVer.COL.B)+')';
 if iVer.COL.A<>lVer.COL.A then iStr:=iStr+'A('+IntToStr(iVer.COL.A)+')';
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
 end;
 
 end;
@@ -3856,8 +3897,9 @@ lver:Tver;
 lEle:Tele;
 begin
 lEle:=I_FIN_ELE(iObj,iEle.NAM);
-if not I_RAV_ELE(lEle,iEle) then begin
+if not I_RAV_ELES(lEle,iEle) then begin
 
+if not I_RAV_ELE(lEle,iEle) then begin
 iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю имя
 
 if lEle.LOC.X<>iEle.LOC.X then iStr:=iStr+'X('+InString(iEle.LOC.X)+')';// Координаты вершины X
@@ -3873,16 +3915,15 @@ if lEle.COL.G<>iEle.COL.G then iStr:=iStr+'G('+IntToStr(iEle.COL.G)+')';// Цв�
 if lEle.COL.B<>iEle.COL.B then iStr:=iStr+'B('+IntToStr(iEle.COL.B)+')';// Цвет Голубой
 if lEle.COL.A<>iEle.COL.A then iStr:=iStr+'A('+IntToStr(iEle.COL.A)+')';// Прозрачность
 
-iStr:=iStr+CR;
+iStr:=iStr+LN;
+end;
 
 for f:=1 to iEle.KOlV do
 if NOT iEle.Vers[f].DEL THEN I_TVER_ANI_01(iObj,iEle.Vers[f],iStr);
 
 for f:=1 to iEle.KOlE do
-if NOT iEle.Eles[f].DEL THEN begin
-iStr:=iStr+'E('+iEle.NAM+')';// Сохраняю Текущий контекст
-I_TELE_ANI_01(iObj,iEle.Eles[f],iStr);
-end;
+if NOT iEle.Eles[f].DEL THEN I_TELE_ANI_01(iObj,iEle.Eles[f],iStr);
+
 
 end;
 end;
@@ -3891,8 +3932,8 @@ var f:Longint;
 begin
 for f:=1 to iObj2.KOlE do
 if NOT iObj2.Eles[f].DEL Then begin
-iStr:=iStr+'O(self)';// Сохраняю Текущий контекст
-I_TELE_ANI_01(iObj1,iObj2.Eles[f],iStr);
+iStr:=iStr+'O(self)'+LN;// Сохраняю Текущий контекст
+I_TELE_ANI_01(iObj2,iObj1.Eles[f],iStr);
 end;
 end;
 
@@ -4374,19 +4415,19 @@ end;
 procedure I_SET_ANIMATION(iAni:TCheckListBox);
 var
 fa,fo:Longint;
-lSelAnis:TSels;
+lSelObjs:TSels;
 lAni:TAni;
 sAni:AnsiString;
 begin
-lSelAnis:=MirSels.SELAniS;
+lSelObjs:=MirSels.SELObjS;
 for fa:=1 to iAni.Items.count-1 do
 if iAni.Selected[fa]     then
-for fo:=1 to lSelAnis.KOl do begin
+for fo:=1 to lSelObjs.KOl do begin
 lAni:=TAni(iAni.Items.Objects[fa]);
-sAni:='O('+lSelAnis.Sels[fo].NAM+')'+lAni.TXT;
+sAni:='O('+lSelObjs.Sels[fo].NAM+')'+lAni.TXT;
 I_SCENA_KAD_01(sAni);
 end;
-lSelAnis.free;
+lSelObjs.free;
 end;
 
 procedure I_SaveScena(iNamFile:Ansistring);
@@ -5418,29 +5459,24 @@ procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   halt;
 end;
-
 procedure TForm3.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
      i_CLOSE;
 end;
-
 procedure TForm3.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
   );
 begin
   //showmessage(intToStr(key));
 end;
-
 procedure TForm3.FormKeyPress(Sender: TObject; var Key: char);
 begin
 
 
 end;
-
 procedure TForm3.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if key=46 then I_DelDel(form4.Act);
 end;
-
 procedure TForm3.OpenGLControl1Click(Sender: TObject);
 begin
 
@@ -5449,11 +5485,6 @@ procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
 begin
   DBUT:=true;
 end;
-
-
-
-
-
 procedure TForm3.OpenGLControl1Resize(Sender: TObject);
 begin
   glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем
@@ -5510,7 +5541,4 @@ end.
 
 
 // 1.Чай 5 мин
-// 3.Пропуск () "" '' {} и неизвестных знаков
-// 4.Добавить сворачивание блоков       { }
-// 5.Создаить окно найтроек
 

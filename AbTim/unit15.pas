@@ -8,10 +8,14 @@ type { TForm15 } TForm15 = class(TForm)
   private
 
   public
-
+  procedure PRI(iStr:Ansistring);
   end;
 var Form15: TForm15;
 implementation {$R *.lfm}
+procedure TForm15.PRI(iStr:Ansistring);
+begin
+memo1.lines.add(iStr);
+end;
 
 end.
 

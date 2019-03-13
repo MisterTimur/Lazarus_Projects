@@ -1,11 +1,12 @@
 object Form12: TForm12
-  Left = 297
+  Left = 350
   Height = 240
-  Top = 324
+  Top = 209
   Width = 320
   Caption = 'Form12'
   ClientHeight = 240
   ClientWidth = 320
+  FormStyle = fsStayOnTop
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
@@ -49,9 +50,17 @@ object Form12: TForm12
     Top = 50
     Width = 211
     Align = alClient
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Height = -19
+    Font.Name = 'Consolas'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
     Lines.Strings = (
       'Memo1'
     )
+    OnChange = Memo1Change
+    ParentFont = False
+    ScrollBars = ssBoth
     TabOrder = 3
   end
 end

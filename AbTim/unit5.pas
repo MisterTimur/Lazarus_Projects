@@ -1,7 +1,7 @@
 unit Unit5;{$mode objfpc}{$H+}interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, Menus,Unit3,unit6,unit7,unit8,unit13,StdCtrls;
+  CheckLst, Menus,Unit3,unit6,unit7,unit8,unit12,unit13,StdCtrls;
 type
 
   { TForm5 }
@@ -28,6 +28,7 @@ type
     Splitter2: TSplitter;
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox2DblClick(Sender: TObject);
     procedure CheckListBox3DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -153,6 +154,14 @@ begin
  for f:=1 to CheckListBox1.items.Count-1 do
  I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
+
+procedure TForm5.CheckListBox2DblClick(Sender: TObject);
+begin
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then
+  U_OpenAnimation(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+end;
+
 procedure TForm5.CheckListBox3DblClick(Sender: TObject);
 begin
   if CheckListBox3.itemindex<CheckListBox3.items.count then

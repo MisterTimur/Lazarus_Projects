@@ -20,11 +20,6 @@ var Form13: TForm13;
 procedure U_OpenScript(iScr:Pointer);
 function  I_FindFormScr(iScr:Pointer):Tform13;// Ищим форму с скриптом
 implementation {$R *.lfm}
-procedure TForm13.U_RefreshScr;
-begin
-I_GetN(Scr,Edit1);
-I_GetT(Scr,memo1);
-end;
 function  I_FindFormScr(iScr:Pointer):Tform13;// Ищим форму с скриптом
 var Rez:Tform13;f:Longint;
 begin
@@ -45,6 +40,11 @@ begin
   lForm13.Scr:=iScr;
   lForm13.U_RefreshScr;
   end else I_FindFormScr(iScr).SetFocus; end;
+procedure TForm13.U_RefreshScr;
+begin
+I_GetN(Scr,Edit1);
+I_GetT(Scr,memo1);
+end;
 procedure TForm13.Edit1Change(Sender: TObject);
 begin
   I_SetN(Scr,Edit1);

@@ -51,10 +51,17 @@ object Form13: TForm13
     Top = 50
     Width = 295
     Align = alClient
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Height = -19
+    Font.Name = 'Consolas'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
     Lines.Strings = (
       'Memo1'
     )
     OnChange = Memo1Change
+    ParentFont = False
+    ScrollBars = ssBoth
     TabOrder = 3
   end
 end
