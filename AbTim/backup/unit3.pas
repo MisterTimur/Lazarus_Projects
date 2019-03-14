@@ -116,7 +116,6 @@ procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает ко
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
 function  I_AddVerLan(iEle:Pointer):Pointer;
 function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
-Procedure I_SCENA_ADD_01(var iStr:Ansistring);
 procedure I_DelDel(iPri:POinter);
 procedure I_CLOSE;
 
@@ -556,6 +555,24 @@ var   {Базовые функции        ===========================}{%Region
       I_Del_Spac(iPos,iStr);
       I_GetSC:=Rez;
       end;
+      function  I_GetKa   (var iPos:Longint;var iStr:Ansistring):Ansistring;
+      var Rez:Ansistring; // Читает занчение в скобке
+      begin
+      Rez:='';
+      I_Del_Spac(iPos,iStr);
+      if iStr[iPos]='"' then begin
+        inc(iPos);
+        while (iStr[iPos]<>'"') and (length(iStr)>=iPos) do
+        begin REz:=REz+iStr[iPos];inc(iPos);end;
+        if (iStr[iPos]<>'"') or (length(iStr)<iPos) Then
+        ERR(' I_GetKa   ');
+        inc(iPos)
+      end else ERR('I_GetKa    ');
+      I_Del_Spac(iPos,iStr);
+      I_GetKA:=Rez;
+      end;
+
+
       function  NewIdd:RLon;// Генерирует уникальный IDD
       begin
       GIDD:=GIDD+1;
@@ -3286,7 +3303,7 @@ MirAnis.AddA(nAni);
 // Предыдущие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
-I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),nAni.TXT);
+I_TOBJ_ANI_01(TObj(lSelObjs.SELS[1]),TObj(lSelObjs.SELS[2]),nAni.TXT);
 MirAnis.AddA(nAni);
 
 I_RefAllForm;
@@ -3295,7 +3312,21 @@ end;
 lSelObjs.free;
 nAni:=nAni;
 end;
-function   I_AddScr:Pointer;// Добавить скрипт
+function   I_AddPAn:Pointer;// Добавить пустую анимацию
+var
+nAni:TAni;
+begin
+nAni:=Nil;
+G_Change:=true;
+nAni:=TAni.Create;
+nAni.Nam:=I_NewNamiDd('A ');
+I_RefAllForm;
+I_AddPAn:=nAni;
+end;
+lSelObjs.free;
+nAni:=nAni;
+end;
+function   I_AddScr:Pointer;// Добавить пустой скрипт
 var nScr:TScr;
 begin
 G_Change:=true;
@@ -3305,6 +3336,16 @@ MirScrs.AddS(nScr);
 I_RefAllForm;
 I_AddScr:=nScr;
 end;
+function   I_AddPSc:Pointer;// Добавить пустой скрипт
+var nScr:TScr;
+begin
+G_Change:=true;
+nScr:=TScr.Create;
+nScr.Nam:=I_NewNamiDd('S ');
+MirScrs.AddS(nScr);
+I_RefAllForm;
+I_AddPSc:=nScr;
+end;
 function   I_RUN(iScr:Pointer;iMemo:TMemo):POinter;// Выполнить скрипт
 var lScr:TScr;
 begin
@@ -3312,7 +3353,7 @@ lScr:=TScr(iScr);
 if lScr.PRG<>nil Then lScr.PRG.Cle;
 lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
 lScr.ProgStru;// Формирование структуры программы
-lScr.ViewElem(lScr.PRG,'');
+//lScr.ViewElem(lScr.PRG,''); Для отладки вывод структуры
 lScr.PRG.TRUNS;
 I_RUN:=Nil;
 end;
@@ -3574,6 +3615,32 @@ end;
 var   {----------------------- ПОиск примитива        ===}{%Region /FOLD }
                                                            G_Reg11:Longint;
 
+function  I_FIN_ANI(          iNam:Ansistring):TAni;// Ищит Анимацию
+var
+Rez:TAni;
+F:Longint;
+begin
+          rez:=Nil;
+          f:=1;while(f<=MirAnis.KOlA)and(REz=NIl)do
+          if (not MirAnis.AniS[f].DEL) and (MirAnis.AniS[f].NAM=iNam)
+          then Rez:=MirAnis.ANiS[f]
+          else f:=f+1;
+          I_FIN_ANI:=Rez;
+end;
+function  I_FIN_SCR(          iNam:Ansistring):TScr;// Ищит Скрипт
+var
+Rez:TScr;
+F:Longint;
+begin
+          rez:=Nil;
+          f:=1;while(f<=MirScrs.KOlS)and(REz=NIl)do
+          if (not MirScrs.ScrS[f].DEL) and (MirScrs.ScrS[f].NAM=iNam)
+          then Rez:=MirScrs.ScrS[f]
+          else f:=f+1;
+          I_FIN_Scr:=Rez;
+end;
+
+
 function  I_FIN_OBJ(          iNam:Ansistring):TObj;// Ищит Обьект
 var
 Rez:Tobj;
@@ -3794,6 +3861,40 @@ iStr:=iStr+LN;
 iStr:=iStr+LN;
 end;
 
+
+Procedure I_TANI_PUT_01(iAni:TAni;var iStr:Ansistring);// Записать анимацию
+var f:Longint;
+begin
+iStr:=iStr+'K('+iAni.NAM+')';// Сохраняю имя скрипта
+iStr:=iStr+ '"'+iAni.txt+'"';// Сохраняю текст Анимации
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+Procedure I_TSCR_PUT_01(iScr:TScr;var iStr:Ansistring);// Записать Скрипт
+begin
+iStr:=iStr+'S('+iScr.NAM+')';// Сохраняю имя скрипта
+iStr:=iStr+ '"'+iScr.txt+'"';// Сохраняю текст скрипта
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+
+Procedure I_ANIS_PUT_01(var iStr:Ansistring);// Сохраняет анимации
+var f:Longint;
+begin
+for f:=1 to MirAnis.KOLA do
+if NOT MirAnis.ANIS[f].DEL Then I_TANI_PUT_01(MirAnis.ANIS[f],iStr);
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+Procedure I_SCRS_PUT_01(var iStr:Ansistring);// Сохраняет скрипты
+var f:Longint;
+begin
+for f:=1 to MirSCRs.KOLS do
+if NOT MirScrs.SCRS[f].DEL Then I_TSCR_PUT_01(MirScrs.SCRS[f],iStr);
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+
 // Сравнение структур
 function  I_RAV_VER(iVer1,iVer2:TVer):Boolean;
 var Rez:Boolean;
@@ -3941,14 +4042,16 @@ end;
 var   {----------------------- Сохранение и загрузка  ===}{%Region /FOLD }
                                                            I_Reg11:Longint;
 
-Procedure I_SCENA_ADD_01(var iStr:Ansistring);
+function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;// дублирует обьекты
 var
 lPos:Longint;
 lNam:Ansistring;
-lAni:Ansistring;
+lTxt:Ansistring;
 lPri:TVER;
 lVer:TVer;
 fVer:TVer;
+fAni:TAni;
+fScr:TScr;
 lLin:TLin;
 fLin:TLin;
 lPlo:TPlo;
@@ -3957,166 +4060,13 @@ lEle:TEle;
 fEle:TEle;
 lObj:Tobj;
 fObj:Tobj;
+LAni:TAni;
+LScr:TScr;
 begin
 lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;
 While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
-// Созаю елси нету таких элементов если есть назначаю текущим ------
-     if iStr[lPos]='S' Then begin INC(lPos);// Далее следует кадр анимации
-     // Далее следует кадр анимации для загрузки
-     I_GetSC(lPos,iStr);
-     while (iStr[lpos]<>'.') and (lpos<length(iStr)) do
-     if iStr[lpos]='('
-     then lAni:=lAni+I_GetSC(lPos,iStr)
-     else begin lAni:=iStr[lPos];lpos:=lpos+1;end;
-     end
-else if iStr[lPos]='O' Then begin INC(lPos);
-     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     if(lNam='self')
-     then begin
-          if (lObj=nil) then ERR('Ни один обьект еще несоздан');
-          lPri:=Tver(lObj);// Указываю текущим
-          end
-     else begin
-          fObj:=I_FIN_Obj(lNam);// Ищу обьект
-          if fObj=nil then begin // Если такого обьекта не существует
-                      lObj:=TObj(I_AddObj); // Создаю его
-                      lObj.Nam:=lNam;// Назанчаю имя
-                      end
-                      else lObj:=fObj;
-          lPri:=Tver(lObj);// Указываю текущим
-          end
-     end
-else if iStr[lPos]='E' Then begin INC(lPos);
-     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     fEle:=I_FIN_Ele(lObj,lNam);// Ищю Элемент с таким же именем
-     if fEle=nil then begin
-                 lEle:=TEle(i_AddEle(lPri));// Если нету создаю элемент
-                 lEle.Nam:=lNam;// Указываю имя
-                 end
-                 else lEle:=fEle;
-     lPri:=lEle;// Назначаю текущим
-     end
-else if iStr[lPos]='L' Then begin INC(lPos);
-     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     fLin:=I_FIN_Lin(lObj,lNam);// Ищю Линию с таким же именем
-     if fLin=nil then begin
-                 lLin:=TLin(I_AddPLi(lObj));// Если нету создает Линию
-                 lLin.Nam:=lNam;// Указываю имя
-                 end
-                 else lLin:=fLin;
-     lPri:=lLin;// Назначаю текущим
-     end
-else if iStr[lPos]='P' Then begin INC(lPos);
-     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     fPlo:=I_FIN_Plo(lObj,lNam);// Ищю плоскость с таким же именем
-     if fPlo=nil then begin
-                      lPlo:=TPlo(I_AddPPl(lObj));// Если нету создает плоскость
-                      lPlo.Nam:=lNam;// Указываю имя
-                      end
-                      else lPlo:=fPlo;
-     lPri:=lPlo;// Назначаю текущим
-     end
-else if iStr[lPos]='V' Then begin INC(lPos);
-     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
-     fVer:=I_FIN_Ver(lPri,lNam);// Ищю вершину с тким именем
-     if fVer=Nil then begin
-                 lVer:=TVer(I_AddVer(lPri));// Добавляю вершину
-                 lVer.Nam:=lNam;// Указываю имя
-                 end
-                 else lVer:=fVer;
-     lPri:=lVer;// Назанчаю текущитм
-     end
-// Имя          ----------------------------------------------------
-else if iStr[lPos]='N' Then begin INC(lPos);
-     lPri.NAm:=I_GetSC(lPos,iStr);
-     end
-else if iStr[lPos]='M' Then begin INC(lPos);
-     lPri.MAR:=StrToBool(I_GetSC(lPos,iStr));
-     end
-// Коринаты     ----------------------------------------------------
-else if iStr[lPos]='X' Then begin INC(lPos);
-     lPri.LOC.X:=inFloat(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='Y' Then begin INC(lPos);
-     lPri.LOC.Y:=inFloat(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='Z' Then begin INC(lPos);
-     lPri.LOC.Z:=inFloat(I_GetSC(lPos,iStr))
-     end
-// Цвета        ----------------------------------------------------
-else if iStr[lPos]='R' Then begin INC(lPos);
-     lPri.COL.R:=StrToInt(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='G' Then begin INC(lPos);
-     lPri.COL.G:=StrToInt(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='B' Then begin INC(lPos);
-     lPri.COL.B:=StrToInt(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='A' Then begin INC(lPos);
-     lPri.COL.A:=StrToInt(I_GetSC(lPos,iStr))
-     end
-// Углы наклона ----------------------------------------------------
-else if iStr[lPos]='x' Then begin INC(lPos);
-     I_GetEl(lPri).EUGL.X:=inFloat(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='y' Then begin INC(lPos);
-     I_GetEl(lPri).EUGL.Y:=inFloat(I_GetSC(lPos,iStr))
-     end
-else if iStr[lPos]='z' Then begin INC(lPos);
-     I_GetEl(lPri).EUGL.Z:=inFloat(I_GetSC(lPos,iStr))
-     end
-// Имена вершмин для плоскости -------------------------------------
-else if iStr[lPos]='a' Then begin INC(lPos);
-     lPlo.VERS[1]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='b' Then begin INC(lPos);
-     lPlo.VERS[2]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='c' Then begin INC(lPos);
-     lPlo.VERS[3]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='d' Then begin INC(lPos);
-     lPlo.VERS[4]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='e' Then begin INC(lPos);
-     lLin.VERS[1]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='f' Then begin INC(lPos);
-     lLin.VERS[2]:=I_FIN_VER(lPri,I_GetSC(lPos,iStr));
-     end
-else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
-end
-end;
-function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
-var
-lPos:Longint;
-lNam:Ansistring;
-lAni:Ansistring;
-lPri:TVER;
-lVer:TVer;
-fVer:TVer;
-lLin:TLin;
-fLin:TLin;
-lPlo:TPlo;
-fPlo:TPlo;
-lEle:TEle;
-fEle:TEle;
-lObj:Tobj;
-fObj:Tobj;
-begin
-lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;
-While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
-// Созаю елси нету таких элементов если есть назначаю текущим ------
-     if iStr[lPos]='S' Then begin INC(lPos);// Далее следует кадр анимации
-     // Далее следует кадр анимации для загрузки
-     I_GetSC(lPos,iStr);
-     while (iStr[lpos]<>'.') and (lpos<length(iStr)) do
-     if iStr[lpos]='('
-     then lAni:=lAni+I_GetSC(lPos,iStr)
-     else begin lAni:=iStr[lPos];lpos:=lpos+1;end;
-     end
-else if iStr[lPos]='O' Then begin INC(lPos);
+
+     if iStr[lPos]='O' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
      if(lNam='self')
      then begin
@@ -4144,6 +4094,38 @@ else if iStr[lPos]='E' Then begin INC(lPos);
                  lEle.Nam:=lNam;// Указываю имя
                  end else lEle:=fEle;
      lPri:=lEle;// Назначаю текущим
+     end
+else if iStr[lPos]='K' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя анимации
+     lTxt:=I_GetKa(lPos,iStr);// Запоминаю Текст анимации
+     fAni:=I_FIN_Ani(lNam);// Ищу Анимацию
+     if fAni=nil then begin // Если такого анимация не существует
+                 lAni:=TAni(I_AddPAn); // Создаю его
+                 lAni.Nam:=lNam;// Назанчаю имя
+                 lAni.Txt:=lTxt;// Назанчаю Текст
+                 end
+                 else begin
+                 lAni:=TAni(I_AddPAn); // Создаю его
+                 lAni.Nam:=I_NewNamIdd(lNam);// Назанчаю Новое имя
+                 lAni.Txt:=lTxt;// Назначаю  текст
+                 end;
+     lAni:=TAni(lAni);// Указываю текущим
+     end
+else if iStr[lPos]='S' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя скрипта
+     lTxt:=I_GetKa(lPos,iStr);// Запоминаю Текст скрипта
+     fScr:=I_FIN_Scr(lNam);// Ищу Анимацию
+     if fScr=nil then begin // Если такого анимация не существует
+                 lScr:=TScr(I_AddPSc); // Создаю его
+                 lScr.Nam:=lNam;// Назанчаю имя
+                 lScr.Txt:=lTxt;// Назанчаю имя
+                 end
+                 else begin
+                 lScr:=TScr(I_AddPSc); // Создаю его
+                 lScr.Nam:=I_NewNamIdd(lNam);// Назанчаю новое имя
+                 lScr.Txt:=lTxt;// Назанчаю имя
+                 end;
+     lScr:=TScr(lScr);// Указываю текущим
      end
 else if iStr[lPos]='L' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
@@ -4239,11 +4221,12 @@ else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
 end;
 I_SCENA_DOU_01:=lObj;
 end;
-Procedure I_SCENA_KAD_01(var iStr:Ansistring);
+Procedure I_SCENA_KAD_01(var iStr:Ansistring);// Устанавливает кадр
 var
 R_O,R_P:Boolean;
 lPos:Longint;
 lNam:Ansistring;
+lTxt:Ansistring;
 lZna:Ansistring;
 lPri:TVER;
 lVer:TVer;
@@ -4258,7 +4241,7 @@ lObj:Tobj;
 fObj:Tobj;
 begin
 lPos:=1;lObj:=Nil;lEle:=Nil;lPlo:=Nil;lLin:=Nil;lVer:=Nil;R_O:=False;R_P:=False;
-While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
+While lPos<Length(iStr) do begin  I_Del_Spac(lPos,iStr);// ПРопускаю спец сим
 
      if iStr[lPos]='O' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
@@ -4292,6 +4275,14 @@ else if iStr[lPos]='E' Then begin INC(lPos);
                  lPri:=lEle;// Назначаю текущим
                  end;
      end;
+     end
+else if iStr[lPos]='K' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя анимации
+     lTxt:=I_GetKa(lPos,iStr);// Запоминаю Текст Анимации
+     end
+else if iStr[lPos]='S' Then begin INC(lPos);
+     lNam:=I_GetSC(lPos,iStr);// Запоминаю имя скрипта
+     lTxt:=I_GetKa(lPos,iStr);// Запоминаю Текст скрипта
      end
 else if iStr[lPos]='L' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя
@@ -4409,10 +4400,7 @@ else if iStr[lPos]='f' Then begin INC(lPos);
 else if iStr[lPos]='(' Then I_GetSC(lPos,iStr) else inc(lPos);
 end
 end;
-
-
-
-procedure I_SET_ANIMATION(iAni:TCheckListBox);
+procedure I_SET_ANIMATION(iAni:TCheckListBox);// Устанавливает анимацию
 var
 fa,fo:Longint;
 lSelObjs:TSels;
@@ -4429,22 +4417,23 @@ I_SCENA_KAD_01(sAni);
 end;
 lSelObjs.free;
 end;
-
-procedure I_SaveScena(iNamFile:Ansistring);
+procedure I_SaveScena(iNamFile:Ansistring);// Сохранение сцены
 var lStr:Ansistring;
 begin
-I_OBJS_PUT_01(lStr);
-StrToFile(iNamFile,lStr);
-G_Change:=false;
+I_OBJS_PUT_01(lStr);// Сохраняет все обьекты в сцене в виде строки
+I_ANIS_PUT_01(lStr);// Сохраняет все анимации в сцене в виде строки
+I_SCRS_PUT_01(lStr);// Сохраняет все скрипты в сцене в виде строки
+StrToFile(iNamFile,lStr);// Сохраняет Строку в Файл
+G_Change:=false;// Указывает что все изменения сохранены
 end;
-procedure I_LoadScena(iNamFile:Ansistring);
+procedure I_LoadScena(iNamFile:Ansistring);// Загрузка сцены
 var
 lStr:AnsiString;
 begin
-FileToStr(iNamFile,lStr);
+FileToStr(iNamFile,lStr);// Читает файл в строку
 I_ClearScena;// Очищаем сцену
-I_SCENA_DOU_01(lStr);
-G_Change:=false;
+I_SCENA_DOU_01(lStr);// Преобразет строку в Обьекты
+G_Change:=false;// Указываем что изменений нету
 end;
 
 {%EndRegion}

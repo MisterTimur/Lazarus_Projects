@@ -6,6 +6,7 @@ object Form15: TForm15
   Caption = 'Form15'
   ClientHeight = 207
   ClientWidth = 410
+  FormStyle = fsStayOnTop
   LCLVersion = '1.8.4.0'
   Visible = True
   object Panel1: TPanel

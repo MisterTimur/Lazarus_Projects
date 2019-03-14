@@ -1,6 +1,6 @@
 unit Unit4;{$mode objfpc}{$H+}interface uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  CheckLst, StdCtrls, Menus,UNit5,unit3, Types;
+  CheckLst, StdCtrls, Menus,UNit5,unit3,unit15, Types;
 type { TForm4 } TForm4 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
@@ -56,6 +56,7 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem4: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
+    MenuItem42: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -127,6 +128,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem40Click(Sender: TObject);
+    procedure MenuItem42Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -314,6 +316,12 @@ procedure TForm4.MenuItem40Click(Sender: TObject);
 begin
   I_DelDel(Act);
 end;
+
+procedure TForm4.MenuItem42Click(Sender: TObject);
+begin
+  form15.visible:=not form15.visible;
+end;
+
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
