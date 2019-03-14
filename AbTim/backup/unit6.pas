@@ -13,6 +13,7 @@ type
     CheckListBox4: TCheckListBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
+    Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;

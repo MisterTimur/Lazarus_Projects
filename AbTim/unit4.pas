@@ -10,6 +10,8 @@ type { TForm4 } TForm4 = class(TForm)
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit10: TEdit;
+    Edit11: TEdit;
+    Edit12: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
@@ -66,6 +68,8 @@ type { TForm4 } TForm4 = class(TForm)
     Panel1: TPanel;
     Panel10: TPanel;
     Panel11: TPanel;
+    Panel12: TPanel;
+    Panel13: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -87,6 +91,8 @@ type { TForm4 } TForm4 = class(TForm)
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
     procedure Edit10DblClick(Sender: TObject);
+    procedure Edit11DblClick(Sender: TObject);
+    procedure Edit12DblClick(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
@@ -361,8 +367,19 @@ end;
 procedure TForm4.Edit10DblClick(Sender: TObject);
 begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
-  I_SETM(Act,edit10);
+  I_SETM(Act,edit10);// Маршрутный примитив
 end;
+
+procedure TForm4.Edit11DblClick(Sender: TObject);
+begin
+  if edit11.TExt='0' then edit11.TExt:='-1' else edit11.TExt:='0';
+  I_SETS(Act,edit11);// Статический ли обьект
+end;
+
+procedure TForm4.Edit12DblClick(Sender: TObject);
+begin
+end;
+
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin

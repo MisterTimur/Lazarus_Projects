@@ -81,6 +81,7 @@ procedure I_RefSpiScrs(             iLis:TCheckListBox);
 procedure I_GetN(iPri:Pointer;iEdit:TEdit);
 procedure I_GetT(iPri:Pointer;iMemo:TMemo);
 procedure I_GetM(iVer:Pointer;iEdit:TEdit);
+procedure I_GetS(iVer:Pointer;iEdit:TEdit);
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
 procedure I_GetY(iVer:Pointer;iEdit:TEdit);
 procedure I_GetZ(iVer:Pointer;iEdit:TEdit);
@@ -91,6 +92,7 @@ procedure I_GeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_GeUZ(iEle:Pointer;iEdit:TEdit);
 
 procedure I_SetM(iVer:Pointer;iEdit:TEdit);
+procedure I_SetS(iVer:Pointer;iEdit:TEdit);
 procedure I_SetT(iVer:Pointer;iMemo:TMemo);
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 procedure I_SetX(iVer:Pointer;iEdit:TEdit);
@@ -615,6 +617,9 @@ TYPE TVER=CLASS  // Опсиание вершиины
   TXT:RSTR;// Текст
   VIS:RBOL;// Видимость примитива
   VVI:RBOL;// Видимость примитива если он не мешает видеть персонажа
+  STA:RBOL;// Всегда перевычислять обьект
+  SHA:RBOL;// в обьекте произошли изменения нужно перевычислить
+
 
   SEL:RBOL;// ОБьект выделен для редактора нужно
   IDD:RLON;// Уникальный идентификатор
@@ -673,6 +678,8 @@ begin
   IDD:=NewIdD       ;// оплучаем уникальный идентификатор
   NOM:=0            ;// Номер в списке всех вершин
   TIP:=T_VER        ;// Тип Вершины
+  STA:=True         ;// Статический ли это обьект
+  SHA:=True         ;// Нужно перевычислить обьект
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -2586,6 +2593,7 @@ edit7.Enabled :=false;edit7.text :='';edit7.color :=clDefault;
 edit8.Enabled :=false;edit8.text :='';
 edit9.Enabled :=false;edit9.text :='';
 edit10.Enabled:=false;edit10.text:='';edit10.color:=clDefault;
+edit11.Enabled:=false;edit11.text:='';edit11.color:=clDefault;
 end
 else begin // Если Есть выбраный активный элемент
 // Читаюю координатиы
@@ -2596,6 +2604,7 @@ else begin // Если Есть выбраный активный элемент
  edit8.Enabled:=true;I_GETA(Act,Edit8);
  edit9.Enabled:=true;I_GETN(Act,Edit9);
 edit10.Enabled:=true;I_GETM(Act,edit10);
+edit11.Enabled:=true;I_GETS(Act,edit11);
 // Читаюю углы наклона
 if (TVer(Act).TIP=T_ELE)or(TVer(Act).TIP=T_OBJ)
 then begin // Включаю углы наклона
@@ -2672,6 +2681,13 @@ begin
 if (boolToStr(TVEr(iVer).MAR)<>iEdit.TEXT)  then begin
    if TVEr(iVer).MAR then iEdit.Color:=clred else iEdit.Color:=clDefault;
    iEdit.Text:=BoolToStr(TVEr(iVer).MAR);
+   end;
+end;
+procedure I_GetS(iVer:Pointer;iEdit:TEdit);
+begin
+if (boolToStr(TVEr(iVer).STA)<>iEdit.TEXT)  then begin
+   if TVEr(iVer).STA then iEdit.Color:=clred else iEdit.Color:=clDefault;
+   iEdit.Text:=BoolToStr(TVEr(iVer).STA);
    end;
 end;
 procedure I_GetX(iVer:Pointer;iEdit:TEdit);
@@ -2763,6 +2779,20 @@ if (boolToStr(TVEr(iVer).MAR)<>iEdit.TEXT) Then begin
 
 G_Change:=true;
 TVEr(iVer).MAR:=StrToBool(iEdit.TEXT);
+if TVEr(iVer).MAR THEN iEdit.Color:=clRed else iEdit.Color:=clDefault;
+I_RefreshActivePrimitiv;
+I_RefreshEditorPrimitiv(iVer);
+
+end;
+end;
+procedure I_SetS(iVer:Pointer;iEdit:TEdit);
+begin
+if iVer<>Nil Then
+if (boolToStr(TVEr(iVer).STA)<>iEdit.TEXT) Then begin
+
+G_Change:=true;
+TVEr(iVer).STA:=StrToBool(iEdit.TEXT);
+if TVEr(iVer).STA THEN iEdit.Color:=clRed else iEdit.Color:=clDefault;
 I_RefreshActivePrimitiv;
 I_RefreshEditorPrimitiv(iVer);
 
@@ -3305,12 +3335,11 @@ nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
 I_TOBJ_ANI_01(TObj(lSelObjs.SELS[1]),TObj(lSelObjs.SELS[2]),nAni.TXT);
 MirAnis.AddA(nAni);
-
 I_RefAllForm;
-I_AddAni:=nAni;
+
 end;
 lSelObjs.free;
-nAni:=nAni;
+I_AddAni:=nAni;
 end;
 function   I_AddPAn:Pointer;// Добавить пустую анимацию
 var
@@ -3318,13 +3347,12 @@ nAni:TAni;
 begin
 nAni:=Nil;
 G_Change:=true;
+// Следующие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
+MirAnis.AddA(nAni);
 I_RefAllForm;
 I_AddPAn:=nAni;
-end;
-lSelObjs.free;
-nAni:=nAni;
 end;
 function   I_AddScr:Pointer;// Добавить пустой скрипт
 var nScr:TScr;
@@ -3814,6 +3842,8 @@ var f:Longint;
 begin
 iStr:=iStr+'O('+iObj.NAM+')';// Сохраняю имя
 
+iStr:=iStr+'H('+boolToStr(iObj.STA)+')';// являеться ли примитив маршрутным
+
 iStr:=iStr+'X('+InString(iObj.LOC.X)+')';// Координаты вершины X
 iStr:=iStr+'Y('+InString(iObj.LOC.Y)+')';// Координаты вершины Y
 iStr:=iStr+'Z('+InString(iObj.LOC.Z)+')';// Координаты вершины Z
@@ -4165,6 +4195,9 @@ else if iStr[lPos]='N' Then begin INC(lPos);
 else if iStr[lPos]='M' Then begin INC(lPos);
      LPri.Mar:=StrToBool(I_GetSC(lPos,iStr));
      end
+else if iStr[lPos]='H' Then begin INC(lPos);
+     LPri.STA:=StrToBool(I_GetSC(lPos,iStr));
+     end
 // Коринаты     ----------------------------------------------------
 else if iStr[lPos]='X' Then begin INC(lPos);
      LPri.LOC.X:=inFloat(I_GetSC(lPos,iStr))
@@ -4329,6 +4362,10 @@ else if iStr[lPos]='M' Then begin INC(lPos);
      lZna:=I_GetSC(lPos,iStr);
      if R_O and R_P Then LPri.Mar:=StrToBool(lZna);
      end
+else if iStr[lPos]='H' Then begin INC(lPos);
+     lZna:=I_GetSC(lPos,iStr);
+     if R_O and R_P Then LPri.STA:=StrToBool(lZna);
+     end
 // Коринаты     ----------------------------------------------------
 else if iStr[lPos]='X' Then begin INC(lPos);
      lZna:=I_GetSC(lPos,iStr);
@@ -4429,11 +4466,19 @@ end;
 procedure I_LoadScena(iNamFile:Ansistring);// Загрузка сцены
 var
 lStr:AnsiString;
+f:longint;
 begin
 FileToStr(iNamFile,lStr);// Читает файл в строку
 I_ClearScena;// Очищаем сцену
 I_SCENA_DOU_01(lStr);// Преобразет строку в Обьекты
 G_Change:=false;// Указываем что изменений нету
+for f:=1 to MirObjs.KolO do
+if not MirObjs.OBJS[f].DEL then begin
+MirObjs.OBJS[f].O_MATH;
+MirObjs.OBJS[f].O_INIC;
+MirObjs.OBJS[f].SHA:=true;
+
+end;
 end;
 
 {%EndRegion}
@@ -4566,7 +4611,13 @@ end;
 procedure MATH;// Перевычисление  примитива
 var f:Longint;
 begin
-for f:=1 to MirObjs.KolO do MirObjs.OBJS[f].O_MATH;
+for f:=1 to MirObjs.KolO do
+if NOT MirObjs.OBJS[f].DEL then // Если обьекит не удален
+if (NOT MirObjs.OBJS[f].STA) or (MirObjs.OBJS[f].SHA)  Then
+begin // Если произошли изменеиня в обьекте
+MirObjs.OBJS[f].O_MATH;// перевычисление ОБьекта
+MirObjs.OBJS[f].SHA:=false;
+end;
 end;
 procedure GRAV;// ГРавитация
 var fo,fg,fv,fl,f1,f2:Longint;
@@ -4575,6 +4626,7 @@ begin
 //------------------------------------------------------------------------------
 // Какой обьект находиться в каком
 for fo:=1 to MirObjs.KOlO do if  not MirObjs.OBJS[fo].DEL then
+if  (not MirObjs.OBJS[fo].STA)or (MirObjs.OBJS[fo].SHA)then
 for fg:=1 to MirObjs.KOlO do if  not MirObjs.OBJS[fg].DEL then
 if (fg<>fo) then begin
 lPer:=MirObjs.OBJS[fo];
@@ -4595,9 +4647,9 @@ lDom:=MirObjs.OBJS[fg];
       end;
 end;
 //------------------------------------------------------------------------------
-// НА какой плоскости находиться обьект
-
+// НА какой плоскости находиться обьект Сброс
 for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
+if  (not MirObjs.OBJS[fo].STA)or (MirObjs.OBJS[fo].SHA)then
 if  MirObjs.Objs[fo].OPER then
 if  MirObjs.Objs[fo].GOb<>Nil Then
 if  MirObjs.Objs[fo].GPl<>Nil Then
@@ -4605,12 +4657,13 @@ if  not VhoditObjPlo3d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
 if  not VhoditObjPlo2d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
 MirObjs.Objs[fo].gpl:=nil;
 
-
-
+// Устновка высоты расположения обьекта на плоскости в 3д пространстве
 for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
+if  (not MirObjs.OBJS[fo].STA)or (MirObjs.OBJS[fo].SHA)then
 if  MirObjs.Objs[fo].OPER then
 if  MirObjs.Objs[fo].GOb<>Nil Then
 for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
+if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].MAR then
 if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
 if  VhoditObjPlo3d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
 MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
@@ -4625,11 +4678,15 @@ MirObjs.Objs[fo].LOC.Y+
 -MirObjs.Objs[fo].LOC.Y)/2;
 end;
 
+// Устновка высоты расположения обьекта на плоскости в 2д пространстве
+// Если неудалося нейти плоскость в 3D
 for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
+if  (not MirObjs.OBJS[fo].STA)or (MirObjs.OBJS[fo].SHA)then
 if  MirObjs.Objs[fo].OPER then
 if  MirObjs.Objs[fo].GOb<>Nil Then
 if  MirObjs.Objs[fo].GPl=Nil Then
 for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
+if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].MAR then
 if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
 if  VhoditObjPlo2d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
 MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
@@ -4644,27 +4701,34 @@ MirObjs.Objs[fo].LOC.Y+
 -MirObjs.Objs[fo].LOC.Y)/2;
 end;
 
-
-
-
 //------------------------------------------------------------------------------
 // Установка в какой плоскости находитсья мршрутная точка
-for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then
+for fo:=1 to MirObjs.KOlO do if not MirObjs.OBJS[Fo].DEL Then
+if  (not MirObjs.OBJS[fo].STA) or (MirObjs.OBJS[fo].SHA)then
 for fV:=1 to MirObjs.OBJS[Fo].KOlV do
 if not MirObjs.OBJS[Fo].VERS[fv].DEL Then
 if     MirObjs.OBJS[Fo].VERS[fv].MAR Then
 MirObjs.OBJS[Fo].VERS[fv].GPL:=FinPlos(MirObjs.OBJS[Fo].VERS[fv].REA);
 //------------------------------------------------------------------------------
 // Устнаовка маршрутных линий
-for fl:=1 to MirLins.KOlL do
-if not MirLins.LINS[fl].DEL Then
-if not MirLins.LINS[fl].VERS[1].DEL Then
-if not MirLins.LINS[fl].VERS[2].DEL Then
-if     MirLins.LINS[fl].VERS[1].MAR Then
-if     MirLins.LINS[fl].VERS[2].MAR Then
-       MirLins.LINS[fl].MAR:=true;
+//for fl:=1 to MirLins.KOlL do
+//if not MirLins.LINS[fl].DEL Then
+//if not MirLins.LINS[fl].VERS[1].DEL Then
+//if not MirLins.LINS[fl].VERS[2].DEL Then
+//if     MirLins.LINS[fl].VERS[1].MAR Then
+//if     MirLins.LINS[fl].VERS[2].MAR Then
+//       MirLins.LINS[fl].MAR:=true;
 //------------------------------------------------------------------------------
+for fo:=1 to MirObjs.KOlO do if not MirObjs.OBJS[Fo].DEL Then
+if  (not MirObjs.OBJS[fo].STA) or (MirObjs.OBJS[fo].SHA)then
+if not MirObjs.OBJS[fo].LINS[fl].DEL Then
+if not MirObjs.OBJS[fo].LINS[fl].VERS[1].DEL Then
+if not MirObjs.OBJS[fo].LINS[fl].VERS[2].DEL Then
+if     MirObjs.OBJS[fo].LINS[fl].VERS[1].MAR Then
+if     MirObjs.OBJS[fo].LINS[fl].VERS[2].MAR Then
+       MirObjs.OBJS[fo].LINS[fl].MAR:=true;
+
+
 //for fo:=1 to MirObjs.KOlO do
 //for f1:=1 to MirObjs.OBJS[FO].KOlV do
 //for f2:=1 to MirObjs.OBJS[FO].KOlV do
@@ -4900,9 +4964,6 @@ if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
 end;
 
 {%EndRegion}
-
-
-
 
 procedure I_EDITDRAWIDDEDI;// ОТрисо IDшник редктируемых   примитивов
 var f:LongWord;RC,SC:LongWord;
@@ -5261,8 +5322,6 @@ glEnable(GL_DEPTH_TEST);// включаю буфер глубины
 end;
 end;
 end;
-
-
 
 procedure TForm3.OpenGLControl1Paint(Sender: TObject);
 var Tr:QWord;lCap2:RCS3;

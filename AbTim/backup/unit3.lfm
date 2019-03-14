@@ -1,11 +1,11 @@
 object Form3: TForm3
   Left = 24
-  Height = 510
+  Height = 539
   Top = 31
-  Width = 921
+  Width = 861
   Caption = 'Form3'
-  ClientHeight = 510
-  ClientWidth = 921
+  ClientHeight = 539
+  ClientWidth = 861
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnKeyDown = FormKeyDown
@@ -15,9 +15,9 @@ object Form3: TForm3
   LCLVersion = '1.8.4.0'
   object OpenGLControl1: TOpenGLControl
     Left = 0
-    Height = 510
+    Height = 539
     Top = 0
-    Width = 921
+    Width = 861
     Align = alClient
     OnClick = OpenGLControl1Click
     OnDblClick = OpenGLControl1DblClick
