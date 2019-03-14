@@ -42,11 +42,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit3"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="4714"/>
-        <CursorPos X="31" Y="4724"/>
-        <FoldState Value=" T4202 T5lL010D1 p0+Y[H475QT]Dw5BC7 pj4xRB86 T8U211 TClNA26 pCj+B84]H3m303B piZj9078]9X]9C9]x0kM6F314[B4n609['48jU0d7[I4l00L[94bkN0C8[:4kC03[:620G6]9YjW04[a42kJ0G5]9AjX0M[R4g]\{2[A4d]JA9]9bjf07[k4Cjb0R3]IfjT0U3]IKkG0fD[{,5D097[j5B0C[+4ejN0B8]R1jV0D4]IXiG0J[94cjY0I7[\5O0A[j4ajG0A[I6H0B5[}55]j6]+3j50G01[u4Z]u7[K40jJ0O3 pm9mg0}F]vjSo806512]BPm107]UjAlF0{s1]wYm00{54[{z5P[}K6YkQ0YE T6oT04A pQ?001f]iX(J01R]9Z@c0GC T0p7Q4D[H4ueH7[94bpFH6[95qc07C]9YlB0HH[-4q6f2C[~%5Xd69[}F5B03I[}i5do3J[_-5Zl5A pj1pdJ9F[+4oaLC5[R4iZf8B[\5WXH2 pkViNSJ[{I5iIS9P pmCjXSK[_Y5iCH8L[#ja6S3]sign4(B6[{I5R087[_75BtD[{I5jOd8G]s5lDDC6 pjJj72M8[~X53732p"/>
+        <CursorPos X="22" Y="5592"/>
+        <FoldState Value=" T4202 T5lL010D1 p0+Y[H475QT]Dv6Af7 piXxgAQ7 T8U211 TClNA26 pCj+B84]H3m303B]fZj9078[o4]9C9 pj0kM6F5]93l80D6]96k8084]agjH0C7]I9kP0N[R4Ek10C8[\4kC03[\620G6]9YjW04[j42kJ0G5 pjAjX0M6[\5U0{2[A4d]JA9]9bjf07[k4Cjb0R3]IfjT0U3]IKkG0fD[{!5D097[j5B0C[+4ejN0B8]R1jV0D4 piXiG0J[94cjY0I7[\5O0A[j4ajG0A[I6H0B5[}55]j]Rj3j50G3[{95E098 pjEjd0O]Im9mg0}F]tjSo806]kkNl20K1]I5g07]ajAlF0{s1];Ym00{54[{:5P[}O6YkQ0YE T6oT04A pQ?001f]iX(J01R]9Z@c0GC T0p7Q4D[H4ueH7[94bpFH6[95qc07C]9YlB0HH[-4q6f2C[~^5Xd69[#Y5B03I[}m5do3J[_,5Zl5A pj1pdJ9F[+4oaLC5[R4iZf8B[\5WXH2 pkViNSJ[{I5iIS9P pmCjXSK[_c5iCH8L[#k46S3]sign4(B6[{I5R087[_B5BtD[{I5jOd8G]s5lDDC6 pjJj72M8[~X53732f"/>
         <UsageCount Value="210"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="unit4.pas"/>
@@ -150,7 +150,7 @@
         <UnitName Value="Unit11"/>
         <EditorIndex Value="12"/>
         <CursorPos Y="9"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="62"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
@@ -163,7 +163,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="14"/>
         <CursorPos X="21" Y="15"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit12>
@@ -177,7 +177,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="39"/>
         <CursorPos X="3" Y="57"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit13>
@@ -190,7 +190,7 @@
         <UnitName Value="Unit14"/>
         <EditorIndex Value="7"/>
         <CursorPos Y="14"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit14>
       <Unit15>
@@ -203,7 +203,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="2"/>
         <CursorPos X="61" Y="9"/>
-        <UsageCount Value="52"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit15>
@@ -212,7 +212,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="150"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit16>
       <Unit17>
@@ -220,7 +220,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3484"/>
         <CursorPos Y="3501"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\lcl\graphics.pp"/>
@@ -228,7 +228,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="48"/>
         <CursorPos X="3" Y="59"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\opengl\src\gl.pp"/>
@@ -236,14 +236,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="817"/>
         <CursorPos X="53" Y="831"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="9"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\inc\objpash.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="201"/>
         <CursorPos X="27" Y="210"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit20>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">

@@ -4721,6 +4721,7 @@ MirObjs.OBJS[Fo].VERS[fv].GPL:=FinPlos(MirObjs.OBJS[Fo].VERS[fv].REA);
 //------------------------------------------------------------------------------
 for fo:=1 to MirObjs.KOlO do if not MirObjs.OBJS[Fo].DEL Then
 if  (not MirObjs.OBJS[fo].STA) or (MirObjs.OBJS[fo].SHA)then
+for fl:=1 to MirObjs.OBJS[fo].KOlL do
 if not MirObjs.OBJS[fo].LINS[fl].DEL Then
 if not MirObjs.OBJS[fo].LINS[fl].VERS[1].DEL Then
 if not MirObjs.OBJS[fo].LINS[fl].VERS[2].DEL Then
