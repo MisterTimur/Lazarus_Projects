@@ -12,7 +12,6 @@ type { TForm3 }  TForm3 = class(TForm)
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure OpenGLControl1Click(Sender: TObject);
     procedure OpenGLControl1DblClick(Sender: TObject);
     procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -508,7 +507,7 @@ var   {Базовые переменные     ===========================}{%Reg
   HSWAP:HAndle;HSWAPTrId:DWORD;// Вывод в буфер вывода
   Clos:Boolean;// Флаг Завершения программы
 
-  UBut:RBOL;// Состояние Левой кнопки мышки
+  LBut:RBOL;// Состояние Правой кнопки мышки
   RBut:RBOL;// Состояние Правой кнопки мышки
   DBut:RBOL;// Двойное нажатие кнопки мышки
   SBut:RBOL;// Сшифт нажат
@@ -5010,7 +5009,9 @@ procedure MATH;// Перевычисление обьектов
 var fo:RLON;
 begin
 for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then MirObjs.OBJS[Fo].O_MATH;
+if not MirObjs.OBJS[Fo].DEL Then begin
+MirObjs.OBJS[Fo].O_MATH;
+end;
 end;
 procedure MARH;// Определяет маршрутные линии и обьекты
 var Fo,Fl,Fv:Longint;
@@ -5434,10 +5435,10 @@ while MirSels.Kol<>0 do I_SetSel(MirSels.sels[MirSels.Kol],false);
 RC:=RC-MaxKOlPriInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
 I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
-UBUT:=false;
+LBUT:=False;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirVers.Vers[RC].ECR;
@@ -5448,10 +5449,10 @@ end;
 end;RC:=RC-MaxKOlVerInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirVers.KolV) then begin // Если выбрана Вершина
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirVers.Vers[RC].Sel:=not MirVers.Vers[RC].Sel ;// Инвертируем выделение
 I_SetSel(MirVers.Vers[RC],MirVers.Vers[RC].Sel);// Фикируем
-UBUT:=false;
+LBUT:=false;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirVers.Vers[RC].ECR;
@@ -5462,10 +5463,10 @@ end;
 end;RC:=RC-MaxKOlVerInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
 I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
-UBUT:=false;
+LBUT:=false;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirLins.Lins[RC].ECR;
@@ -5476,10 +5477,10 @@ end;
 end;RC:=RC-MaxKOlLinInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirLins.KolL) then begin // Если выбрана Лииния
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirLins.Lins[RC].Sel:=not MirLins.Lins[RC].Sel ;// Инвертируем выделение
 I_SetSel(MirLins.Lins[RC],MirLins.Lins[RC].Sel);// Фикируем
-UBUT:=false;
+LBUT:=false;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirLins.Lins[RC].ECR;
@@ -5490,20 +5491,20 @@ end;
 end;RC:=RC-MaxKOlLinInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirPlos.KolP) then begin // Если выбрана плоскость
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirPlos.Plos[RC].Sel:=not MirPlos.Plos[RC].Sel;
 I_SetSel(MirPLos.PLos[RC],MirPlos.Plos[RC].Sel);
-UBUT:=false;
+LBUT:=false;
 end;
 if DBUT and SBUT THEN begin
 U_OpenPlos(MirPLOs.PLos[RC],TELE(MirPlos.Plos[RC].ELE));SBUT:=FALsE;end;
 end;RC:=RC-MaxKOlPLoInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirEles.KolE) then begin // Если выбран Элемент
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirEles.Eles[RC].Sel:=not MirEles.Eles[RC].Sel;
 I_SetSel(MirEles.Eles[RC],MirEles.Eles[RC].Sel);
-UBUT:=False;
+LBUT:=False;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirEles.Eles[RC].ECR;
@@ -5513,10 +5514,10 @@ end;
 end;RC:=RC-MaxKOlEleInMir;
 //------------------------------------------------------------------------------
 if (RC>=1) and (RC<=MirObjs.KolO) then begin // Если выбран обьект
-if UBUT THEN if form4.CheckBox5.Checked then begin
+if LBUT THEN if form4.CheckBox5.Checked then begin
 MirObjs.Objs[RC].Sel:=not MirObjs.Objs[RC].Sel;
 I_SetSel(MirObjs.Objs[RC],MirObjs.Objs[RC].Sel);
-UBUT:=false;
+LBUT:=False;
 end;
 if DBUT THEN begin
 if NOT SBUT THEN CaP3:=MirObjs.Objs[RC].ECR;
@@ -5672,7 +5673,9 @@ iver2:=iPlo.VERS[2].ECR;
 iver3:=iPlo.VERS[3].ECR;
 iver4:=iPlo.VERS[4].ECR;
 
+if 1=2 then
 if NOT SBUT THEN
+if DBUT then
 if MBUT then begin
         CaP3:=OpredelitCoo(
                MouD.X,
@@ -5683,8 +5686,9 @@ if MBUT then begin
 	       iver4,
 	       16
 	       );
-        CaP3.Y:=CaP3.Y+10;
+        //CaP3.Y:=CaP3.Y+10;
         if PER<>NIL then PER.OCEL:=CaP3;
+        DBUT:=False;
         end;
 end;
 end;
@@ -5798,51 +5802,17 @@ end;
 }
 end;
 
-procedure TForm3.OpenGLControl1Paint(Sender: TObject);
-var Tr:QWord;lCap2:RCS3;
-begin
-if GlDraw then begin
-  begin // Подготовка в отрисовке
-  timer2.Enabled:=false;
-  Tr:=GetTickCount64;
-  //----------------------------------------------------------------------------
-  Cap2:=SerRcs8(cap2,cap3);
-  CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
-  CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
-  RasN:=((Ras3-RasN)/16)+RasN;
-  //----------------------------------------------------------------------------
-  glLoadIdentity();// Сброс матрицы
-  GlpushMatrix();
-  glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
-  glRotateD(CaU2.X,1,0,0);// Поворот по оси X
-  glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
-  lCap2:=Cap2;
-  if   form4.CheckBox2.Checked then begin
-  lCap2.X:=Cap2.X;
-  lCap2.Y:=Cap2.Y+100;
-  lCap2.Z:=Cap2.Z;
-  end;
-  glTranslateD(-lCaP2.x,-lCaP2.y,-lCaP2.z);// Координаты камеры
-  end;
-  I_EDITDRAWIDDSCE;// Отрисвока IDDDDDD    ИГРА
-  I_EDITDRAWIDDEDI;// Отрисвока IDDDDDD    РЕДАКТОР
-  I_EDITDRAWCOLSCE;// Отрисвока Цветами    ИГРА
-  I_EDITDRAWCOLEDI;// Отрисвока Цветами    РЕДАКТОР
-  if DBUT THEN DBUT:=false;
-  begin // Завершение отрисовки
-  OpenGLControl1.SwapBuffers;
-  KolKAdVsek:=KolKAdVsek+1;
-  TR:=GetTickCount64-tr;
-  timer2.Enabled:=true;
-  end;
-end;
-end;
 function  TheadMath(Par:Pointer):DWORD;stdcall;// Вычисление
 var F:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(100);
+     sleep(33);
+     for f:=1 to MirObjs.KolO do begin
+     if not MirObjs.OBJS[f].Del then
+     MirObjs.OBJS[f].O_MATH;
+     sleep(1);
+     end;
      //sleep(30);MATH;// Вычисление обьекта
      //sleep(30);DOPL;// Опредение кем будем управлять
      //sleep(30);GRAV;// Вычисление Гравитация
@@ -5920,7 +5890,6 @@ begin
 Timer1.enabled:=false;// Отключаем запускатор
 
   RBUT:=False;// Парвая кнопка мыши нажата
-  UBUT:=False;// Щелчок мыши
   DBUT:=False;// Двойной Щелчок мыши
   SBUT:=False;// Кнопка Shift
   MBUT:=true ;// флаг Перемещаться
@@ -5935,7 +5904,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirScrs:=TScrS.Create;// Создаем списки скриптов
   MirCols:=TCols.Create;// Создает Цветные Плоскости
   // Отдельный поток для расчета координат всех вершин
-  //HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
+  HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
   HSWAP:=CreateThread(nil,0,@TheadSWAP,nil,0,HSwapTrId);
   //OpenGl настройки
   OpenGLControl1.OnPaint:= @OpenGLControl1Paint; // for "mode delphi" this would be "GLBox.OnPaint := GLboxPaint"
@@ -5955,10 +5924,50 @@ Timer1.enabled:=false;// Отключаем запускатор
   Timer3.enabled:=true;// Врубаем подсчет количества кадров в секунду
   GlDraw:=true;
 end;
+
+procedure TForm3.OpenGLControl1Paint(Sender: TObject);
+var Tr:QWord;lCap2:RCS3;
+begin
+if GlDraw then begin
+  begin // Подготовка в отрисовке
+  timer2.Enabled:=false;
+  Tr:=GetTickCount64;
+  //----------------------------------------------------------------------------
+  Cap2:=SerRcs8(cap2,cap3);
+  CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
+  CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
+  RasN:=((Ras3-RasN)/16)+RasN;
+  //----------------------------------------------------------------------------
+  glLoadIdentity();// Сброс матрицы
+  GlpushMatrix();
+  glTranslateD(0,0,RASN);// Отодвигаем камеру на нужное растояние
+  glRotateD(CaU2.X,1,0,0);// Поворот по оси X
+  glRotateD(CaU2.Z,0,1,0);// Поворот по оси Y
+  lCap2:=Cap2;
+  if   form4.CheckBox2.Checked then begin
+  lCap2.X:=Cap2.X;
+  lCap2.Y:=Cap2.Y+100;
+  lCap2.Z:=Cap2.Z;
+  end;
+  glTranslateD(-lCaP2.x,-lCaP2.y,-lCaP2.z);// Координаты камеры
+  end;
+  I_EDITDRAWIDDSCE;// Отрисвока IDDDDDD    ИГРА
+  I_EDITDRAWIDDEDI;// Отрисвока IDDDDDD    РЕДАКТОР
+  I_EDITDRAWCOLSCE;// Отрисвока Цветами    ИГРА
+  I_EDITDRAWCOLEDI;// Отрисвока Цветами    РЕДАКТОР
+  begin // Завершение отрисовки
+  OpenGLControl1.SwapBuffers;
+  KolKAdVsek:=KolKAdVsek+1;
+  TR:=GetTickCount64-tr;
+  timer2.Enabled:=true;
+  end;
+end;
+end;
 procedure TForm3.Timer2Timer(Sender: TObject);// ОТрисовка
 begin
 OpenGLControl1Paint(sender);
 end;
+
 procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
 begin
   Caption:=IntToStr(KolKAdVsek)+' '+
@@ -5998,13 +6007,9 @@ begin
   SBUT:=false;//if not(Shift=[ssShift] then
   if key=46 then I_DelDel(form4.Act);
 end;
-procedure TForm3.OpenGLControl1Click(Sender: TObject);
-begin
-   UBUT:=true;
-end;
 procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
 begin
- DBUT:=true;UBUT:=False;
+ DBUT:=true;
 end;
 procedure TForm3.OpenGLControl1Resize(Sender: TObject);
 begin
@@ -6032,6 +6037,7 @@ procedure TForm3.OpenGLControl1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button=mbRight then RBut:=False;
+  if Button=mbLeft  then LBut:=False;
 end;
 procedure TForm3.OpenGLControl1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
@@ -6053,10 +6059,16 @@ begin
   CaU1.X:=CaU2.X;
   CaU1.Z:=CaU2.Z;
   if Button=mbRight then RBut:=true;
+  if Button=mbLeft  then LBut:=true;
 end;
 
 {%EndRegion}
 end.
+
+
+
+
+
 
 
 // 1. Чай 5 мин

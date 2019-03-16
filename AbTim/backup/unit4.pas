@@ -89,7 +89,6 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter9: TSplitter;
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
-    procedure CheckBox5Change(Sender: TObject);
     procedure Edit10DblClick(Sender: TObject);
     procedure Edit11DblClick(Sender: TObject);
     procedure Edit12DblClick(Sender: TObject);

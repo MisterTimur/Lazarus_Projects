@@ -314,7 +314,6 @@ object Form4: TForm4
       Top = 5
       Width = 76
       Caption = 'Selected'
-      OnChange = CheckBox5Change
       TabOrder = 4
     end
   end
