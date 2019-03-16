@@ -22,7 +22,7 @@ object Form13: TForm13
       Left = 11
       Height = 25
       Top = 11
-      Width = 75
+      Width = 101
       Caption = 'Button1'
       OnClick = Button1Click
       TabOrder = 0

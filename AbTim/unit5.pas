@@ -154,14 +154,12 @@ begin
  for f:=1 to CheckListBox1.items.Count-1 do
  I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
-
 procedure TForm5.CheckListBox2DblClick(Sender: TObject);
 begin
   if CheckListBox2.itemindex<CheckListBox2.items.count then
   if CheckListBox2.itemindex>0 then
   U_OpenAnimation(CheckListBox2.items.objects[CheckListBox2.itemindex]);
 end;
-
 procedure TForm5.CheckListBox3DblClick(Sender: TObject);
 begin
   if CheckListBox3.itemindex<CheckListBox3.items.count then

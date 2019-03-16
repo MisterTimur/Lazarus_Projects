@@ -1,11 +1,11 @@
 object Form5: TForm5
   Left = 347
-  Height = 357
+  Height = 249
   Top = 179
   Width = 435
   BorderStyle = bsSizeToolWin
   Caption = 'Form5'
-  ClientHeight = 357
+  ClientHeight = 249
   ClientWidth = 435
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -29,7 +29,7 @@ object Form5: TForm5
   end
   object CheckListBox1: TCheckListBox
     Left = 0
-    Height = 323
+    Height = 215
     Top = 34
     Width = 128
     Align = alLeft
@@ -49,7 +49,7 @@ object Form5: TForm5
   end
   object CheckListBox2: TCheckListBox
     Left = 133
-    Height = 323
+    Height = 215
     Top = 34
     Width = 139
     Align = alLeft
@@ -68,19 +68,19 @@ object Form5: TForm5
   end
   object Splitter1: TSplitter
     Left = 128
-    Height = 323
+    Height = 215
     Top = 34
     Width = 5
   end
   object Splitter2: TSplitter
     Left = 272
-    Height = 323
+    Height = 215
     Top = 34
     Width = 5
   end
   object CheckListBox3: TCheckListBox
     Left = 277
-    Height = 323
+    Height = 215
     Top = 34
     Width = 158
     Align = alClient

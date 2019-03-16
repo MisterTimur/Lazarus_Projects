@@ -39,12 +39,10 @@ begin
   lForm12.Ani:=iAni;
   lForm12.U_RefreshAni;
   end else I_FindFormAni(iAni).SetFocus; end;
-
 procedure TForm12.Memo1Change(Sender: TObject);
 begin
     I_SetT(Ani,memo1);
 end;
-
 procedure TForm12.U_RefreshAni;
 begin
 I_GetN(ANI,Edit1 );

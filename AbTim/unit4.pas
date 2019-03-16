@@ -11,7 +11,6 @@ type { TForm4 } TForm4 = class(TForm)
     Edit1: TEdit;
     Edit10: TEdit;
     Edit11: TEdit;
-    Edit12: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
@@ -69,7 +68,6 @@ type { TForm4 } TForm4 = class(TForm)
     Panel10: TPanel;
     Panel11: TPanel;
     Panel12: TPanel;
-    Panel13: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -80,6 +78,7 @@ type { TForm4 } TForm4 = class(TForm)
     Panel9: TPanel;
     SaveDialog1: TSaveDialog;
     Splitter1: TSplitter;
+    Splitter10: TSplitter;
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Splitter4: TSplitter;
@@ -322,12 +321,10 @@ procedure TForm4.MenuItem40Click(Sender: TObject);
 begin
   I_DelDel(Act);
 end;
-
 procedure TForm4.MenuItem42Click(Sender: TObject);
 begin
   form15.visible:=not form15.visible;
 end;
-
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
@@ -364,22 +361,22 @@ begin
  MenuItem16.Checked:=false;
  end;
 end;
+
+
+
 procedure TForm4.Edit10DblClick(Sender: TObject);
 begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
   I_SETM(Act,edit10);// Маршрутный примитив
 end;
-
 procedure TForm4.Edit11DblClick(Sender: TObject);
 begin
   if edit11.TExt='0' then edit11.TExt:='-1' else edit11.TExt:='0';
-  I_SETS(Act,edit11);// Статический ли обьект
+  I_SETV(Act,edit11);// Видимость примитива
 end;
-
 procedure TForm4.Edit12DblClick(Sender: TObject);
 begin
 end;
-
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
@@ -431,7 +428,6 @@ procedure TForm4.Edit9Change(Sender: TObject);
 begin
  I_SetN(Act,Edit9);
 end;
-
 procedure TForm4.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 

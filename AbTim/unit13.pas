@@ -51,16 +51,13 @@ procedure TForm13.Edit1Change(Sender: TObject);
 begin
   I_SetN(Scr,Edit1);
 end;
-
 procedure TForm13.Button1Click(Sender: TObject);
 begin
   I_RUN(Scr,memo1);
 end;
-
 procedure TForm13.Memo1Change(Sender: TObject);
 begin
   I_SetT(Scr,memo1);
 end;
-
 end.
 

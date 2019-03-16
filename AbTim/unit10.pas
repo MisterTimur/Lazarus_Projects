@@ -9,17 +9,26 @@ type
   TForm10 = class(TForm)
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
+    Edit10: TEdit;
+    Edit11: TEdit;
+    Edit12: TEdit;
+    Edit13: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    Edit8: TEdit;
+    Edit9: TEdit;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Splitter1: TSplitter;
     procedure Edit10Change(Sender: TObject);
     procedure Edit11Change(Sender: TObject);
-    procedure Edit11DblClick(Sender: TObject);
     procedure Edit12Change(Sender: TObject);
+    procedure Edit13Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -36,9 +45,11 @@ type
     procedure Edit5Change(Sender: TObject);
     procedure Edit5DblClick(Sender: TObject);
     procedure Edit6Change(Sender: TObject);
+    procedure Edit6DblClick(Sender: TObject);
     procedure Edit7Change(Sender: TObject);
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
+    procedure Edit8DblClick(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
     procedure Edit9DblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -85,6 +96,17 @@ begin
 I_GetN(PLO,Edit1 );
 I_GetC(PLO,Edit3 );
 I_GetA(PLO,Edit4 );
+I_GeMl(Plo,edit5 );
+// Цвета вершин
+I_GCV1(PLO,Edit6 );
+I_GCV2(PLO,Edit7 );
+I_GCV3(PLO,Edit8 );
+I_GCV4(PLO,Edit9 );
+// прозрачность вершин
+I_GAV1(PLO,Edit10 );
+I_GAV2(PLO,Edit11 );
+I_GAV3(PLO,Edit12 );
+I_GAV4(PLO,Edit13 );
 end;
 procedure TForm10.Edit1Change(Sender: TObject);
 begin
@@ -92,19 +114,19 @@ begin
 end;
 procedure TForm10.Edit10Change(Sender: TObject);
 begin
+I_SAV1(Plo,Edit10);
 end;
 procedure TForm10.Edit11Change(Sender: TObject);
 begin
-end;
-procedure TForm10.Edit11DblClick(Sender: TObject);
-begin
-  if ColorDialog1.Execute then begin
-  TEdit(sender).Color:=ColorDialog1.Color;
-  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
-  end;
+I_SAV2(Plo,Edit11)
 end;
 procedure TForm10.Edit12Change(Sender: TObject);
 begin
+I_SAV3(Plo,Edit12);
+end;
+procedure TForm10.Edit13Change(Sender: TObject);
+begin
+  I_SAV4(Plo,Edit13);
 end;
 procedure TForm10.Edit2Change(Sender: TObject);
 begin
@@ -148,19 +170,28 @@ begin
 end;
 procedure TForm10.Edit5Change(Sender: TObject);
 begin
+ I_SeMl(Plo,edit5);
 end;
 procedure TForm10.Edit5DblClick(Sender: TObject);
+begin
+   if Edit5.Text='1' then Edit5.Text:='2' else
+   if Edit5.Text='2' then Edit5.Text:='3' else
+   if Edit5.Text='3' then Edit5.Text:='1' else Edit5.Text:='1';
+end;
+procedure TForm10.Edit6Change(Sender: TObject);
+begin
+I_SCV1(Plo,Edit6);
+end;
+procedure TForm10.Edit6DblClick(Sender: TObject);
 begin
   if ColorDialog1.Execute then begin
   TEdit(sender).Color:=ColorDialog1.Color;
   TEdit(sender).Text:=intToStr(ColorDialog1.Color);
   end;
 end;
-procedure TForm10.Edit6Change(Sender: TObject);
-begin
-end;
 procedure TForm10.Edit7Change(Sender: TObject);
 begin
+I_SCV2(Plo,Edit7);
 end;
 procedure TForm10.Edit7DblClick(Sender: TObject);
 begin
@@ -171,9 +202,18 @@ begin
 end;
 procedure TForm10.Edit8Change(Sender: TObject);
 begin
+  I_SCV3(Plo,Edit8);
+end;
+procedure TForm10.Edit8DblClick(Sender: TObject);
+begin
+  if ColorDialog1.Execute then begin
+  TEdit(sender).Color:=ColorDialog1.Color;
+  TEdit(sender).Text:=intToStr(ColorDialog1.Color);
+  end;
 end;
 procedure TForm10.Edit9Change(Sender: TObject);
 begin
+I_SCV4(Plo,Edit9);
 end;
 procedure TForm10.Edit9DblClick(Sender: TObject);
 begin

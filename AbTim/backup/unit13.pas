@@ -3,11 +3,13 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs,
   ExtCtrls, StdCtrls,Unit3;
 type { TForm13 } TForm13 = class(TForm)
+    Button1: TButton;
     Edit1: TEdit;
     Memo1: TMemo;
     Panel1: TPanel;
     Panel2: TPanel;
     Splitter1: TSplitter;
+    procedure Button1Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Memo1Change(Sender: TObject);
   private
@@ -48,6 +50,10 @@ end;
 procedure TForm13.Edit1Change(Sender: TObject);
 begin
   I_SetN(Scr,Edit1);
+end;
+procedure TForm13.Button1Click(Sender: TObject);
+begin
+  I_RUN(Scr,memo1);
 end;
 procedure TForm13.Memo1Change(Sender: TObject);
 begin

@@ -1,36 +1,42 @@
 object Form15: TForm15
-  Left = 495
-  Height = 207
-  Top = 1
-  Width = 410
+  Left = 396
+  Height = 287
+  Top = 206
+  Width = 472
   Caption = 'Form15'
-  ClientHeight = 207
-  ClientWidth = 410
+  ClientHeight = 287
+  ClientWidth = 472
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
   LCLVersion = '1.8.4.0'
   Visible = True
   object Panel1: TPanel
     Left = 0
-    Height = 50
+    Height = 56
     Top = 0
-    Width = 410
+    Width = 472
     Align = alTop
-    Caption = 'Panel1'
+    Caption = 'Terminal'
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Height = -19
+    Font.Name = 'Consolas'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
+    ParentFont = False
     TabOrder = 0
+    OnClick = Panel1Click
   end
   object Memo1: TMemo
     Left = 0
-    Height = 157
-    Top = 50
-    Width = 410
+    Height = 231
+    Top = 56
+    Width = 472
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -19
     Font.Name = 'Consolas'
     Font.Pitch = fpFixed
     Font.Quality = fqDraft
-    Lines.Strings = (
-      'Memo1'
-    )
     ParentFont = False
     TabOrder = 1
   end

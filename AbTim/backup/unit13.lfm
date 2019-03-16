@@ -1,7 +1,7 @@
 object Form13: TForm13
-  Left = 358
+  Left = 328
   Height = 292
-  Top = 124
+  Top = 181
   Width = 422
   Caption = 'Form13'
   ClientHeight = 292
@@ -15,7 +15,18 @@ object Form13: TForm13
     Width = 422
     Align = alTop
     Caption = 'Panel1'
+    ClientHeight = 50
+    ClientWidth = 422
     TabOrder = 0
+    object Button1: TButton
+      Left = 11
+      Height = 25
+      Top = 11
+      Width = 75
+      Caption = 'Button1'
+      OnClick = Button1Click
+      TabOrder = 0
+    end
   end
   object Panel2: TPanel
     Left = 0

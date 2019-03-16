@@ -95,10 +95,6 @@ procedure TForm8.Edit1Change(Sender: TObject);
 begin
   I_SetN(Ver,Edit1);
 end;
-
-
-
-
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);
@@ -137,32 +133,26 @@ begin
   left:=form3.left+form3.Width-width-10;
   top:=form3.top+form3.height-height-50;
 end;
-
 procedure TForm8.MenuItem1Click(Sender: TObject);
 begin
    I_AddVerCOp(Ver);
 end;
-
 procedure TForm8.MenuItem2Click(Sender: TObject);
 begin
    I_AddVerSYX(Ver);
 end;
-
 procedure TForm8.MenuItem3Click(Sender: TObject);
 begin
    I_AddVerSYY(Ver);
 end;
-
 procedure TForm8.MenuItem4Click(Sender: TObject);
 begin
    I_AddVerSYZ(Ver);
 end;
-
 procedure TForm8.MenuItem5Click(Sender: TObject);
 begin
    I_AddVer150(Ver);
 end;
-
 procedure TForm8.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin
