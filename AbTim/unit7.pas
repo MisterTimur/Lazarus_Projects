@@ -58,20 +58,22 @@ type { TForm7 } TForm7 = class(TForm)
 
   public
   Ele:Pointer;
+  rEle:Pointer;
   MHeight:Longint;
   procedure U_RefreshEle;
   end;
 var  Form7: TForm7;
-procedure U_OpenElement(iEle:Pointer);
+procedure U_OpenElement(iEle:Pointer;irEle:pointer);
 function  I_FindFormEle(iEle:Pointer):Tform7;// Ищим форму с Элементом
 implementation {$R *.lfm}{ TForm7 }
-procedure U_OpenElement(iEle:Pointer);
+procedure U_OpenElement(iEle:Pointer;irEle:pointer);
 var lForm7:TForm7;
 begin
   if I_FindFormEle(iEle)=nil then begin
   lForm7:=TForm7.Create(application);
   lForm7.Visible:=True;
   lForm7.Ele:=iEle;
+  lForm7.rEle:=irEle;
   lForm7.U_RefreshEle
   end else I_FindFormEle(iEle).SetFocus;
 end;
@@ -125,7 +127,7 @@ procedure TForm7.CheckListBox2DblClick(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
-   U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex]);
+   U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex],Ele);
 end;
 procedure TForm7.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
   var f:Longint;

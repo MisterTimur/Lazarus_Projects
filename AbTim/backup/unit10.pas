@@ -103,10 +103,10 @@ I_GCV2(PLO,Edit7 );
 I_GCV3(PLO,Edit8 );
 I_GCV4(PLO,Edit9 );
 // прозрачность вершин
-I_GAV1(PLO,Edit6 );
-I_GAV2(PLO,Edit7 );
-I_GAV3(PLO,Edit8 );
-I_GAV4(PLO,Edit9 );
+I_GAV1(PLO,Edit10 );
+I_GAV2(PLO,Edit11 );
+I_GAV3(PLO,Edit12 );
+I_GAV4(PLO,Edit13 );
 end;
 procedure TForm10.Edit1Change(Sender: TObject);
 begin

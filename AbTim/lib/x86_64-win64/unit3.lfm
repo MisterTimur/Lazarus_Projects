@@ -9,6 +9,7 @@ object Form3: TForm3
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   Position = poDefault
   LCLVersion = '1.8.4.0'

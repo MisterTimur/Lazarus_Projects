@@ -5,11 +5,8 @@ type  TForm11 = class(TForm)
   private
 
   public
-   ;
   end;
-
 var Form11: TForm11;
-
 implementation{$R *.lfm}
 
 

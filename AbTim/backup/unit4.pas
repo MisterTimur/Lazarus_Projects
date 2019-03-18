@@ -2,11 +2,9 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   CheckLst, StdCtrls, Menus,UNit5,unit3,unit15, Types;
 type { TForm4 } TForm4 = class(TForm)
-    CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
-    CheckBox5: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit10: TEdit;
@@ -87,7 +85,6 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter7: TSplitter;
     Splitter8: TSplitter;
     Splitter9: TSplitter;
-    procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
     procedure Edit10DblClick(Sender: TObject);
     procedure Edit11DblClick(Sender: TObject);
@@ -329,10 +326,7 @@ procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
 end;
-procedure TForm4.CheckBox1Change(Sender: TObject);
-begin
- I_Set_MBUT(CheckBox1.Checked);
-end;
+
 procedure TForm4.CheckBox4Change(Sender: TObject);
 begin
  if CheckBox4.Checked
@@ -361,6 +355,7 @@ begin
  MenuItem16.Checked:=false;
  end;
 end;
+
 
 
 

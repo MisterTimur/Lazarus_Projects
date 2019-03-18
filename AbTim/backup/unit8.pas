@@ -44,7 +44,7 @@ type
 
   public
   Ver:Pointer;
-  Ele:Pointer;
+  rEle:Pointer;
   MHeight:Longint;
   procedure U_RefreshVer;
   end;
@@ -55,14 +55,14 @@ var
 procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
 function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
 implementation {$R *.lfm} { TForm8 }
-procedure U_OpenPoint(iVer,iEle:Pointer);
+procedure U_OpenPoint(iVer,irEle:Pointer);
 var lForm8:TForm8;
 begin
   If I_FindFormVer(iVer)=Nil then begin
   lForm8:=TForm8.Create(application);
   lForm8.Visible:=True;
   lForm8.Ver:=iVer;
-  lForm8.Ele:=iEle;
+  lForm8.rEle:=irEle;
   lForm8.U_RefreshVer;
   end else I_FindFormVer(iVer).SetFocus;
 end;
@@ -95,10 +95,6 @@ procedure TForm8.Edit1Change(Sender: TObject);
 begin
   I_SetN(Ver,Edit1);
 end;
-
-
-
-
 procedure TForm8.Edit2Change(Sender: TObject);
 begin
   I_SetX(Ver,Edit2);
@@ -137,32 +133,26 @@ begin
   left:=form3.left+form3.Width-width-10;
   top:=form3.top+form3.height-height-50;
 end;
-
 procedure TForm8.MenuItem1Click(Sender: TObject);
 begin
    I_AddVerCOp(Ver);
 end;
-
 procedure TForm8.MenuItem2Click(Sender: TObject);
 begin
    I_AddVerSYX(Ver);
 end;
-
 procedure TForm8.MenuItem3Click(Sender: TObject);
 begin
    I_AddVerSYY(Ver);
 end;
-
 procedure TForm8.MenuItem4Click(Sender: TObject);
 begin
    I_AddVerSYZ(Ver);
 end;
-
 procedure TForm8.MenuItem5Click(Sender: TObject);
 begin
    I_AddVer150(Ver);
 end;
-
 procedure TForm8.Panel1Click(Sender: TObject);
 begin
   if Height=panel1.height then begin

@@ -8,7 +8,5 @@ type  TForm11 = class(TForm)
   end;
 var Form11: TForm11;
 implementation{$R *.lfm}
-
-
 end.
 

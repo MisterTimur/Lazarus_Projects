@@ -1,7 +1,7 @@
 object Form4: TForm4
-  Left = 217
+  Left = 22
   Height = 72
-  Top = 566
+  Top = 549
   Width = 850
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
@@ -270,27 +270,16 @@ object Form4: TForm4
     ClientHeight = 26
     ClientWidth = 850
     TabOrder = 15
-    object CheckBox1: TCheckBox
-      Left = 8
-      Height = 19
-      Top = 5
-      Width = 111
-      Caption = 'Перемещаться.'
-      Checked = True
-      OnChange = CheckBox1Change
-      State = cbChecked
-      TabOrder = 0
-    end
     object CheckBox2: TCheckBox
-      Left = 124
+      Left = 8
       Height = 19
       Top = 5
       Width = 104
       Caption = 'Камера + 150'
-      TabOrder = 1
+      TabOrder = 0
     end
     object CheckBox4: TCheckBox
-      Left = 240
+      Left = 120
       Height = 19
       Top = 5
       Width = 160
@@ -298,23 +287,15 @@ object Form4: TForm4
       Checked = True
       OnChange = CheckBox4Change
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 1
     end
     object CheckBox3: TCheckBox
-      Left = 488
+      Left = 288
       Height = 19
       Top = 5
       Width = 167
       Caption = 'Привязать к персонажу'
-      TabOrder = 3
-    end
-    object CheckBox5: TCheckBox
-      Left = 408
-      Height = 19
-      Top = 5
-      Width = 76
-      Caption = 'Selected'
-      TabOrder = 4
+      TabOrder = 2
     end
   end
   object Splitter8: TSplitter

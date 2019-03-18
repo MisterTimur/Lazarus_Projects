@@ -44,7 +44,7 @@ type
 
   public
   Ver:Pointer;
-  Ele:Pointer;
+  rEle:Pointer;
   MHeight:Longint;
   procedure U_RefreshVer;
   end;
@@ -52,17 +52,17 @@ type
 var
   Form8: TForm8;
 
-procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
+procedure U_OpenPoint(iVer,irEle:Pointer);// Создает форму с вершиной
 function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
 implementation {$R *.lfm} { TForm8 }
-procedure U_OpenPoint(iVer,iEle:Pointer);
+procedure U_OpenPoint(iVer,irEle:Pointer);
 var lForm8:TForm8;
 begin
   If I_FindFormVer(iVer)=Nil then begin
   lForm8:=TForm8.Create(application);
   lForm8.Visible:=True;
   lForm8.Ver:=iVer;
-  lForm8.Ele:=iEle;
+  lForm8.rEle:=irEle;
   lForm8.U_RefreshVer;
   end else I_FindFormVer(iVer).SetFocus;
 end;

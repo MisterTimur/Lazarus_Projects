@@ -42,7 +42,7 @@ type
   public
   MHeight:Longint;
   LIN:pointer;
-  ELE:pointer;
+  rELE:pointer;
   procedure U_RefreshLin;
   end;
 
@@ -50,17 +50,17 @@ var
   Form9: TForm9;
 
 
-procedure U_OpenLine(iLin,iEle:Pointer);
+procedure U_OpenLine(iLin,irEle:Pointer);
 function  I_FindFormLin(iLin:Pointer):Tform9;// Ищим форму с вершиной
 implementation {$R *.lfm}
-procedure U_OpenLine(iLin,iEle:Pointer);
+procedure U_OpenLine(iLin,irEle:Pointer);
 var lForm9:TForm9;
 begin
   If I_FindFormLin(iLin)=Nil then begin
   lForm9:=TForm9.Create(application);
   lForm9.Visible:=True;
   lForm9.Lin:=iLin;
-  lForm9.Ele:=iEle;
+  lForm9.rEle:=irEle;
   lForm9.U_RefreshLin;
   end else I_FindFormLin(iLin).SetFocus;
 end;

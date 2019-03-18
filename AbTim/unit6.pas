@@ -183,7 +183,7 @@ procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then
-   U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex]);
+   U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex],obj);
 end;
 procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
 var f:Longint;
