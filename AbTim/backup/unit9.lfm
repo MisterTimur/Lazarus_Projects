@@ -1,11 +1,12 @@
 object Form9: TForm9
-  Left = 423
+  Left = 448
   Height = 123
-  Top = 178
-  Width = 320
+  Top = 382
+  Width = 128
+  BorderStyle = bsSizeToolWin
   Caption = 'Form9'
   ClientHeight = 123
-  ClientWidth = 320
+  ClientWidth = 128
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -13,12 +14,12 @@ object Form9: TForm9
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 32
     Top = 0
-    Width = 320
+    Width = 128
     Align = alTop
     Caption = 'Panel1'
     TabOrder = 0
@@ -92,10 +93,10 @@ object Form9: TForm9
     Width = 5
   end
   object Panel3: TPanel
-    Left = 133
+    Left = 128
     Height = 91
     Top = 32
-    Width = 187
+    Width = 0
     Align = alClient
     Caption = 'Panel3'
     TabOrder = 3
@@ -124,7 +125,7 @@ object Form9: TForm9
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 272
-    top = 10
+    left = 8
+    top = 8
   end
 end

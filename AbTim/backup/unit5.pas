@@ -154,14 +154,12 @@ begin
  for f:=1 to CheckListBox1.items.Count-1 do
  I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
 end;
-
 procedure TForm5.CheckListBox2DblClick(Sender: TObject);
 begin
   if CheckListBox2.itemindex<CheckListBox2.items.count then
   if CheckListBox2.itemindex>0 then
   U_OpenAnimation(CheckListBox2.items.objects[CheckListBox2.itemindex]);
 end;
-
 procedure TForm5.CheckListBox3DblClick(Sender: TObject);
 begin
   if CheckListBox3.itemindex<CheckListBox3.items.count then
@@ -175,8 +173,8 @@ end;
 procedure TForm5.FormCreate(Sender: TObject);
 begin
   mHeight:=Height;
-  left:=form3.left+form3.width-width-10;
-  top :=form3.top+30;
+  left:=OknoWidth(form3.left+form3.width-width-10);
+  top :=OknoHeight(form3.top+30);
 end;
 procedure TForm5.MenuItem10Click(Sender: TObject); // удалить скрипт
 begin

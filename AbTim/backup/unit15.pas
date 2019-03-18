@@ -23,6 +23,8 @@ end;
 procedure TForm15.FormCreate(Sender: TObject);
 begin
   MHeight:=height;
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
 end;
 procedure TForm15.Panel1Click(Sender: TObject);
 begin

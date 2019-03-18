@@ -1,24 +1,28 @@
 object Form15: TForm15
-  Left = 396
-  Height = 287
-  Top = 206
-  Width = 472
+  Left = 921
+  Height = 165
+  Top = 78
+  Width = 344
   Caption = 'Form15'
-  ClientHeight = 287
-  ClientWidth = 472
+  ClientHeight = 165
+  ClientWidth = 344
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -13
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '1.8.4.0'
-  Visible = True
+  LCLVersion = '2.0.0.4'
   object Panel1: TPanel
     Left = 0
-    Height = 56
+    Height = 32
     Top = 0
-    Width = 472
+    Width = 344
     Align = alTop
     Caption = 'Terminal'
     Font.CharSet = RUSSIAN_CHARSET
-    Font.Height = -19
+    Font.Height = -13
     Font.Name = 'Consolas'
     Font.Pitch = fpFixed
     Font.Quality = fqDraft
@@ -28,9 +32,9 @@ object Form15: TForm15
   end
   object Memo1: TMemo
     Left = 0
-    Height = 231
-    Top = 56
-    Width = 472
+    Height = 133
+    Top = 32
+    Width = 344
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -19

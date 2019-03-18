@@ -130,8 +130,9 @@ end;
 procedure TForm8.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
-  left:=form3.left+form3.Width-width-10;
-  top:=form3.top+form3.height-height-50;
+  caption:='Vertex';
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
 end;
 procedure TForm8.MenuItem1Click(Sender: TObject);
 begin

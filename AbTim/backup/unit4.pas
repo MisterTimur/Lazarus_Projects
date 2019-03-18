@@ -56,6 +56,10 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
+    MenuItem43: TMenuItem;
+    MenuItem44: TMenuItem;
+    MenuItem45: TMenuItem;
+    MenuItem46: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -103,6 +107,7 @@ type { TForm4 } TForm4 = class(TForm)
     procedure Edit7DblClick(Sender: TObject);
     procedure Edit8Change(Sender: TObject);
     procedure Edit9Change(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
@@ -131,6 +136,8 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem40Click(Sender: TObject);
     procedure MenuItem42Click(Sender: TObject);
+    procedure MenuItem44Click(Sender: TObject);
+    procedure MenuItem46Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -162,8 +169,8 @@ end;
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   Act:=nil;
-  //left:=0;//form3.Left+form3.width-width-30;
-  //top:=0;//form3.top+form3.height-height-10;
+  left:=form3.Left+form3.width-width-30;
+  top:=form3.top+form3.height-height-10;
 end;
 procedure TForm4.MenuItem10Click(Sender: TObject);
 begin
@@ -322,11 +329,21 @@ procedure TForm4.MenuItem42Click(Sender: TObject);
 begin
   form15.visible:=not form15.visible;
 end;
+
+procedure TForm4.MenuItem44Click(Sender: TObject);
+begin
+  // Загрузить обьект из файла
+end;
+
+procedure TForm4.MenuItem46Click(Sender: TObject);
+begin
+  // Сохранить обьект в Файл
+end;
+
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
 end;
-
 procedure TForm4.CheckBox4Change(Sender: TObject);
 begin
  if CheckBox4.Checked
@@ -355,10 +372,6 @@ begin
  MenuItem16.Checked:=false;
  end;
 end;
-
-
-
-
 procedure TForm4.Edit10DblClick(Sender: TObject);
 begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
@@ -423,11 +436,16 @@ procedure TForm4.Edit9Change(Sender: TObject);
 begin
  I_SetN(Act,Edit9);
 end;
+
+procedure TForm4.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+ form3.close;
+end;
+
 procedure TForm4.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 
 end;
-
 end.
 
 

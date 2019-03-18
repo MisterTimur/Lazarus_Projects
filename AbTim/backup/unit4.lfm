@@ -1,12 +1,12 @@
 object Form4: TForm4
-  Left = 22
-  Height = 72
-  Top = 549
-  Width = 850
+  Left = 434
+  Height = 70
+  Top = 545
+  Width = 720
   BorderStyle = bsSizeToolWin
   Caption = 'Form4'
-  ClientHeight = 53
-  ClientWidth = 850
+  ClientHeight = 51
+  ClientWidth = 720
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -14,18 +14,19 @@ object Form4: TForm4
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   Menu = MainMenu1
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   Visible = True
   object Panel1: TPanel
     Left = 0
-    Height = 27
+    Height = 25
     Top = 26
     Width = 77
     Align = alLeft
     Caption = 'Panel1'
-    ClientHeight = 27
+    ClientHeight = 25
     ClientWidth = 77
     TabOrder = 0
     object Edit1: TEdit
@@ -45,18 +46,18 @@ object Form4: TForm4
   end
   object Splitter1: TSplitter
     Left = 77
-    Height = 27
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel2: TPanel
     Left = 82
-    Height = 27
+    Height = 25
     Top = 26
     Width = 78
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 27
+    ClientHeight = 25
     ClientWidth = 78
     TabOrder = 2
     object Edit2: TEdit
@@ -76,18 +77,18 @@ object Form4: TForm4
   end
   object Splitter2: TSplitter
     Left = 160
-    Height = 27
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel3: TPanel
     Left = 165
-    Height = 27
+    Height = 25
     Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel3'
-    ClientHeight = 27
+    ClientHeight = 25
     ClientWidth = 75
     TabOrder = 4
     object Edit3: TEdit
@@ -107,25 +108,25 @@ object Form4: TForm4
   end
   object Splitter3: TSplitter
     Left = 240
-    Height = 27
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel4: TPanel
     Left = 245
-    Height = 27
+    Height = 25
     Top = 26
-    Width = 75
+    Width = 50
     Align = alLeft
     Caption = 'Panel4'
-    ClientHeight = 27
-    ClientWidth = 75
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 6
     object Edit4: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 73
+      Width = 48
       Align = alTop
       Alignment = taCenter
       Enabled = False
@@ -137,26 +138,26 @@ object Form4: TForm4
     end
   end
   object Splitter4: TSplitter
-    Left = 320
-    Height = 27
+    Left = 295
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel5: TPanel
-    Left = 325
-    Height = 27
+    Left = 300
+    Height = 25
     Top = 26
-    Width = 66
+    Width = 50
     Align = alLeft
     Caption = 'Panel5'
-    ClientHeight = 27
-    ClientWidth = 66
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 8
     object Edit5: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 64
+      Width = 48
       Align = alTop
       Alignment = taCenter
       Enabled = False
@@ -168,26 +169,26 @@ object Form4: TForm4
     end
   end
   object Splitter5: TSplitter
-    Left = 391
-    Height = 27
+    Left = 350
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel6: TPanel
-    Left = 396
-    Height = 27
+    Left = 355
+    Height = 25
     Top = 26
-    Width = 68
+    Width = 50
     Align = alLeft
     Caption = 'Panel6'
-    ClientHeight = 27
-    ClientWidth = 68
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 10
     object Edit6: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 66
+      Width = 48
       Align = alTop
       Alignment = taCenter
       Enabled = False
@@ -199,19 +200,19 @@ object Form4: TForm4
     end
   end
   object Splitter6: TSplitter
-    Left = 464
-    Height = 27
+    Left = 405
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel7: TPanel
-    Left = 469
-    Height = 27
+    Left = 410
+    Height = 25
     Top = 26
     Width = 67
     Align = alLeft
     Caption = 'Panel7'
-    ClientHeight = 27
+    ClientHeight = 25
     ClientWidth = 67
     TabOrder = 12
     object Edit7: TEdit
@@ -231,26 +232,26 @@ object Form4: TForm4
     end
   end
   object Splitter7: TSplitter
-    Left = 536
-    Height = 27
+    Left = 477
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel8: TPanel
-    Left = 541
-    Height = 27
+    Left = 482
+    Height = 25
     Top = 26
-    Width = 75
+    Width = 50
     Align = alLeft
     Caption = 'Panel8'
-    ClientHeight = 27
-    ClientWidth = 75
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 14
     object Edit8: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 73
+      Width = 48
       Align = alTop
       Alignment = taCenter
       Enabled = False
@@ -265,10 +266,10 @@ object Form4: TForm4
     Left = 0
     Height = 26
     Top = 0
-    Width = 850
+    Width = 720
     Align = alTop
     ClientHeight = 26
-    ClientWidth = 850
+    ClientWidth = 720
     TabOrder = 15
     object CheckBox2: TCheckBox
       Left = 8
@@ -299,19 +300,19 @@ object Form4: TForm4
     end
   end
   object Splitter8: TSplitter
-    Left = 616
-    Height = 27
+    Left = 532
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel10: TPanel
-    Left = 621
-    Height = 27
+    Left = 537
+    Height = 25
     Top = 26
     Width = 74
     Align = alLeft
     Caption = 'Panel10'
-    ClientHeight = 27
+    ClientHeight = 25
     ClientWidth = 74
     TabOrder = 17
     object Edit9: TEdit
@@ -327,26 +328,26 @@ object Form4: TForm4
     end
   end
   object Splitter9: TSplitter
-    Left = 695
-    Height = 27
+    Left = 611
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel11: TPanel
-    Left = 700
-    Height = 27
+    Left = 616
+    Height = 25
     Top = 26
-    Width = 68
+    Width = 50
     Align = alLeft
     Caption = 'Panel11'
-    ClientHeight = 27
-    ClientWidth = 68
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 19
     object Edit10: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 66
+      Width = 48
       Align = alTop
       Alignment = taCenter
       OnDblClick = Edit10DblClick
@@ -355,26 +356,26 @@ object Form4: TForm4
     end
   end
   object Splitter10: TSplitter
-    Left = 768
-    Height = 27
+    Left = 666
+    Height = 25
     Top = 26
     Width = 5
   end
   object Panel12: TPanel
-    Left = 773
-    Height = 27
+    Left = 671
+    Height = 25
     Top = 26
-    Width = 75
+    Width = 50
     Align = alLeft
     Caption = 'Panel12'
-    ClientHeight = 27
-    ClientWidth = 75
+    ClientHeight = 25
+    ClientWidth = 50
     TabOrder = 21
     object Edit11: TEdit
       Left = 1
       Height = 23
       Top = 1
-      Width = 73
+      Width = 48
       Align = alTop
       Alignment = taCenter
       OnDblClick = Edit11DblClick
@@ -402,6 +403,20 @@ object Form4: TForm4
       object MenuItem20: TMenuItem
         Caption = 'Сохранить как.'
         OnClick = MenuItem20Click
+      end
+      object MenuItem43: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem46: TMenuItem
+        Caption = 'Сохранить обьект как .'
+        OnClick = MenuItem46Click
+      end
+      object MenuItem44: TMenuItem
+        Caption = 'Загрузить обьект.'
+        OnClick = MenuItem44Click
+      end
+      object MenuItem45: TMenuItem
+        Caption = '-'
       end
       object MenuItem21: TMenuItem
         Caption = 'Выход.'

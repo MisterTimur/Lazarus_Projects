@@ -58,7 +58,7 @@ type
 
   public
   MHeight:Longint;
-  ELE:POinter;
+  rELE:POinter;
   PLO:POinter;
   procedure U_RefreshPlo;
   end;
@@ -66,17 +66,17 @@ type
 var
   Form10: TForm10;
 
-procedure U_OpenPLos(iPlo,iEle:Pointer);
+procedure U_OpenPLos(iPlo,irEle:Pointer);
 function  I_FindFormPLo(iPLo:Pointer):Tform10;// Ищим форму с Плоскостью
 implementation {$R *.lfm} { TForm10 }
-procedure U_OpenPLos(iPlo,iEle:Pointer);
+procedure U_OpenPLos(iPlo,irEle:Pointer);
 var lForm10:TForm10;
 begin
   If I_FindFormPlo(iPlo)=Nil then begin
   lForm10:=TForm10.Create(application);
   lForm10.Visible:=True;
   lForm10.Plo:=iPlo;
-  lForm10.Ele:=iEle;
+  lForm10.rEle:=irEle;
   lForm10.U_RefreshPlo;
   end else I_FindFormPlo(iPlo).SetFocus;
 end;
@@ -225,6 +225,8 @@ end;
 procedure TForm10.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
 end;
 procedure TForm10.Panel1Click(Sender: TObject);
 begin

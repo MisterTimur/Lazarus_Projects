@@ -142,6 +142,8 @@ function  I_AddVerLan(iEle:Pointer):Pointer;
 function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;
 procedure I_DelDel(iPri:POinter);
 procedure I_CLOSE;
+function  OknoWidth(ix:longint):longint;
+function  OknoHeight(iy:longint):longint;
 
 {%EndRegion}
 implementation {$R *.lfm}
@@ -159,7 +161,7 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolVerInEle=512*1;// Максимальное количество Вершин в Элементе
   MaxKolLinInObj=512*1;// Максимальное количество Линий в Элементе
   MaxKolPloInObj=512*1;// Максимальное количество Плоскостей в Элементе
-  MaxKolEleInEle=128*1;// Максимальное количество Элементов в Элементе
+  MaxKolEleInEle=  8*1;// Максимальное количество Элементов в Элементе
   MaxKolObjInObj=128*4;// Максимальное количество обьектов в одном обьетке
 
   MaxKOlVerInMir=1024*64;//Максимальное количество Вершин в игровом мире
@@ -668,6 +670,22 @@ var   {Базовые функции        ===========================}{%Region
       iStr:=lStr;
       closefile(tf);
       end;
+ function  OknoWidth(ix:longint):longint;
+ var rez:Longint;
+ begin
+ Rez:=ix;
+ if ix<50 Then REz:=50;
+ if ix>screen.width Then Rez:=screen.width-50;
+ OknoWidth:=REz;
+ end;
+ function  OknoHeight(iy:longint):longint;
+ var rez:Longint;
+ begin
+ Rez:=iy;
+ if iy<50 Then REz:=50;
+ if iy>screen.height Then Rez:=screen.height-50;
+ OknoHeight:=REz;
+ end;
 
 {%EndRegion}
 
@@ -5825,7 +5843,7 @@ begin
 if GlDraw then begin
   begin // Подготовка в отрисовке
   timer2.Enabled:=false;
-  Tr:=GetTickCount64;
+  Tr:=GetTickCount;
   //----------------------------------------------------------------------------
   Cap2:=SerRcs8(cap2,cap3);
   CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
@@ -5852,7 +5870,7 @@ if GlDraw then begin
   begin // Завершение отрисовки
   OpenGLControl1.SwapBuffers;
   KolKAdVsek:=KolKAdVsek+1;
-  TR:=GetTickCount64-tr;
+  TR:=GetTickCount-tr;
   timer2.Enabled:=true;
   end;
 end;

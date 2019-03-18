@@ -173,8 +173,8 @@ end;
 procedure TForm5.FormCreate(Sender: TObject);
 begin
   mHeight:=Height;
-  left:=form3.left+form3.width-width-10;
-  top :=form3.top+30;
+  left:=OknoWidth(form3.left+form3.width-width-10);
+  top :=OknoHeight(form3.top+30);
 end;
 procedure TForm5.MenuItem10Click(Sender: TObject); // удалить скрипт
 begin

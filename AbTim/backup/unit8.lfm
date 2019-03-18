@@ -1,7 +1,7 @@
 object Form8: TForm8
-  Left = 450
+  Left = 315
   Height = 173
-  Top = 294
+  Top = 109
   Width = 128
   BorderStyle = bsSizeToolWin
   Caption = 'Form8'
@@ -14,7 +14,7 @@ object Form8: TForm8
   Font.Quality = fqDraft
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 34

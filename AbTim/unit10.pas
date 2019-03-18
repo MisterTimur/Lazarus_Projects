@@ -225,6 +225,9 @@ end;
 procedure TForm10.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
+  Caption:='Quad';
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
 end;
 procedure TForm10.Panel1Click(Sender: TObject);
 begin

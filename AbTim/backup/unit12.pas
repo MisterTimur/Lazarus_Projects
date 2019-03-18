@@ -8,6 +8,7 @@ type  { TForm12 }  TForm12 = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Splitter1: TSplitter;
+    procedure FormCreate(Sender: TObject);
     procedure Memo1Change(Sender: TObject);
   private
 
@@ -43,11 +44,17 @@ procedure TForm12.Memo1Change(Sender: TObject);
 begin
     I_SetT(Ani,memo1);
 end;
+
+procedure TForm12.FormCreate(Sender: TObject);
+begin
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
+end;
+
 procedure TForm12.U_RefreshAni;
 begin
 I_GetN(ANI,Edit1 );
 I_GetT(ANI,Memo1 );
 end;
-
 end.
 

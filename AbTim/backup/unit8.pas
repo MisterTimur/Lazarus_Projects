@@ -52,7 +52,7 @@ type
 var
   Form8: TForm8;
 
-procedure U_OpenPoint(iVer,iEle:Pointer);// Создает форму с вершиной
+procedure U_OpenPoint(iVer,irEle:Pointer);// Создает форму с вершиной
 function  I_FindFormVer(iVer:Pointer):Tform8;// Ищим форму с вершиной
 implementation {$R *.lfm} { TForm8 }
 procedure U_OpenPoint(iVer,irEle:Pointer);
@@ -130,8 +130,8 @@ end;
 procedure TForm8.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
-  left:=form3.left+form3.Width-width-10;
-  top:=form3.top+form3.height-height-50;
+  left:=OknoWidth(form3.left+form3.Width-width-10);
+  top:=OknoHeight(form3.top+form3.height-height-50);
 end;
 procedure TForm8.MenuItem1Click(Sender: TObject);
 begin

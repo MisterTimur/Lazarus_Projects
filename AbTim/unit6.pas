@@ -248,8 +248,9 @@ end;
 procedure TForm6.FormCreate(Sender: TObject);
 begin
   MHeight:=height;
-  left:=form3.Left+10;
-  top:=form3.top+30;
+  Caption:='Object';
+  left:=OknoWidth(form3.Left+10);
+  top:=OknoHeight(form3.top+30);
 end;
 procedure TForm6.MenuItem1Click(Sender: TObject);
 begin

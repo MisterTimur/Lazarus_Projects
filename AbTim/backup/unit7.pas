@@ -127,7 +127,7 @@ procedure TForm7.CheckListBox2DblClick(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
-   U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex]);
+   U_OpenElement(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex],Ele);
 end;
 procedure TForm7.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
   var f:Longint;
@@ -195,8 +195,8 @@ end;
 procedure TForm7.FormCreate(Sender: TObject);
 begin
   MHeight:=Height;
-  left:=form3.left+10;
-  top:=form3.top+form3.height-height-10;
+  left:=OknoWidth(form3.left+10);
+  top:=OknoHeight(form3.top+form3.height-height-10);
 end;
 procedure TForm7.MenuItem2Click(Sender: TObject);
 begin
