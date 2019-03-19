@@ -40,7 +40,7 @@ G_FileName:Ansistring='';// Имя файла с котрым работаем
 G_Change:Boolean=False  ;// В проекте есть не сохраненные изменения
 GlDraw:boolean=false    ;// Разрешение отрисовки
 
-procedure BLOK;
+procedure BLOK(iVer:Pointer);
 procedure I_DelVer(iVer:Pointer);// Удаление Вершины
 procedure I_DelLin(iLin:Pointer);// Удаление Линии
 procedure I_DelPLo(iPlo:Pointer);// Удаление Плоскости
@@ -505,6 +505,7 @@ var   {Базовые переменные     ===========================}{%Reg
 
   HMath:HAndle;HMathTrId:DWORD;// Перевычисление обьектов
   HSWAP:HAndle;HSWAPTrId:DWORD;// Вывод в буфер вывода
+  HSSWA:HAndle;HSSWATrId:DWORD;// Вывод в буфер вывода
   Clos:Boolean;// Флаг Завершения программы
 
   LBut:RBOL;// Состояние Левой кнопки мышки
@@ -701,8 +702,10 @@ TYPE TVER=CLASS  // Описание вершиины
   NAM:RSTR;// Наименование элемента
   MCL:RBYT;// Режим отрисовки Цветов
   TXT:RSTR;// Текст
+  YYY:RSIN;// Высота обьекта
   VIS:RBOL;// Видимость примитива
   VVI:RBOL;// Видимость примитива если он не мешает видеть персонажа
+  CHE:RLON;// Обьект нужно перевычислить
 
   SEL:RBOL;// ОБьект выделен для редактора нужно
   IDD:RLON;// Уникальный идентификатор
@@ -761,6 +764,8 @@ begin
   NOM:=0            ;// Номер в списке всех вершин
   TIP:=T_VER        ;// Тип Вершины
   MCL:=1            ;// Режим отрисовки выбор режима разукрашивания примитивов
+  YYY:=0            ;// Начальная высота расположения обьекта
+  CHE:=100          ;// если больше 0 то нужно перевычислять обьект
 
   LOC:=NilRCS3      ;// ЛОкальная коордианата
   MAT:=NilRCS3      ;// Используеться для вычисления реальных координат
@@ -1285,9 +1290,7 @@ var f:Longint;
 begin
 for f:=1 to KolE do with ELES[f] do E_SWAP;
 for f:=1 to KolV do begin
-//MirVers.ECOO1[VERS[f].NOM].X:=VERS[f].ECR.X-Cap2.x;
-//MirVers.ECOO1[VERS[f].NOM].Y:=VERS[f].ECR.Y-Cap2.y;
-//MirVers.ECOO1[VERS[f].NOM].Z:=VERS[f].ECR.Z-Cap2.z;
+MirVers.ECOO1[VERS[f].NOM]:=VERS[f].ECR;
 MirVers.ECOO2[VERS[f].NOM]:=VERS[f].ECR;
 end;
 end;
@@ -1432,6 +1435,7 @@ TYPE TOBJ=CLASS(TELE)
   OCEL:RCS3;// Цель куда нужно перпемесчаться глобально
   OMOV:RCS3;// Куда нужно перемещаться в данный момент времени
   OPER:RBOL;// Если это управляемый персонаж
+  MTP :TVER;// Маршрутная точка через котрую нужно пройти
   //OGRA:RBOL;// Являеться ли обьект гравитационным
   KolP:RLON;// Количество плоскостей
   KolL:RLON;// Количество Линий
@@ -2419,7 +2423,7 @@ if not Del and Vis and VVI then
      end
 else if MCL=2 then begin // Используем для цвета цвет плоскости
 
-     lver1:=addV(VERS[1],COL);
+     lver1:=addV(VERS[1],COL);sleep(1);
      lver2:=addV(VERS[2],COL);
      lver3:=addV(VERS[3],COL);
      lver4:=addV(VERS[4],COL);
@@ -2428,7 +2432,7 @@ else if MCL=2 then begin // Используем для цвета цвет пл
      end
 else if MCL=3 then begin // Используем для цвета цвета заданые в самой плоскои
 
-     lver1:=addV(VERS[1],COLS[1]);
+     lver1:=addV(VERS[1],COLS[1]);sleep(1);
      lver2:=addV(VERS[2],COLS[2]);
      lver3:=addV(VERS[3],COLS[3]);
      lver4:=addV(VERS[4],COLS[4]);
@@ -2996,7 +3000,7 @@ G_Change:=true;
 TPlo(iPlo).MCL:=inInt(iEdit.TEXT);
 I_RefreshActivePrimitiv;
 I_RefreshEditorPrimitiv(iPlo);
-BLOK;
+BLOK(iPlo);
 
 end;
 end;
@@ -3039,7 +3043,7 @@ TVEr(iVer).MAR:=StrToBool(iEdit.TEXT);
 if TVEr(iVer).MAR THEN iEdit.Color:=clRed else iEdit.Color:=clDefault;
 I_RefreshActivePrimitiv;
 I_RefreshEditorPrimitiv(iVer);
-BLOK;
+BLOK(iVer);
 
 end;
 end;
@@ -3065,7 +3069,7 @@ if iEdit.Text<>InString(TVEr(iVer).Loc.X) then begin
    TVEr(iVer).Loc.X:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
-   BLOK;
+   BLOK(iVer);
 
 end;
 end;
@@ -3078,7 +3082,7 @@ if iEdit.Text<>inString(TVEr(iVer).Loc.Y) then begin
    TVEr(iVer).Loc.Y:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
-   BLOK;
+   BLOK(iVer);
 end;
 end;
 procedure I_SetZ(iVer:Pointer;iEdit:TEdit);
@@ -3089,7 +3093,7 @@ if iEdit.Text<>inString(TVEr(iVer).Loc.Z) then begin
    G_Change:=true;
    TVEr(iVer).Loc.Z:=inFloat(iEdit.Text);
    I_RefreshEditorPrimitiv(iVer);
-   BLOK;
+   BLOK(iVer);
 end;
 end;
 
@@ -3105,7 +3109,7 @@ if iEdit.Text<>inString(RColRgbToInt(TVEr(iVer).COL))  then begin
    TVEr(iVer).COL.B:=Blue (trunc(inFloat(iEdit.Text)));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
-   BLOk;
+   BLOk(iVer);
 end;
 
 end;
@@ -3121,7 +3125,7 @@ if iEdit.Text<>inString(RColRgbToInt(TPlo(iPlo).COLS[1]))  then begin
    TPLo(iPLo).COLS[1].B:=Blue (trunc(inFloat(iEdit.Text)));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 
 end;
@@ -3137,7 +3141,7 @@ if iEdit.Text<>inString(RColRgbToInt(TPlo(iPlo).COLS[2]))  then begin
    TPLo(iPLo).COLS[2].B:=Blue (trunc(inFloat(iEdit.Text)));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 
 end;
@@ -3153,7 +3157,7 @@ if iEdit.Text<>inString(RColRgbToInt(TPlo(iPlo).COLS[3]))  then begin
    TPLo(iPLo).COLS[3].B:=Blue (trunc(inFloat(iEdit.Text)));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 
 end;
@@ -3169,7 +3173,7 @@ if iEdit.Text<>inString(RColRgbToInt(TPlo(iPlo).COLS[4]))  then begin
    TPLo(iPLo).COLS[4].B:=Blue (trunc(inFloat(iEdit.Text)));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 
 end;
@@ -3184,7 +3188,7 @@ if iEdit.Text<>inString(TPlo(iPlo).COLS[1].A) then begin
    TPLo(iPLo).COLS[1].A:=trunc(inFloat(iEdit.Text));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 end;
 procedure I_SAV2(iPlo:Pointer;iEdit:TEdit);
@@ -3197,7 +3201,7 @@ if iEdit.Text<>inString(TPlo(iPlo).COLS[2].A) then begin
    TPLo(iPLo).COLS[2].A:=trunc(inFloat(iEdit.Text));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPLo);
-   BLOk;
+   BLOk(iPlo);
 end;
 end;
 procedure I_SAV3(iPlo:Pointer;iEdit:TEdit);
@@ -3210,7 +3214,7 @@ if iEdit.Text<>inString(TPlo(iPlo).COLS[3].A) then begin
    TPLo(iPLo).COLS[3].A:=trunc(inFloat(iEdit.Text));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 end;
 procedure I_SAV4(iPlo:Pointer;iEdit:TEdit);
@@ -3223,7 +3227,7 @@ if iEdit.Text<>inString(TPlo(iPlo).COLS[4].A) then begin
    TPLo(iPLo).COLS[4].A:=trunc(inFloat(iEdit.Text));
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iPlo);
-   BLOk;
+   BLOk(iPlo);
 end;
 end;
 
@@ -3250,7 +3254,7 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.X) then begin
    TEle(iEle).EUGL.X:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iEle);
-   BLOK;
+   BLOK(iele);
 
 end;
 end;
@@ -3264,7 +3268,7 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.Y) then begin
    TEle(iEle).EUGL.Y:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iEle);
-   BLOK;
+   BLOK(iEle);
 
 end;
 end;
@@ -3277,7 +3281,7 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
    TEle(iEle).EUGL.Z:=inFloat(iEdit.Text);
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iEle);
-   BLOK;
+   BLOK(iEle);
 
 end;
 end;
@@ -4447,6 +4451,9 @@ end;
 var   {----------------------- Сохранение и загрузка  ===}{%Region /FOLD }
                                                            I_Reg11:Longint;
 
+
+procedure MARHS;forward;
+procedure OBINS;forward;
 function  I_SCENA_DOU_01(var iStr:Ansistring):Pointer;// дублирует обьекты
 var
 lPos:Longint;
@@ -4894,6 +4901,8 @@ if not MirObjs.OBJS[f].DEL then begin
 MirObjs.OBJS[f].O_MATH;
 MirObjs.OBJS[f].O_INIC;
 end;
+MARHS;// Раставляем маршрутные точки
+OBINS;// Определяем какой обьект в каком
 end;
 
 {%EndRegion}
@@ -4997,19 +5006,20 @@ end;
 var   {Таймеры                ===========================}{%Region /FOLD }
                                                            Reg14:Longint;
 
-function  VhoditObjPlo3d(iPer:TObj;iPLo:TPlo):Boolean;
+
+function  VhoditCooPlo3d(iCoo:RCS3;iPLo:TPlo):Boolean;
 var Rez:Boolean;
 begin
 Rez:=False;
-if Vhodit3D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
-VhoditObjPlo3d:=REz;
+if Vhodit3D(iCoo,iPlo.GMin,iPLo.GMAx) then rez:=true;
+VhoditCooPlo3d:=REz;
 end;
-function  VhoditObjPlo2d(iPer:TObj;iPLo:TPlo):Boolean;
+function  VhoditCooPlo2d(iCoo:RCS3;iPLo:TPlo):Boolean;
 var Rez:Boolean;
 begin
 Rez:=False;
-if Vhodit2D(iPer.LOC,iPlo.GMin,iPLo.GMAx) then rez:=true;
-VhoditObjPlo2d:=REz;
+if Vhodit2D(iCoo,iPlo.GMin,iPLo.GMAx) then rez:=true;
+VhoditCooPlo2d:=REz;
 end;
 function  FinPlos(iCoo:Rcs3):TPlo;// Ищит плоскость в котрой принадлеж КОО
 var REz:Tplo;f:Longint;
@@ -5021,160 +5031,14 @@ begin
     rez:=MirPLos.PLOS[f];
  FinPlos:=rez;
 end;
-
-
-procedure MATH;// Перевычисление обьектов
-var fo:RLON;
+function  FinPlos(iObj:Tobj;iCoo:Rcs3):TPlo;// Ищит плоскость в котрой принадлеж КОО
+var REz:Tplo;f:Longint;
 begin
-for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then begin
-MirObjs.OBJS[Fo].O_MATH;
-end;
-end;
-procedure MARH;// Определяет маршрутные линии и обьекты
-var Fo,Fl,Fv:Longint;
-begin
-//------------------------------------------------------------------------------
-// Установка в какой плоскости находитсья мршрутная точка
-//------------------------------------------------------------------------------
-for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then
-for fV:=1 to MirObjs.OBJS[Fo].KOlV do
-if not MirObjs.OBJS[Fo].VERS[fv].DEL Then
-if     MirObjs.OBJS[Fo].VERS[fv].MAR Then
-MirObjs.OBJS[Fo].VERS[fv].GPL:=FinPlos(MirObjs.OBJS[Fo].VERS[fv].REA);
-//------------------------------------------------------------------------------
-// Все маршрутные вершины находиться только на уровне обьекта
-// Все мрашрутные Линии находяить на уровне обьекта
-//------------------------------------------------------------------------------
-for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then
-for fl:=1 to MirObjs.OBJS[fo].KOlL   do
-if not MirObjs.OBJS[fo].LINS[fl].DEL Then
-if not MirObjs.OBJS[fo].LINS[fl].VERS[1].DEL Then
-if not MirObjs.OBJS[fo].LINS[fl].VERS[2].DEL Then
-if     MirObjs.OBJS[fo].LINS[fl].VERS[1].MAR Then
-if     MirObjs.OBJS[fo].LINS[fl].VERS[2].MAR Then
-       begin
-       MirObjs.OBJS[fo].LINS[fl].MAR:=true;
-       MirObjs.OBJS[fo].MAR:=true;
-       end;
-//------------------------------------------------------------------------------
-end;
-procedure OBIN;// Определяет какой обьект находитсья в каком
-var
-fo,fg:Longint;
-lPer,ldom:Tobj;
-begin
-// Какой обьект находиться в каком
-for fo:=1 to MirObjs.KOlO do if not MirObjs.OBJS[fo].DEL then begin
-//------------------------------------------------------------------------------
-lPer:=MirObjs.OBJS[fo];// проверяем в каком обьекте находиться данный обьект
-// ПРоверка находиться ли обьект там где он был в прошлый раз
-if lPer.Gob<>nil then
-if not Vhodit3D(lPer.REA,lPer.Gob.GMin,lPer.Gob.GMax) then
-begin TObj(lPer.GOb).DelDels(lPer);lPer.Gob:=Nil;end;
-//------------------------------------------------------------------------------
-      for fg:=1 to MirObjs.KOlO do // ищим обьект в котором находиться lPer
-      if (fg<>fo) then
-      if not MirObjs.OBJS[fg].DEL then begin
-      lDom:=MirObjs.OBJS[fg];// Перебираемый
-      //---------------------------------------------------------
-      if lPer.OB3<lDom.Ob3 then // Если обьект меньше
-      if (lPer.GOb=nil) or (lPer.GOb.OB3>lDom.Ob3) then // Если его грав >
-      if Vhodit3D(lPer.REA,lDom.GMin,lDom.GMax) then begin
-         //---------------------------------------------------
-         if lPer.GOb<>Nil Then TObj(lPer.GOb).DelDels(lPer);
-         lDom.AddDels(lPer);
-         lPer.Gob:=lDom;
-         //---------------------------------------------------
-      end;
-      end;
-//------------------------------------------------------------------------------
-end;
-end;
-procedure GRES;// Сброс GPL в обьектах
-var
-fo:Longint;
-begin
-//------------------------------------------------------------------------------
-// На какой плоскости находиться обьект Сброс
-for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
-if  MirObjs.Objs[fo].GOb<>Nil Then
-if  MirObjs.Objs[fo].GPl<>Nil Then
-if  not VhoditObjPlo3d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
-if  not VhoditObjPlo2d(MirObjs.Objs[fo],Tplo(MirObjs.Objs[fo].Gpl)) then
-MirObjs.Objs[fo].gpl:=nil;
-//------------------------------------------------------------------------------
-end;
-procedure VISO;// Определяет высоту обьекта на плоскости
-var
-fo,fg:Longint;
-begin
-// -----------------------------------------------------------------------------
-// Устновка высоты расположения обьекта на плоскости в 3д пространстве
-for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
-if  MirObjs.Objs[fo].OPER Then
-if  MirObjs.Objs[fo].GOb<>Nil Then
-for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
-if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].MAR then
-if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
-if  VhoditObjPlo3d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
-MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
-if MirObjs.Objs[fo].LOC.Y<
-TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC) then
-MirObjs.Objs[fo].LOC.Y:=
-TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
-else
-MirObjs.Objs[fo].LOC.Y:=
-MirObjs.Objs[fo].LOC.Y+
-(TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
--MirObjs.Objs[fo].LOC.Y)/2;
-end;
-// -----------------------------------------------------------------------------
-// Устновка высоты расположения обьекта на плоскости в 2д пространстве
-// Если неудалося нейти плоскость в 3D
-for fo:=1 to MirObjs.KOlO do if  not MirObjs.Objs[fo].DEL then
-if  MirObjs.Objs[fo].OPER Then
-if  MirObjs.Objs[fo].GOb<>Nil Then
-if  MirObjs.Objs[fo].GPl=Nil Then
-for fg:=1 to TObj(MirObjs.Objs[fo].GOb).KOlP do
-if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].MAR then
-if not TObj(MirObjs.Objs[fo].GOb).PLOS[fg].DEL then
-if  VhoditObjPlo2d(MirObjs.Objs[fo],TObj(MirObjs.Objs[fo].GOb).PLOS[fg])then begin
-MirObjs.Objs[fo].Gpl:=TObj(MirObjs.Objs[fo].GOb).PLOS[fg];
-if MirObjs.Objs[fo].LOC.Y<
-TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC) then
-MirObjs.Objs[fo].LOC.Y:=
-TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
-else
-MirObjs.Objs[fo].LOC.Y:=
-MirObjs.Objs[fo].LOC.Y+
-(TObj(MirObjs.Objs[fo].GOb).PLOS[fg].P_Viso(MirObjs.Objs[fo].LOC)
--MirObjs.Objs[fo].LOC.Y)/2;
-end;
-// -----------------------------------------------------------------------------
-end;
-procedure MPER;// Перемещение персонажей
-var f:Longint;
-begin
-for f:=1 to MirObjs.KolO do if form4.CheckBox3.Checked then
-if MirObjs.OBJS[f].NAM='Человечек' then begin
-   PER:=MirObjs.OBJS[f];
-   PER.OPER:=true;
-   if RasRcs2(PER.OMOV,PER.loc)>1 Then
-   PER.ELES[1].EUGL.y:=
-   GRAD((PER.OMOV.x-PER.loc.x),(PER.OMOV.z-PER.loc.z))+(pi/2);
-   PER.loc:=MovRCS3(PER.loc,PER.OMOV,5);
-   end;
-end;
-procedure BLOK;
-begin
-MATH;// Перевычисление обьектов
-MARH;// Определяет маршрутные линии и обьекты
-OBIN;// Определяет какой обьект находитсья в каком
-GRES;// Сброс GPL в обьектах
-VISO;// Определяет высоту обьекта на плоскости
+ REz:=Nil;
+ for f:=1 to iObj.KolP do // Перебираем плоскости
+ if not iObj.PLOS[f].DEl then // Если плоскость не удалена
+ if Vhodit3D(iCoo,iObj.PLOS[f].GMin,iObj.PLOS[f].GMAx) then rez:=iObj.PLOS[f];
+ FinPlos:=rez;
 end;
 
 var   {Маршрутизация          ===========================}{%Region /FOLD }
@@ -5335,6 +5199,7 @@ Ex:Boolean;
 begin
 for f:=1 to MirObjs.KolO do
 if not MirObjs.OBJS[f].DEL then // если обьект неудален
+if MirObjs.OBJS[f].GOB<>NIL THEN
 if    MirObjs.OBJS[f].OPER then // если обьект персонаж   // Если мы не на месте
 if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
    //---------------------------------------------------------------------------
@@ -5375,7 +5240,7 @@ if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
    end;
    //---------------------------------------------------------------------------
    // MPER - Маршрутная точка к котрой нужно перемещаться
-   if MPER<>NIL Then PEr.OMOV:=MPER.REA;
+   if MPER<>NIL Then begin PEr.OMOV:=MPER.REA;PEr.MTP:=MPER; end;
    //---------------------------------------------------------------------------
    end;
    //---------------------------------------------------------------------------
@@ -5383,6 +5248,138 @@ if RAsRCS3(MirObjs.OBJS[f].LOC,MirObjs.OBJS[f].OCEL)>3 then begin
 end;
 
 {%EndRegion}
+
+procedure MAROBJ(iObj:TObj);// Правельно определяет маршрутные вершины
+var fl,fv:Longint;
+begin
+with iObj do begin
+//------------------------------------------------------------------------------
+// Определяем на какой плоскости лежат маршрутные точки
+for fV:=1 to KOlV do
+if not VERS[fv].DEL Then
+if     VERS[fv].MAR Then
+begin
+iObj.MAR:=true;
+VERS[fv].GPL:=FinPlos(iObj,VERS[fv].REA);
+if VERS[fv].GPL<>nil then TPlo(VERS[fv].GPL).MAR:=True;
+end;
+//------------------------------------------------------------------------------
+// Определяем какие линии являтюсять марштурными
+for fl:=1 to KOlL do
+if not LINS[fl].DEL Then
+if (not LINS[fl].VERS[1].DEL) and
+   (not LINS[fl].VERS[2].DEL) and
+   (    LINS[fl].VERS[1].MAR) and
+   (    LINS[fl].VERS[2].MAR) Then LINS[fl].MAR:=true
+                              else LINS[fl].Mar:=False;
+//------------------------------------------------------------------------------
+// ВНИАМНИЕ СНИМАТЬ МАРКЕР МАРШУТНАЯ ПЛОСКОСТЬ НУЖНО В ДРУГОМ МЕСТЕ
+
+end;
+end;
+procedure OBIOBJ(iObj:TObj);// Опредеяет в каком обьекте находиться обьект
+var fg:Longint;RezPl:Tplo;
+begin
+RezPl:=Nil;
+//---------------------------------------------------------
+// Опредеяем находиться ли обьект в том же обьекте где и был
+if iObj.Gob<>nil then
+if (not Vhodit3D(iObj.REA,iObj.Gob.GMin,iObj.Gob.GMax)) or
+   (NOT TObj(iObj.GOb).MAR) THEN // Если этот обьект немаршрутный
+begin TObj(iObj.GOb).DelDels(iObj);iObj.Gob:=Nil;end;
+//---------------------------------------------------------
+// Ищим в каком обьекте находиться даннй обьект
+for fg:=1 to MirObjs.KOlO do
+if  NOT MirObjs.OBJS[Fg].DEL   THEN
+if      MirObjs.OBJS[Fg].MAR   THEN
+if      MirObjs.OBJS[Fg]<>iObj THEN with MirObjs.OBJS[fg] do
+if iObj.OB3<Ob3   then
+if Vhodit3D(iObj.REA,GMin,GMax) then
+if(iObj.GOb=nil) or (iObj.GOb.OB3>Ob3) then
+  begin
+  if iObj.GOb<>Nil Then TObj(iObj.GOb).DelDels(iObj);
+  AddDels(iObj);
+  iObj.Gob:=MirObjs.OBJS[Fg];
+  end;
+//---------------------------------------------------------
+// Определяем плоскость на котрой находиться обьект
+if iObj.GOb<>Nil then with TObj(iObj.GOb) do begin
+
+  for fg:=1 to KOlP do // ПРоверяем сперва 3D
+  if not PLOS[fg].DEL then
+  if     PLOS[fg].MAR then
+  if  VhoditCooPlo3d(iObj.REA,PLOS[fg]) then
+  if  (REzPl=NIL) then REzPl:=PLOS[fg] else
+  if  (iObj.MTP<>NIL) THEN
+  if  (iObj.MTP.GPL<>NIL) THEN
+  if  (iObj.MTP.GPL=PLOS[fg]) then REzPl:=PLOS[fg];
+
+  if RezPl=Nil Then
+  for fg:=1 to KOlP do // ПРоверяем 2D если 3D нету
+  if not PLOS[fg].DEL then
+  if     PLOS[fg].MAR then
+  if  VhoditCooPlo2d(iObj.REA,PLOS[fg]) then REzPl:=PLOS[fg];
+
+  iObj.Gpl:=RezPl;
+
+end;
+//---------------------------------------------------------
+if RezPl<>Nil Then iObj.YYY:=RezPl.P_Viso(iObj.REA);
+
+
+end;
+procedure MARHS;// Определяет маршрутные плоскости линии и обьекты
+var Fo:Longint;
+begin
+for fo:=1 to MirObjs.KOlO do
+if not MirObjs.OBJS[Fo].DEL Then MAROBJ(MirObjs.OBJS[Fo]);
+end;
+procedure OBINS;// Определяет какой обьект находитсья в каком
+var
+fo:Longint;
+begin
+// Какой обьект находиться в каком
+for fo:=1 to MirObjs.KOlO do
+if not MirObjs.OBJS[fo].DEL then
+if NOT MirObjs.OBJS[fo].MAR then OBIOBJ(MirObjs.OBJS[fo]);
+end;
+procedure MPERS;// Перемещение персонажей
+var f:Longint;lPer:Tobj;
+begin
+
+if form4.CheckBox3.Checked then begin
+   //---------------------------------------------------------------------------
+   // Определяем кто персонаж в игре
+   for f:=1 to MirObjs.KolO do
+   if length(MirObjs.OBJS[f].NAM)>1 then
+   if MirObjs.OBJS[f].NAM[1]='_' then begin
+
+   lPer:=MirObjs.OBJS[f];
+   lPer.OPER:=TRUE;
+   if lPer.NAM='_USER' then  PER:=lPer;
+
+   if RasRcs2(lPer.OMOV,lPer.loc)>1 Then begin
+   lPer.ELES[1].EUGL.y:=
+   GRAD((lPer.OMOV.x-lPer.loc.x),(lPer.OMOV.z-lPer.loc.z))+(pi/2);
+   lPer.loc:=MovRCS3(lPer.loc,lPer.OMOV,5);
+   OBIOBJ(lPer);
+   LPER.LOC.Y:=LPER.YYY;
+   lPer.CHE:=100;
+   end;
+
+   end;
+   //---------------------------------------------------------------------------
+   // Маршрутизируем персонажей в игре
+   GOGO;
+end;
+end;
+procedure BLOK(iVer:Pointer);
+begin
+tObj(Tver(iVer).Obj).O_MATH ;// Перевычисляем обьект
+MAROBJ(TObj(Tver(iVer).Obj));// Перевычисляем маршрутные точки
+OBIOBJ(TObj(Tver(iVer).Obj));// Определяет какой обьект находитсья в каком
+end;
+
 
 procedure I_EDI_IDD;// ОТрисо IDшник редктируемых   примитивов
 var
@@ -5656,10 +5653,6 @@ if DBUT then begin // Перемешение
 end;
 end;
 
-
-
-
-
 var f:Longint;RC:Longword;P:TPLO;
 begin
 if form4.MenuItem13.Checked or form4.MenuItem6.Checked then begin
@@ -5720,16 +5713,16 @@ var F:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(33);
-     for f:=1 to MirObjs.KolO do begin
-     if not MirObjs.OBJS[f].Del then
-     MirObjs.OBJS[f].O_MATH;
-     sleep(1);
+   sleep(33);//----------------------------------------------
+     for f:=1 to MirObjs.KolO do
+     with MirObjs.OBJS[f] do if(not Del)and(CHE>0)THEN
+     begin
+       CHE:=CHE-1;
+       O_MATH;
+       sleep(1);
      end;
-     //sleep(30);MATH;// Вычисление обьекта
-     //sleep(30);DOPL;// Опредение кем будем управлять
-     //sleep(30);GRAV;// Вычисление Гравитация
-     //sleep(30);GOGO;// Вычисление Маршрутизация
+   sleep(33);//----------------------------------------------
+     MPERS;
    end;
 result:=0;
 end;
@@ -5741,20 +5734,19 @@ lDrKL:Longword;// Реальное количество Вершин Линий
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(30);
+     sleep(50);
      // ========================================================================
      with MirVers do for f:=1 to KOlV do
-     if   Vers[f].OBJ.VIS then
+     //if   NOT Tobj(Vers[f].OBJ).OPER then
      if   Vers[f].ELE.VIS then
      if       Vers[f].VIS then
      if   not Vers[f].DEL then
      with Vers[f] do begin
-     Sleep(1);
-     ECOO1[f]:=ECR;
+     ECOO1[f]:=ECR;sleep(1);
      ECOL1[f]:=Col;
      end;
      // ========================================================================
-     lDrKp:=0;sleep(30);
+     lDrKp:=0;
      with MirPlos do for f:=1 to KolP do
      if   Plos[f].OBJ.VIS then
      if   Plos[f].ELE.VIS then
@@ -5763,7 +5755,7 @@ begin
      if       Plos[f].VVI then
      if   Plos[f].MCL=1   then // Не использовать собственые цвета
      with Plos[f] do begin
-     lDrKp:=lDrKp+1;Sleep(1);
+     lDrKp:=lDrKp+1;sleep(1);
      EPlo1[lDrKp].VERS[1]:=Vers[1].Nom;
      EPlo1[lDrKp].VERS[2]:=Vers[2].Nom;
      EPlo1[lDrKp].VERS[3]:=Vers[3].Nom;
@@ -5781,11 +5773,11 @@ begin
      if   not Lins[f].DEL then
      if   not Lins[f].MAR then
      with Lins[f] do begin
-     lDrKl:=lDrKl+1; Sleep(1);
+     lDrKl:=lDrKl+1;sleep(1);
      ELin1[lDrKl].VERS[1]:=Vers[1].Nom;
      ELin1[lDrKl].VERS[2]:=Vers[2].Nom;
      end;
-     MirLins.DrKl:=lDrKl;sleep(30);
+     MirLins.DrKl:=lDrKl;
      // ========================================================================
      with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
      with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
@@ -5793,6 +5785,21 @@ begin
      with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
      // ========================================================================
      MirCols.Swap;
+   end;
+   result:=0;
+end;
+function  TheadSSwa(Par:Pointer):DWORD;stdcall;// Вывод сцены в буфер
+var
+FO:Longword;// ДЛя циклов
+begin
+   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
+   while Clos=false do begin
+     sleep(50);
+     // ========================================================================
+     with MirObjs do for fo:=1 to KOlO do begin
+     if OBJS[FO].CHE>0 THEN OBJS[FO].O_SWAP;
+     sleep(1);
+     end;
    end;
    result:=0;
 end;
@@ -5818,6 +5825,7 @@ Timer1.enabled:=false;// Отключаем запускатор
   // Отдельный поток для расчета координат всех вершин
   HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
   HSWAP:=CreateThread(nil,0,@TheadSWAP,nil,0,HSwapTrId);
+  HSSWA:=CreateThread(nil,0,@TheadSSWA,nil,0,HSSwaTrId);
   //OpenGl настройки
   OpenGLControl1.OnPaint:= @OpenGLControl1Paint; // for "mode delphi" this would be "GLBox.OnPaint := GLboxPaint"
   OpenGLControl1.invalidate;
@@ -5945,7 +5953,7 @@ begin
   glViewport  (0, 0, OpenGLControl1.Width, OpenGLControl1.Height);// Указываем размер области в котрой рисуем
   glMatrixMode(GL_PROJECTION);// Указываем матрицу с котрой будем работать
   glLoadIdentity;// Сброс в еденичную матрицу
-  gluPerspective(60, OpenGLControl1.Width / OpenGLControl1.Height,MinRAsInMir,MAxRAsInMir);// Устанвока перспективы (Угол обзора в градусах,Соотношение сторон ,Ближний предел ,дальний предел )
+  gluPerspective(45, OpenGLControl1.Width / OpenGLControl1.Height,MinRAsInMir,MAxRAsInMir);// Устанвока перспективы (Угол обзора в градусах,Соотношение сторон ,Ближний предел ,дальний предел )
   glMatrixMode(GL_MODELVIEW);// Выбираем модельную матрицу
   glLoadIdentity();// сброс в еденичную матрицу
 end;
@@ -5994,88 +6002,13 @@ end;
 {%EndRegion}
 end.
 
-
-// 1. Чай 5 мин
-// 2. Уборка в коде
-//    Общая проверка загрузки и сохранения
-//    ЗАгрузка сохранение отдельных обьектов
-//    Сделать сайт
-//    Сделать Информацию о файлах
-//    Придумать как скомпилировать программу надежным способом
-
-
-
-// 3. Доделать интепретатор и сделать демо сцену
-
-
-
-
-
-{Склад
-
-
-procedure I_EDITDRAWIDDVIS;// Делает не видимыми мешающие стеки
-var f:LongWord;RC:LongWord;lCap2:RCS3;
+{
+procedure MATH;// Перевычисление обьектов
+var fo:RLON;
 begin
-lCap2:=Cap2;
-if   form4.CheckBox2.Checked then begin
-lCap2.X:=Cap2.X;
-lCap2.Y:=Cap2.Y+100;
-lCap2.Z:=Cap2.Z;
+for fo:=1 to MirObjs.KOlO do
+if not MirObjs.OBJS[Fo].DEL Then begin
+MirObjs.OBJS[Fo].O_MATH;
 end;
-glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
-
-{
-for f:=1 to MirObjs.KolO do // пребираю Обьекты
-if NOT MirObjs.OBJS[f].DEL then
-if MirObjs.OBJS[f].TIP= then with MirObjs.OBJS[f] do
-for f2:=1 to KolP do
-if NOT PLOS[f].DEL then begin
-I_DrPlo(PLOS[f2],intToCol(1000));// РИсую плоскость
-RC:=0; glReadPixels(trunc(form3.ClientWidth/2),trunc(form3.ClientHeight/2)
-,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if RC<>2000 then begin // Если плоскость загораживает обьект
-glDisable(GL_DEPTH_TEST); // Отключаю буфер глубины
-PLOS[f2].VVI:=False;
-I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
-glEnable(GL_DEPTH_TEST);// включаю буфер глубины
 end;
-end
 }
-
-
-
-{
-for f:=1 to MirPlos.KolP do // пребираю всеплоскости
-if not TOBJ(MirPlos.PLOS[f].OBJ).OPER then
-if not MirPlos.PLOS[f].DEL then  // если он не удален
-if     MirPlos.PLOS[f].VIS then begin // Это не важно видимость обьекта
-MirPLos.PLOS[f].VVI:=true; // Изначально все плоскости видимы
-I_DrPlo(MirPLos.PLOS[f],intToCol(1000));// РИсую плоскость
-RC:=0; glReadPixels(trunc(form3.ClientWidth/2),trunc(form3.ClientHeight/2)
-             ,1,1,GL_RGB,GL_UNSIGNED_BYTE,@RC);
-if RC<>2000 then begin // Если плоскость загораживает обьект
-//glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экрана
-//glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-glDisable(GL_DEPTH_TEST); // Отключаю буфер глубины
-MirPLos.PLOS[f].VVI:=False;
-I_DrVer(lCaP2,intToColRgb(2000));// РИсую пиксель в точке куда смотрит камера
-glEnable(GL_DEPTH_TEST);// включаю буфер глубины
-end;
-end;
-
-}
-end;
-
-
-
-}
-
-
-
-
-
-
-

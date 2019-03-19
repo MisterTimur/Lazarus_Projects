@@ -1,9 +1,9 @@
 object Form3: TForm3
-  Left = 229
+  Left = 272
   Height = 400
-  Top = 93
+  Top = 120
   Width = 700
-  Caption = 'Form3'
+  Caption = 'AbTim'
   ClientHeight = 400
   ClientWidth = 700
   OnClose = FormClose

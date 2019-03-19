@@ -4,7 +4,7 @@ object Form4: TForm4
   Top = 545
   Width = 720
   BorderStyle = bsSizeToolWin
-  Caption = 'Form4'
+  Caption = 'Control panel'
   ClientHeight = 51
   ClientWidth = 720
   Font.CharSet = RUSSIAN_CHARSET
