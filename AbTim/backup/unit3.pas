@@ -13,6 +13,7 @@ type { TForm3 }  TForm3 = class(TForm)
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure OpenGLControl1Click(Sender: TObject);
     procedure OpenGLControl1DblClick(Sender: TObject);
     procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -503,9 +504,9 @@ var   {Базовые переменные     ===========================}{%Reg
 
   KolKAdVsek:Longint;// Количество кадров в секунду
 
-  HMath:HAndle;HMathTrId:DWORD;// Перевычисление обьектов
-  HSWAP:HAndle;HSWAPTrId:DWORD;// Вывод в буфер вывода
-  HSSWA:HAndle;HSSWATrId:DWORD;// Вывод в буфер вывода
+  //HMath:HAndle;HMathTrId:DWORD;// Перевычисление обьектов
+  //HSWAP:HAndle;HSWAPTrId:DWORD;// Вывод в буфер вывода
+  //HSSWA:HAndle;HSSWATrId:DWORD;// Вывод в буфер вывода
   Clos:Boolean;// Флаг Завершения программы
 
   LBut:RBOL;// Состояние Левой кнопки мышки
@@ -666,7 +667,7 @@ var   {Базовые функции        ===========================}{%Region
       Reset(tf);
       while Not Eof(tf) do begin
       Readln(tf,S);
-      lStr:=lStr+s
+      lStr:=lStr+s+LN;
       end;
       iStr:=lStr;
       closefile(tf);
@@ -686,6 +687,29 @@ var   {Базовые функции        ===========================}{%Region
  if iy<50 Then REz:=50;
  if iy>screen.height Then Rez:=screen.height-50;
  OknoHeight:=REz;
+ end;
+ function  MemoToStr(iMemo:Tmemo):Ansistring;
+ var lStr:AnsiString;f:Longint;
+ begin
+ lStr:='';
+ for f:=0 to imemo.lines.count-1 do
+ lStr:=lStr+imemo.lines[f]+LN;
+ MemoToStr:=lStr;
+ end;
+ procedure StrToMemo(iStr:Ansistring;iMemo:Tmemo);
+ var f:Longint;lStr:Ansistring;
+ begin
+ F:=1;iMemo.Lines.clear;lStr:='';
+ while f<=Length(iStr) do
+ if iStr[f]=chr(13) then begin
+    iMemo.Lines.Add(lStr);f:=f+1;
+    if iStr[f]=chr(10) then f:=f+1;
+    lStr:='';
+    end
+ else begin
+ lStr:=lStr+iStr[f];f:=f+1;
+ end;
+ if lStr<>'' Then iMemo.Lines.add(lStr);
  end;
 
 {%EndRegion}
@@ -1290,8 +1314,9 @@ var f:Longint;
 begin
 for f:=1 to KolE do with ELES[f] do E_SWAP;
 for f:=1 to KolV do begin
-MirVers.ECOO1[VERS[f].NOM]:=VERS[f].ECR;
-MirVers.ECOO2[VERS[f].NOM]:=VERS[f].ECR;
+MirVers.ECOO2[VERS[f].NOM]:=
+SerRCS8(MirVers.ECOO2[VERS[f].NOM],VERS[f].ECR);
+MirVers.ECOO1[VERS[f].NOM]:=MirVers.ECOO2[VERS[f].NOM];
 end;
 end;
 procedure   TELE.E_INIC;// Вычисление Экранны координат
@@ -1707,7 +1732,9 @@ end;
 var   {Интепретатор           ===========================}{%Region /FOLD }
                                                            RegI0:Longint;
 
+//------------------------------------------------------------------------------
 Type  TEl=Class  // Элемент исполнения
+
   TXT:Ansistring;// Текс слова
   Zna:Ansistring;// Значение
   TIP:LongWord;  // ТИп элемента
@@ -1724,21 +1751,33 @@ Type  TEl=Class  // Элемент исполнения
   procedure VlogitSc(S1,S2:Ansistring); // Вложение скобок
   Procedure VlogitPA;// Вложение параметров
   Procedure VlogitBl;// Вложкение Исполнительных блоков
-  Procedure VlogitMa(S:Ansistring);// Вложение математических операций   '+-'
+  Procedure VlogitADD;// Вложение математических операций
+  Procedure VlogitMUL;// Вложение математических операций
+  Procedure VlogitSRA;// Вложение математических операций
+  Procedure VlogitLET;// Вложение математических операций
 
   Function  FinFun(N:Ansistring):Tel;// ПОиск функции или переменной
 
-  Procedure Cle;// Очистка элемента
+  Procedure Cle   ;// Очистка элемента
   Function  Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
-  Procedure TRuns;// Выполняет структуру
-  Procedure TRun;// Выполняет 1 елемент
+  Procedure TRuns ;// Выполняет структуру
+  Procedure TRun  ;// Выполняет 1 елемент
   Procedure RunFun;// Найти и выполнить пользовательскую функцию
+  Procedure Op_ADD;// Сложение
+  Procedure Op_SUB;// Вычитание
+  Procedure Op_DIV;// Деление
+  Procedure Op_MUL;// умножение
 
-  Procedure Op_Mat;
-  Procedure Op_Let;
-  Procedure Op_Sco;
-  Procedure Op_WHI;
-  Procedure Op_Con;
+  Procedure Op_MEN;// Меньше
+  Procedure Op_BOL;// Больше
+  Procedure Op_BRA;// Больше либо равно
+  Procedure Op_MRA;// Меньше либо равно
+  Procedure Op_NER;// Не равно
+
+  Procedure Op_Let;// Прсивоение
+  Procedure Op_SCO;// Скобка
+  Procedure Op_WHI;// While
+  Procedure Op_PRI;// Вывод в консоль
 
 end;
 TYpe  TScr=class(Tver)
@@ -1747,7 +1786,20 @@ Function  ReadPars(S:Ansistring):Tel;
 Procedure ViewElem(E:Tel;O:Ansistring);
 Procedure ProgStru;
 end;
+Function  EtoCif(s:Ansistring):boolean;
+var
+f:Longint;
+rez:Boolean;
+begin
+rez:=true;
 
+for f:=1 to Length(s) do
+if (s[f]<'0') or (s[f]>'9')then begin rez:=false;break end;
+
+If Length(s)=0 Then Rez:=False;
+EtoCif:=REz;
+end;
+//------------------------------------------------------------------------------
 Function  Tel.Del:Tel;// Изятие элемента из списка
 var
 Pr,Ne:TEl;
@@ -1781,8 +1833,8 @@ Then Lst.NEX:=El // Присоеденяемс к посоледнему эле�
 Else Blo:=El;    // Указываем себя как первый элемент в списке
 Add:=El;
 end;
-Function  Tel.Add(S:AnsiString;T:LongWord):Tel;// Создает и Добавляет элемент в конец списка
-Var
+Function  Tel.Add(S:AnsiString;T:LongWord):Tel;
+Var // Создает и Добавляет элемент в конец списка
 Rez:Tel;
 begin
 Rez:=nil;
@@ -1844,22 +1896,73 @@ Uka.VlogitBl;
 UKA:=UKA.NEX;
 end;
 end;
-Procedure TEl.VlogitMa(S:Ansistring);// Вложение математических операций   '+-'
+Procedure TEl.VlogitMUL;// Вложение математических операций   '*/'
 Var
 Uka:Tel;
 Begin
 Uka:=Blo;
 While UKA<>Nil do
 Begin
-if (Uka.pre<>nil) and (Uka.nex<>nil) and (POs(Uka.TXT,S)<>0) Then
-   begin
+if (Uka.pre<>nil) and (Uka.nex<>nil) and
+   ((Uka.TXT='/') or (Uka.TXT='*'))
+   Then begin
    Uka.Add(UKA.Pre);
    Uka.Add(UKA.Nex);
    end;
-UKA.VlogitMa(s);
+UKA.VlogitMUL;
 Uka:=Uka.Nex;
 end;
-
+end;
+Procedure TEl.VlogitADD;// Вложение математических операций   '+-'
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+if (Uka.pre<>nil) and (Uka.nex<>nil) and
+   ((Uka.TXT='+') or (Uka.TXT='-'))
+   Then begin
+   Uka.Add(UKA.Pre);
+   Uka.Add(UKA.Nex);
+   end;
+UKA.VlogitADD;
+Uka:=Uka.Nex;
+end;
+end;
+Procedure TEl.VlogitSRA;// Вложение математических операций '><!='
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+if (Uka.pre<>nil) and (Uka.nex<>nil) and
+   ((Uka.TXT='<') or (Uka.TXT='>' ) or (Uka.TXT='<=')or
+   (Uka.TXT='>=') or (Uka.TXT='!=') or (Uka.TXT='<>'))
+   Then begin
+   Uka.Add(UKA.Pre);
+   Uka.Add(UKA.Nex);
+   end;
+UKA.VlogitSRA;
+Uka:=Uka.Nex;
+end;
+end;
+Procedure TEl.VlogitLET;// Вложение математических операций '><!='
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+if (Uka.pre<>nil) and (Uka.nex<>nil) and (Uka.TXT=':=')
+   Then begin
+   Uka.Add(UKA.Pre);
+   Uka.Add(UKA.Nex);
+   end;
+UKA.VlogitLET;
+Uka:=Uka.Nex;
+end;
 end;
 //------------------------------------------------------------------------------
 Procedure Tel.Cle;// Очистка элемента
@@ -1917,14 +2020,184 @@ Begin
 Uka:=Uka.Nex;
 end;
 end;
+//------------------------------------------------------------------------------
+Procedure Tel.Op_ADD;//  Сложение
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
+ zna:=FloatToStr(StrToFloat(Blo.zna)+StrToFloat(Blo.nex.zna)) else
+ zna:=Blo.zna+Blo.nex.zna;
+end;
+end;
+Procedure Tel.Op_SUB;// Вычитание
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
+ zna:=FloatToStr(StrToFloat(Blo.zna)-StrToFloat(Blo.nex.zna)) else
+ ERR('Нельзя вычитать строки');
+end;
+end;
+Procedure Tel.Op_DIV;//   Деление
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
+ if StrToFloat(Blo.nex.zna)=0 then
+ zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
+ ERR('Делени на ноль') else ERR('Нельзя делить строки');
+end;
+end;
+Procedure Tel.Op_MUL;// Умножение
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
+ zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
+ ERR('Нельзя Умножать строки');
+end;
+end;
+
+Procedure Tel.Op_MEN;//    Меньше
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ then zna:= BoolToStr(StrToFloat(Blo.zna)<StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_BOL;//    Больше
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ then zna:= BoolToStr(StrToFloat(Blo.zna)>StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna>Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_MRA;// Меньше Ра
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ then zna:= BoolToStr(StrToFloat(Blo.zna)<=StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<=Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_BRA;// Больше Ра
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ then zna:= BoolToStr(StrToFloat(Blo.zna)>=StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna>=Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_NER;//  Не равно
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
+ then zna:= BoolToStr(StrToFloat(Blo.zna)<>StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<>Blo.nex.zna);
+end;
+end;
+
+Procedure Tel.Op_LET; // = Операция присваивания значения
+Var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+Blo.nex.TRun;
+F:=FinFun(Blo.TXT);
+if F<>Nil Then F.Zna:=Blo.nex.Zna;
+end;
+end;
+Procedure Tel.Op_SCO; // Выполняет скобку
+var
+l:TEl;
+rez:Ansistring;
+begin
+rez:='';l:=Blo;
+while l<>nil do
+begin
+l.TRun;
+rez:=rez+l.zna;
+l:=l.nex;
+end;
+zna:=rez;
+end;
+Procedure Tel.Op_WHI; // Оператор WHITE
+var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+Blo.TRun;
+While Blo.zna='1' do
+begin
+Blo.nex.TRun;
+Blo.TRun;
+end;
+end;
+end;
+Procedure Tel.Op_PRI; // Вывод в консоль
+var
+l:Tel;
+Co:Ansistring;
+begin
+if Blo<>nil then
+begin
+l:=Blo.Blo;
+while l<>nil do
+begin
+l.TRun;
+Co:=Co+l.zna;
+L:=l.nex;
+end;
+end;
+Form15.PRI(co);
+end;
+
+//------------------------------------------------------------------------------
 Procedure Tel.TRun;// Выполняет 1 елемент
 Begin
-if Pos(Txt,'*/+-<>')<>0 Then Op_Mat else
-if Txt='='              Then Op_Let else
-if Txt='('              Then Op_Sco else
-if Txt='{'              Then TRuns  else
-if Txt='WHILE'          Then Op_WHI else
-if Txt='PRINT'          Then Op_Con else
+if Txt='+'              Then Op_ADD else // Сложение
+if Txt='-'              Then Op_SUB else // Вычитание
+if Txt='/'              Then Op_DIV else // Деление
+if Txt='*'              Then Op_MUL else // Умножение
+if Txt='<'              Then Op_MEN else // Меньше
+if Txt='>'              Then Op_BOL else // Больше
+if Txt='>='             Then Op_BRA else // Больше либо равно
+if Txt='<='             Then Op_MRA else // Меньше либо равно
+if Txt='<>'             Then Op_NER else // Неравно
+if Txt='!='             Then Op_NER else // Неравно
+if Txt=':='             Then Op_Let else // ПРисвоение
+if Txt='('              Then Op_Sco else // ОТкрывающаяся скобка
+if Txt='{'              Then TRuns  else // Открывающитйся блок
+if Txt='WHILE'          Then Op_WHI else // Цикл while
+if Txt='PRINT'          Then Op_PRI else // Оператор PRINT
 if Tip=Ti_Slo           Then RunFun;
 end;
 Function  Tel.FinFun(N:Ansistring):Tel;// ПОиск функции или переменной
@@ -1987,98 +2260,6 @@ if F<>Nil Then
           end;
 end;
 //------------------------------------------------------------------------------
-Function  EtoCif(s:Ansistring):boolean;
-var
-f:Longint;
-rez:Boolean;
-begin
-rez:=true;
-
-for f:=1 to Length(s) do
-if (s[f]<'0') or (s[f]>'9')then begin rez:=false;break end;
-
-If Length(s)=0 Then Rez:=False;
-EtoCif:=REz;
-end;
-Procedure Tel.Op_Mat;
-Begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
-
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- Then
- if TXT='+' then zna:=FloatToStr(StrToFloat(Blo.zna)+StrToFloat(Blo.nex.zna)) else
- if TXT='-' then zna:=FloatToStr(StrToFloat(Blo.zna)-StrToFloat(Blo.nex.zna)) else
- if TXT='*' then zna:=FloatToStr(StrToFloat(Blo.zna)*StrToFloat(Blo.nex.zna)) else
- if TXT='/' then zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
- if TXT='>' then begin if (StrToFloat(Blo.zna)>StrToFloat(Blo.nex.zna))            Then zna:='1'else zna:='0';end else
- if TXT='<' then begin if (StrToFloat(Blo.zna)<StrToFloat(Blo.nex.zna))            Then zna:='1'else zna:='0';end
- else
- if TXT='+' then zna:=Blo.zna+Blo.nex.zna else
- if TXT='=' then begin if Blo.zna=Blo.nex.zna  then zna:='1' else zna:='0' end else
- if TXT='>' then begin if Blo.zna>Blo.nex.zna then zna:='1' else zna:='0' end else
- if TXT='<' then begin if Blo.zna<Blo.nex.zna then zna:='1' else zna:='0' end;
-end;
-End;
-Procedure Tel.Op_Let; // = Операция присваивания значения
-Var
-F:Tel;
-begin
-if (blo<>nil) and  (blo.nex<>nil) then
-begin
-Blo.nex.TRun;
-F:=FinFun(Blo.TXT);
-if F<>Nil Then F.Zna:=Blo.nex.Zna;
-end;
-end;
-Procedure Tel.Op_Sco; // Выполняет скобку
-var
-l:TEl;
-rez:Ansistring;
-begin
-rez:='';l:=Blo;
-while l<>nil do
-begin
-l.TRun;
-rez:=rez+l.zna;
-l:=l.nex;
-end;
-zna:=rez;
-end;
-Procedure Tel.Op_WHI; // Оператор WHITE
-var
-F:Tel;
-begin
-if (blo<>nil) and  (blo.nex<>nil) then
-begin
-Blo.TRun;
-While Blo.zna='1' do
-begin
-Blo.nex.TRun;
-Blo.TRun;
-end;
-end;
-end;
-Procedure Tel.Op_Con; // Вывод в консоль
-var
-l:Tel;
-Co:Ansistring;
-begin
-if Blo<>nil then
-begin
-l:=Blo.Blo;
-while l<>nil do
-begin
-l.TRun;
-Co:=Co+l.zna;
-L:=l.nex;
-end;
-end;
-Form15.PRI(co);
-end;
-//------------------------------------------------------------------------------
 Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
 var
   REZ:Tel;     // Списко слов на которые разита программа
@@ -2090,7 +2271,12 @@ Var
   REz:Ansistring;
 begin
 REz:='';
-While (UKA<=LEN) and ((S[UKA]>='A') and (S[UKA]<='Z')) do
+While (UKA<=LEN) and (
+                        ((S[UKA]>='A') and (S[UKA]<='Z')) or
+                        ((S[UKA]>='a') and (S[UKA]<='z')) or
+                        ( S[UKA]='.' ) or
+                        ( S[UKA]='_' )
+                      ) do
       begin
       REZ:=REZ+S[UKA];
       UKA:=UKA+1;
@@ -2114,8 +2300,18 @@ Var
   REz:Ansistring;
 begin
 REz:='';
-If (UKA<=LEN) Then
-If
+
+If (UKA+1<=LEN) and        (
+  (S[UKA]+S[UKA+1]='>=') or
+  (S[UKA]+S[UKA+1]='<=') or
+  (S[UKA]+S[UKA+1]='<>') or
+  (S[UKA]+S[UKA+1]=':=')   )
+      Then
+      begin
+      REZ:=REZ+S[UKA]+S[UKA];
+      UKA:=UKA+2;
+      end else
+If (UKA<=LEN) and (
   (S[UKA]='+') or
   (S[UKA]='-') or
   (S[UKA]='*') or
@@ -2126,7 +2322,7 @@ If
   (S[UKA]='}') or
   (S[UKA]='>') or
   (S[UKA]='<') or
-  (S[UKA]='=')
+  (S[UKA]='=')    )
       Then
       begin
       REZ:=REZ+S[UKA];
@@ -2163,8 +2359,8 @@ While UKA<=LEN Do
       If REZ.ADD(REadKav,TI_KAv)=nil Then UKA:=UKA+1;
 ReadPars:=Rez;
 end;
-Procedure TScr.ViewElem(E:Tel;O:Ansistring); // Выводит на печать содержимое элемента
-Var
+Procedure TScr.ViewElem(E:Tel;O:Ansistring);
+Var // Выводит на печать содержимое элемента
 L:TEl;
 begin
 L:=E.BLO;
@@ -2181,10 +2377,10 @@ PRG.VlogitSc('(',')');
 PRG.VlogitSc('{','}');
 PRG.VlogitPA;
 PRG.VlogitBl;
-PRG.VlogitMA('*/');
-PRG.VlogitMA('+-');
-PRG.VlogitMA('<>');
-PRG.VlogitMA('=');
+PRG.VlogitMUL;
+PRG.VlogitADD;
+PRG.VlogitSRA;
+PRG.VlogitLET;
 end;
 
 TYPE TScrS=CLASS
@@ -2446,6 +2642,7 @@ else if MCL=3 then begin // Используем для цвета цвета з
 end;
 
 {%EndRegion}
+
 
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
@@ -2848,7 +3045,7 @@ procedure I_GetT(iPri:Pointer;iMemo:TMemo);
 begin
 
 if (Tobject(iPri) is Tver) then
-if iMemo.Text<>TVEr(iPri).txt then iMemo.Text:=TVEr(iPri).Txt;
+if iMemo.Text<>TVEr(iPri).txt then StrToMemo(TVEr(iPri).Txt,iMemo);
 
 end;
 procedure I_GeMl(iPlo:Pointer;iEdit:TEdit);
@@ -3028,7 +3225,7 @@ begin
 if iVer<>Nil Then
 if (TVEr(iVer).Txt<>iMemo.Text) Then begin
   G_Change:=true;
-  TVEr(iVer).Txt:=iMemo.Text;
+  TVEr(iVer).Txt:=MemoToStr(iMemo);
   I_RefreshActivePrimitiv;
   I_RefreshEditorPrimitiv(iVer);
 end;
@@ -4276,7 +4473,7 @@ iStr:=iStr+LN;
 end;
 
 
-Procedure I_TANI_PUT_01(iAni:TAni;var iStr:Ansistring);// Записать анимацию
+Procedure I_TANI_PUT_01(iAni:TAni;var iStr:Ansistring);// Записать анимцию
 var f:Longint;
 begin
 iStr:=iStr+'K('+iAni.NAM+')';// Сохраняю имя скрипта
@@ -5353,14 +5550,17 @@ if form4.CheckBox3.Checked then begin
    for f:=1 to MirObjs.KolO do
    if length(MirObjs.OBJS[f].NAM)>1 then
    if MirObjs.OBJS[f].NAM[1]='_' then begin
-
    lPer:=MirObjs.OBJS[f];
    lPer.OPER:=TRUE;
    if lPer.NAM='_USER' then  PER:=lPer;
-
    if RasRcs2(lPer.OMOV,lPer.loc)>1 Then begin
+
+
+
+   if RasRcs2(lPer.OCEL,lPer.loc)>3 Then
    lPer.ELES[1].EUGL.y:=
    GRAD((lPer.OMOV.x-lPer.loc.x),(lPer.OMOV.z-lPer.loc.z))+(pi/2);
+
    lPer.loc:=MovRCS3(lPer.loc,lPer.OMOV,5);
    OBIOBJ(lPer);
    LPER.LOC.Y:=LPER.YYY;
@@ -5707,21 +5907,21 @@ glEnableClientState(GL_COLOR_ARRAY);
 end;
 end;
 //------------------------------------------------------------------------------
-
+{
 function  TheadMath(Par:Pointer):DWORD;stdcall;// Вычисление
 var F:Longint;
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-   sleep(33);//----------------------------------------------
+     sleep(33);//----------------------------------------------
      for f:=1 to MirObjs.KolO do
      with MirObjs.OBJS[f] do if(not Del)and(CHE>0)THEN
      begin
        CHE:=CHE-1;
        O_MATH;
+       O_SWAP;
        sleep(1);
      end;
-   sleep(33);//----------------------------------------------
      MPERS;
    end;
 result:=0;
@@ -5734,10 +5934,10 @@ lDrKL:Longword;// Реальное количество Вершин Линий
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(50);
+     sleep(500);
      // ========================================================================
      with MirVers do for f:=1 to KOlV do
-     //if   NOT Tobj(Vers[f].OBJ).OPER then
+     if   NOT Tobj(Vers[f].OBJ).OPER then
      if   Vers[f].ELE.VIS then
      if       Vers[f].VIS then
      if   not Vers[f].DEL then
@@ -5794,15 +5994,156 @@ FO:Longword;// ДЛя циклов
 begin
    SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
    while Clos=false do begin
-     sleep(50);
+     sleep(100);
+
      // ========================================================================
-     with MirObjs do for fo:=1 to KOlO do begin
-     if OBJS[FO].CHE>0 THEN OBJS[FO].O_SWAP;
-     sleep(1);
-     end;
+     //with MirObjs do for fo:=1 to KOlO do begin
+     //sleep(1);
+     //if OBJS[FO].CHE>0 THEN OBJS[FO].O_SWAP;
+     //end;
    end;
    result:=0;
 end;
+}
+var   {Потоки                 ===========================}{%Region /FOLD }
+                                                           Reg1T:Longint;
+
+Type TheadMath = class(TThread)
+    private
+    protected
+    procedure Execute; override;
+    public
+    Constructor Create(CreateSuspended : boolean);
+end;
+constructor TheadMath.Create(CreateSuspended : boolean);
+begin
+  FreeOnTerminate := True;
+  inherited Create(CreateSuspended);
+end;
+procedure   TheadMath.Execute;
+var f:Longint;
+begin
+  Priority:=tpIdle;
+  while (not Terminated) and (Clos=false) do
+    begin
+      sleep(33);//----------------------------------------------
+      for f:=1 to MirObjs.KolO do
+      with MirObjs.OBJS[f] do if(not Del)and(CHE>0)THEN
+      begin
+        CHE:=CHE-1;
+        O_MATH;
+        O_SWAP;
+        sleep(1);
+      end;
+      MPERS;
+    end;
+end;
+
+Type TheadSwap = class(TThread)
+    private
+    protected
+    procedure Execute; override;
+    public
+    Constructor Create(CreateSuspended : boolean);
+end;
+constructor TheadSwap.Create(CreateSuspended : boolean);
+begin
+  FreeOnTerminate := True;
+  inherited Create(CreateSuspended);
+end;
+procedure   TheadSwap.Execute;
+var
+F:Longword;// ДЛя циклов
+lDrKp:Longword;// Реальное количество Вершин Плоскостей
+lDrKL:Longword;// Реальное количество Вершин Линий
+begin
+  Priority:=tpIdle;
+  while (not Terminated) and (Clos=false) do
+    begin
+    sleep(500);
+    // ========================================================================
+    with MirVers do for f:=1 to KOlV do
+    if   NOT Tobj(Vers[f].OBJ).OPER then
+    if   Vers[f].ELE.VIS then
+    if       Vers[f].VIS then
+    if   not Vers[f].DEL then
+    with Vers[f] do begin
+    ECOO1[f]:=ECR;sleep(1);
+    ECOL1[f]:=Col;
+    end;
+    // ========================================================================
+    lDrKp:=0;
+    with MirPlos do for f:=1 to KolP do
+    if   Plos[f].OBJ.VIS then
+    if   Plos[f].ELE.VIS then
+    if       Plos[f].VIS then
+    if   not Plos[f].DEL then
+    if       Plos[f].VVI then
+    if   Plos[f].MCL=1   then // Не использовать собственые цвета
+    with Plos[f] do begin
+    lDrKp:=lDrKp+1;sleep(1);
+    EPlo1[lDrKp].VERS[1]:=Vers[1].Nom;
+    EPlo1[lDrKp].VERS[2]:=Vers[2].Nom;
+    EPlo1[lDrKp].VERS[3]:=Vers[3].Nom;
+    EPlo1[lDrKp].VERS[4]:=Vers[3].Nom;
+    EPlo1[lDrKp].VERS[5]:=Vers[4].Nom;
+    EPlo1[lDrKp].VERS[6]:=Vers[1].Nom;
+    end;
+    MirPLos.DrKp:=lDrKp;
+    // ========================================================================
+    lDrKl:=0;
+    with MirLins do for f:=1 to KolL do
+    if   Lins[f].OBJ.VIS then
+    if   Lins[f].ELE.VIS then
+    if       Lins[f].VIS then
+    if   not Lins[f].DEL then
+    if   not Lins[f].MAR then
+    with Lins[f] do begin
+    lDrKl:=lDrKl+1;sleep(1);
+    ELin1[lDrKl].VERS[1]:=Vers[1].Nom;
+    ELin1[lDrKl].VERS[2]:=Vers[2].Nom;
+    end;
+    MirLins.DrKl:=lDrKl;
+    // ========================================================================
+    with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
+    with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
+    with MirLins do Move(ELin1,ELin2,(DrKl+0)*SizeOf(RLIN));
+    with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
+    // ========================================================================
+    MirCols.Swap;
+    end;
+end;
+
+Type TheadSSwa = class(TThread)
+    private
+    protected
+    procedure Execute; override;
+    public
+    Constructor Create(CreateSuspended : boolean);
+end;
+constructor TheadSSwa.Create(CreateSuspended : boolean);
+begin
+  FreeOnTerminate := True;
+  inherited Create(CreateSuspended);
+end;
+procedure   TheadSSwa.Execute;
+begin
+  Priority:=tpIdle;
+  while (not Terminated) and (Clos=false) do
+    begin
+    sleep(500);
+    end;
+end;
+
+var
+headMath:TheadMath;
+headSwap:TheadSwap;
+headSSwa:TheadSSwa;
+
+{%EndRegion}
+
+
+
 procedure TForm3.Timer1Timer(Sender: TObject);// Запускатор
 var
 x,z:RINT;
@@ -5823,9 +6164,12 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirScrs:=TScrS.Create;// Создаем списки скриптов
   MirCols:=TCols.Create;// Создает Цветные Плоскости
   // Отдельный поток для расчета координат всех вершин
-  HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
-  HSWAP:=CreateThread(nil,0,@TheadSWAP,nil,0,HSwapTrId);
-  HSSWA:=CreateThread(nil,0,@TheadSSWA,nil,0,HSSwaTrId);
+  headMath:=TheadMath.Create(false);
+  headSwap:=TheadSwap.Create(false);
+  headSswa:=TheadSswa.Create(false);
+  //HMath:=CreateThread(nil,0,@TheadMath,nil,0,HMathTrId);
+  //HSWAP:=CreateThread(nil,0,@TheadSWAP,nil,0,HSwapTrId);
+  //HSSWA:=CreateThread(nil,0,@TheadSSWA,nil,0,HSSwaTrId);
   //OpenGl настройки
   OpenGLControl1.OnPaint:= @OpenGLControl1Paint; // for "mode delphi" this would be "GLBox.OnPaint := GLboxPaint"
   OpenGLControl1.invalidate;
@@ -5890,6 +6234,7 @@ end;
 
 procedure TForm3.Timer3Timer(Sender: TObject);// ПОдгонка чатсоты кадров
 begin
+
   Caption:=IntToStr(KolKAdVsek)+' '+
              //FloatToStr(CaU2.X)+' '+
              //FloatToStr(CaU2.Z)+' '+
@@ -5903,6 +6248,14 @@ begin
 if (KolKAdVsek>33) and (Timer2.interval<50) then Timer2.interval:=Timer2.interval+1;
 if (KolKAdVsek<33) and (Timer2.interval>20) then Timer2.interval:=Timer2.interval-1;
 KolKAdVsek:=0;
+
+//if (MouN.X>form4.Left) and
+//(MouN.X<=form4.Left+form4.width) and
+//(MouN.Z> form4.Top) and
+//(MouN.Z<=form4.Top+form4.Height)
+//then form4.Visible:=true else form4.Visible:=false;
+
+
 end;
 
 {%EndRegion}
@@ -5944,6 +6297,12 @@ begin
   SBUT:=false;
   if key=46 then I_DelDel(form4.Act);
 end;
+
+procedure TForm3.OpenGLControl1Click(Sender: TObject);
+begin
+
+end;
+
 procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
 begin
  DBUT:=true;

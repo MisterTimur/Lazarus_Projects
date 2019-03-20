@@ -19,6 +19,7 @@ object Form3: TForm3
     Top = 0
     Width = 700
     Align = alClient
+    OnClick = OpenGLControl1Click
     OnDblClick = OpenGLControl1DblClick
     OnKeyDown = FormKeyDown
     OnKeyUp = FormKeyUp

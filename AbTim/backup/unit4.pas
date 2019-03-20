@@ -4,7 +4,6 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
 type { TForm4 } TForm4 = class(TForm)
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
-    CheckBox4: TCheckBox;
     ColorDialog1: TColorDialog;
     Edit1: TEdit;
     Edit10: TEdit;
@@ -60,6 +59,9 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem44: TMenuItem;
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
+    MenuItem47: TMenuItem;
+    MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -89,7 +91,7 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter7: TSplitter;
     Splitter8: TSplitter;
     Splitter9: TSplitter;
-    procedure CheckBox4Change(Sender: TObject);
+
     procedure Edit10DblClick(Sender: TObject);
     procedure Edit11DblClick(Sender: TObject);
     procedure Edit12DblClick(Sender: TObject);
@@ -138,6 +140,9 @@ type { TForm4 } TForm4 = class(TForm)
     procedure MenuItem42Click(Sender: TObject);
     procedure MenuItem44Click(Sender: TObject);
     procedure MenuItem46Click(Sender: TObject);
+    procedure MenuItem47Click(Sender: TObject);
+    procedure MenuItem48Click(Sender: TObject);
+    procedure MenuItem49Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -340,14 +345,22 @@ begin
   // Сохранить обьект в Файл
 end;
 
-procedure TForm4.Edit1Change(Sender: TObject);
+procedure TForm4.MenuItem47Click(Sender: TObject);
 begin
-  I_SetX(Act,Edit1);
+ MenuItem6.Checked:=false;
+ MenuItem8.Checked:=false;
+ MenuItem9.Checked:=false;
+ MenuItem10.Checked:=false;
+ MenuItem12.Checked:=false;
+ MenuItem13.Checked:=false;
+ MenuItem22.Checked:=false;
+ MenuItem14.Checked:=false;
+ MenuItem31.Checked:=true;
+ MenuItem16.Checked:=true;
 end;
-procedure TForm4.CheckBox4Change(Sender: TObject);
+
+procedure TForm4.MenuItem48Click(Sender: TObject);
 begin
- if CheckBox4.Checked
- then begin
  MenuItem6.Checked:=false;
  MenuItem8.Checked:=false;
  MenuItem9.Checked:=false;
@@ -358,8 +371,10 @@ begin
  MenuItem14.Checked:=true;
  MenuItem31.Checked:=true;
  MenuItem16.Checked:=true;
- end
- else begin
+end;
+
+procedure TForm4.MenuItem49Click(Sender: TObject);
+begin
  MenuItem6.Checked:=true;
  MenuItem8.Checked:=true;
  MenuItem9.Checked:=true;
@@ -370,8 +385,13 @@ begin
  MenuItem14.Checked:=false;
  MenuItem31.Checked:=false;
  MenuItem16.Checked:=false;
- end;
 end;
+
+procedure TForm4.Edit1Change(Sender: TObject);
+begin
+  I_SetX(Act,Edit1);
+end;
+
 procedure TForm4.Edit10DblClick(Sender: TObject);
 begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';

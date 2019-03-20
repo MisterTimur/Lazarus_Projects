@@ -171,9 +171,6 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <CodeGeneration>
-      <TargetOS Value="win32"/>
-    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>

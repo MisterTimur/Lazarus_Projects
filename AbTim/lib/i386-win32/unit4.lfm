@@ -1,11 +1,11 @@
 object Form4: TForm4
   Left = 248
-  Height = 70
+  Height = 69
   Top = 448
   Width = 720
   BorderStyle = bsSizeToolWin
   Caption = 'Control panel'
-  ClientHeight = 51
+  ClientHeight = 50
   ClientWidth = 720
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
@@ -21,12 +21,12 @@ object Form4: TForm4
   Visible = True
   object Panel1: TPanel
     Left = 0
-    Height = 25
+    Height = 24
     Top = 26
     Width = 77
     Align = alLeft
     Caption = 'Panel1'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 77
     TabOrder = 0
     object Edit1: TEdit
@@ -46,18 +46,18 @@ object Form4: TForm4
   end
   object Splitter1: TSplitter
     Left = 77
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel2: TPanel
     Left = 82
-    Height = 25
+    Height = 24
     Top = 26
     Width = 78
     Align = alLeft
     Caption = 'Panel2'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 78
     TabOrder = 2
     object Edit2: TEdit
@@ -77,18 +77,18 @@ object Form4: TForm4
   end
   object Splitter2: TSplitter
     Left = 160
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel3: TPanel
     Left = 165
-    Height = 25
+    Height = 24
     Top = 26
     Width = 75
     Align = alLeft
     Caption = 'Panel3'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 75
     TabOrder = 4
     object Edit3: TEdit
@@ -108,18 +108,18 @@ object Form4: TForm4
   end
   object Splitter3: TSplitter
     Left = 240
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel4: TPanel
     Left = 245
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel4'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 6
     object Edit4: TEdit
@@ -139,18 +139,18 @@ object Form4: TForm4
   end
   object Splitter4: TSplitter
     Left = 295
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel5: TPanel
     Left = 300
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel5'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 8
     object Edit5: TEdit
@@ -170,18 +170,18 @@ object Form4: TForm4
   end
   object Splitter5: TSplitter
     Left = 350
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel6: TPanel
     Left = 355
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel6'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 10
     object Edit6: TEdit
@@ -201,18 +201,18 @@ object Form4: TForm4
   end
   object Splitter6: TSplitter
     Left = 405
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel7: TPanel
     Left = 410
-    Height = 25
+    Height = 24
     Top = 26
     Width = 67
     Align = alLeft
     Caption = 'Panel7'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 67
     TabOrder = 12
     object Edit7: TEdit
@@ -233,18 +233,18 @@ object Form4: TForm4
   end
   object Splitter7: TSplitter
     Left = 477
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel8: TPanel
     Left = 482
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel8'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 14
     object Edit8: TEdit
@@ -277,42 +277,34 @@ object Form4: TForm4
       Top = 5
       Width = 104
       Caption = 'Камера + 150'
+      Checked = True
+      OnChange = CheckBox2Change
+      State = cbChecked
       TabOrder = 0
     end
-    object CheckBox4: TCheckBox
-      Left = 120
-      Height = 19
-      Top = 5
-      Width = 160
-      Caption = 'Режим редактирования'
-      Checked = True
-      OnChange = CheckBox4Change
-      State = cbChecked
-      TabOrder = 1
-    end
     object CheckBox3: TCheckBox
-      Left = 288
+      Left = 120
       Height = 19
       Top = 5
       Width = 167
       Caption = 'Привязать к персонажу'
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object Splitter8: TSplitter
     Left = 532
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel10: TPanel
     Left = 537
-    Height = 25
+    Height = 24
     Top = 26
     Width = 74
     Align = alLeft
     Caption = 'Panel10'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 74
     TabOrder = 17
     object Edit9: TEdit
@@ -329,18 +321,18 @@ object Form4: TForm4
   end
   object Splitter9: TSplitter
     Left = 611
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel11: TPanel
     Left = 616
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel11'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 19
     object Edit10: TEdit
@@ -357,18 +349,18 @@ object Form4: TForm4
   end
   object Splitter10: TSplitter
     Left = 666
-    Height = 25
+    Height = 24
     Top = 26
     Width = 5
   end
   object Panel12: TPanel
     Left = 671
-    Height = 25
+    Height = 24
     Top = 26
     Width = 50
     Align = alLeft
     Caption = 'Panel12'
-    ClientHeight = 25
+    ClientHeight = 24
     ClientWidth = 50
     TabOrder = 21
     object Edit11: TEdit
@@ -558,6 +550,18 @@ object Form4: TForm4
       end
       object MenuItem39: TMenuItem
         Caption = '-'
+      end
+      object MenuItem49: TMenuItem
+        Caption = 'Сцена'
+        OnClick = MenuItem49Click
+      end
+      object MenuItem48: TMenuItem
+        Caption = 'Реадктирование'
+        OnClick = MenuItem48Click
+      end
+      object MenuItem47: TMenuItem
+        Caption = 'Маршруты'
+        OnClick = MenuItem47Click
       end
       object MenuItem15: TMenuItem
         Caption = 'Шрифт.'
