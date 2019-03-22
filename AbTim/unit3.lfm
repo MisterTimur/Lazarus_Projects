@@ -1,7 +1,7 @@
 object Form3: TForm3
-  Left = 272
+  Left = 91
   Height = 400
-  Top = 120
+  Top = 396
   Width = 700
   Caption = 'AbTim'
   ClientHeight = 400
@@ -12,7 +12,7 @@ object Form3: TForm3
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   Position = poScreenCenter
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '1.6.0.4'
   object OpenGLControl1: TOpenGLControl
     Left = 0
     Height = 400

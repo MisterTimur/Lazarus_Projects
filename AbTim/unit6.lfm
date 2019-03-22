@@ -1,7 +1,7 @@
 object Form6: TForm6
-  Left = 395
+  Left = 287
   Height = 241
-  Top = 103
+  Top = 202
   Width = 414
   BorderStyle = bsSizeToolWin
   Caption = 'Form6'
@@ -15,7 +15,7 @@ object Form6: TForm6
   FormStyle = fsStayOnTop
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 34
@@ -176,11 +176,13 @@ object Form6: TForm6
       Items.Strings = (
         'V'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox1Click
       OnDblClick = CheckListBox1DblClick
-      OnSelectionChange = CheckListBox1SelectionChange
+      OnKeyPress = CheckListBox1KeyPress
+      OnKeyUp = CheckListBox1KeyUp
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -196,11 +198,13 @@ object Form6: TForm6
       Items.Strings = (
         'L'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox2Click
       OnDblClick = CheckListBox2DblClick
-      OnSelectionChange = CheckListBox2SelectionChange
+      OnKeyPress = CheckListBox2KeyPress
+      OnKeyUp = CheckListBox2KeyUp
       PopupMenu = PopupMenu2
       TabOrder = 1
       Data = {
@@ -216,11 +220,13 @@ object Form6: TForm6
       Items.Strings = (
         'P'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox3Click
       OnDblClick = CheckListBox3DblClick
-      OnSelectionChange = CheckListBox3SelectionChange
+      OnKeyPress = CheckListBox3KeyPress
+      OnKeyUp = CheckListBox3KeyUp
       PopupMenu = PopupMenu3
       TabOrder = 2
       Data = {
@@ -254,11 +260,13 @@ object Form6: TForm6
       Items.Strings = (
         'E'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox4Click
       OnDblClick = CheckListBox4DblClick
-      OnSelectionChange = CheckListBox4SelectionChange
+      OnKeyPress = CheckListBox4KeyPress
+      OnKeyUp = CheckListBox4KeyUp
       PopupMenu = PopupMenu4
       TabOrder = 6
       Data = {

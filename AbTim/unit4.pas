@@ -178,6 +178,9 @@ begin
   left:=form3.Left+form3.width-width-30;
   top:=form3.top+form3.height-height-10;
 end;
+
+
+
 procedure TForm4.MenuItem10Click(Sender: TObject);
 begin
  MenuItem10.Checked:=not MenuItem10.Checked;

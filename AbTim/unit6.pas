@@ -41,14 +41,30 @@ type
     Splitter3: TSplitter;
     Splitter4: TSplitter;
 
+    procedure CheckListBox1Click(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
-    procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox1KeyPress(Sender: TObject; var Key: char);
+    procedure CheckListBox1KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CheckListBox2Click(Sender: TObject);
+    //procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2DblClick(Sender: TObject);
-    procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox2KeyPress(Sender: TObject; var Key: char);
+    procedure CheckListBox2KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CheckListBox3Click(Sender: TObject);
+    //procedure CheckListBox2SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox3DblClick(Sender: TObject);
-    procedure CheckListBox3SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox3KeyPress(Sender: TObject; var Key: char);
+    procedure CheckListBox3KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CheckListBox4Click(Sender: TObject);
+    //procedure CheckListBox3SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox4DblClick(Sender: TObject);
-    procedure CheckListBox4SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox4KeyPress(Sender: TObject; var Key: char);
+    procedure CheckListBox4KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    //procedure CheckListBox4SelectionChange(Sender: TObject; User: boolean);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2MouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -81,6 +97,7 @@ type
   OBJ:Pointer;
   MHeight:Longint;
   procedure U_RefreshObj;
+  procedure TimSelectionChange(Sender: TObject);
   end;
 
 var
@@ -147,50 +164,126 @@ begin
    if CheckListBox1.itemindex>0 then
    U_OpenPoint(CheckListBox1.Items.Objects[CheckListBox1.ItemIndex],Obj);
 end;
-procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+
+procedure TForm6.CheckListBox1Click(Sender: TObject);
+begin
+ TimSelectionChange(sender);
+end;
+
+procedure TForm6.CheckListBox1KeyPress(Sender: TObject; var Key: char);
+begin
+  TimSelectionChange(sender);
+end;
+
+procedure TForm6.CheckListBox1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   TimSelectionChange(sender);
+end;
+
+procedure TForm6.CheckListBox2Click(Sender: TObject);
+begin
+   TimSelectionChange(sender);
+end;
+
+procedure TForm6.TimSelectionChange(Sender: TObject);
 var f:Longint;
 begin
 
- For f:=1 to CheckListBox1.Items.Count-1 do
- I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
+ For f:=1 to TCheckListBox(Sender).Items.Count-1 do
+ I_SetSel(TCheckListBox(Sender).Items.Objects[f],TCheckListBox(Sender).Selected[f])
 
 end;
+//procedure TForm6.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+//var f:Longint;
+//begin
+//
+// For f:=1 to CheckListBox1.Items.Count-1 do
+// I_SetSel(CheckListBox1.Items.Objects[f],CheckListBox1.Selected[f])
+//
+//end;
 procedure TForm6.CheckListBox2DblClick(Sender: TObject);
 begin
    if CheckListBox2.itemindex<CheckListBox2.items.count then
    if CheckListBox2.itemindex>0 then
    U_OpenLine(CheckListBox2.Items.Objects[CheckListBox2.ItemIndex],Obj);
 end;
-procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
-var f:Longint;
+
+procedure TForm6.CheckListBox2KeyPress(Sender: TObject; var Key: char);
 begin
- For f:=1 to CheckListBox2.Items.Count-1 do
- I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
+ TimSelectionChange(sender);
 end;
+
+procedure TForm6.CheckListBox2KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ TimSelectionChange(sender);
+end;
+
+procedure TForm6.CheckListBox3Click(Sender: TObject);
+begin
+    TimSelectionChange(sender);
+end;
+
+//procedure TForm6.CheckListBox2SelectionChange(Sender: TObject; User: boolean);
+//var f:Longint;
+//begin
+// For f:=1 to CheckListBox2.Items.Count-1 do
+// I_SetSel(CheckListBox2.Items.Objects[f],CheckListBox2.Selected[f])
+//end;
 procedure TForm6.CheckListBox3DblClick(Sender: TObject);
 begin
    if CheckListBox3.itemindex<CheckListBox3.items.count then
    if CheckListBox3.itemindex>0 then
    U_OpenPLos(CheckListBox3.Items.Objects[CheckListBox3.ItemIndex],Obj);
 end;
-procedure TForm6.CheckListBox3SelectionChange(Sender: TObject; User: boolean);
-var f:Longint;
+
+procedure TForm6.CheckListBox3KeyPress(Sender: TObject; var Key: char);
 begin
- For f:=1 to CheckListBox3.Items.Count-1 do
- I_SetSel(CheckListBox3.Items.Objects[f],CheckListBox3.Selected[f])
+   TimSelectionChange(sender);
 end;
+
+procedure TForm6.CheckListBox3KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ TimSelectionChange(sender);
+end;
+
+procedure TForm6.CheckListBox4Click(Sender: TObject);
+begin
+   TimSelectionChange(sender);
+end;
+
+//procedure TForm6.CheckListBox3SelectionChange(Sender: TObject; User: boolean);
+//var f:Longint;
+//begin
+// For f:=1 to CheckListBox3.Items.Count-1 do
+// I_SetSel(CheckListBox3.Items.Objects[f],CheckListBox3.Selected[f])
+//end;
 procedure TForm6.CheckListBox4DblClick(Sender: TObject);
 begin
    if CheckListBox4.itemindex<CheckListBox4.items.count then
    if CheckListBox4.itemindex>0 then
    U_OpenElement(CheckListBox4.Items.Objects[CheckListBox4.ItemIndex],obj);
 end;
-procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
-var f:Longint;
+
+procedure TForm6.CheckListBox4KeyPress(Sender: TObject; var Key: char);
 begin
- For f:=1 to CheckListBox4.Items.Count-1 do
- I_SetSel(CheckListBox4.Items.Objects[f],CheckListBox4.Selected[f])
+  TimSelectionChange(sender);
 end;
+
+procedure TForm6.CheckListBox4KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  TimSelectionChange(sender);
+end;
+
+//procedure TForm6.CheckListBox4SelectionChange(Sender: TObject; User: boolean);
+//var f:Longint;
+//begin
+// For f:=1 to CheckListBox4.Items.Count-1 do
+// I_SetSel(CheckListBox4.Items.Objects[f],CheckListBox4.Selected[f])
+//end;
 procedure TForm6.Edit2Change(Sender: TObject);
 begin
   I_SetX(Obj,Edit2);

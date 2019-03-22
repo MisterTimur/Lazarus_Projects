@@ -3,9 +3,10 @@ program AbTim;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}//{$IFDEF UseCThreads}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  //{$ENDIF}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, Unit1, Unit2, Unit3, lazopenglcontext, Unit4, Unit5, Unit6, Unit7,
   Unit8, Unit9, Unit10, Unit11, Unit12, Unit13, Unit14, Unit15;

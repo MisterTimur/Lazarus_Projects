@@ -6298,6 +6298,8 @@ begin
   if key=46 then I_DelDel(form4.Act);
 end;
 
+
+
 procedure TForm3.OpenGLControl1Click(Sender: TObject);
 begin
 
