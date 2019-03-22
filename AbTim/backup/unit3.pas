@@ -2,7 +2,7 @@ unit Unit3; {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, OpenGLContext, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls,windows,CheckLst,Types,Gl,Glu,GLext;
+  Dialogs, StdCtrls, ExtCtrls,CheckLst,Types,Gl,Glu,GLext;
 type { TForm3 }  TForm3 = class(TForm)
     OpenGLControl1: TOpenGLControl;
     Timer1: TTimer;
@@ -379,9 +379,6 @@ REz.z:=1/Ras*RZ*iSpe+a.z;
 end;
 MovRCS3:=Rez;
 end;
-
-
-
 function  RasRCS2(A,B:RCS3):RSIN;// Расчитывает рсатояние между 2 вершинами
 Var
 Rez:RSin;
@@ -2014,6 +2011,7 @@ Begin
 Uka:=Blo;
 While UKA<>Nil do
 Begin
+ sleep(1);
  If (Not UKA.FUN)    or
     (Uka.Txt='WHILE')or
     (UKA.Txt='IF')   Then Uka.TRun;
@@ -2021,6 +2019,7 @@ Uka:=Uka.Nex;
 end;
 end;
 //------------------------------------------------------------------------------
+
 Procedure Tel.Op_ADD;//  Сложение
 begin
 if (blo<>nil)  and (blo.nex<>nil) Then
@@ -2308,7 +2307,7 @@ If (UKA+1<=LEN) and        (
   (S[UKA]+S[UKA+1]=':=')   )
       Then
       begin
-      REZ:=REZ+S[UKA]+S[UKA];
+      REZ:=REZ+S[UKA]+S[UKA+1];
       UKA:=UKA+2;
       end else
 If (UKA<=LEN) and (
@@ -2432,7 +2431,6 @@ begin
 KolS:=0;
 KolD:=0;
 end;
-
 
 {%EndRegion}
 var   {Буфер обмена           ===========================}{%Region /FOLD }
@@ -3971,10 +3969,11 @@ lScr:=TScr(iScr);
 if lScr.PRG<>nil Then lScr.PRG.Cle;
 lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
 lScr.ProgStru;// Формирование структуры программы
-//lScr.ViewElem(lScr.PRG,''); Для отладки вывод структуры
+//lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
 lScr.PRG.TRUNS;
 I_RUN:=Nil;
 end;
+
 {%EndRegion}
 var   {----------------------- Удалание  примитивов   ===}{%Region /FOLD }
                                                           F_Reg11:Longint;
@@ -6297,6 +6296,8 @@ begin
   SBUT:=false;
   if key=46 then I_DelDel(form4.Act);
 end;
+
+
 
 procedure TForm3.OpenGLControl1Click(Sender: TObject);
 begin

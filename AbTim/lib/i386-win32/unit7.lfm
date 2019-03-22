@@ -15,7 +15,7 @@ object Form7: TForm7
   FormStyle = fsStayOnTop
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 32
@@ -176,11 +176,13 @@ object Form7: TForm7
       Items.Strings = (
         'V'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox1Click
       OnDblClick = CheckListBox1DblClick
-      OnSelectionChange = CheckListBox1SelectionChange
+      OnKeyPress = CheckListBox1KeyPress
+      OnKeyUp = CheckListBox1KeyUp
       PopupMenu = PopupMenu1
       TabOrder = 0
       Data = {
@@ -202,11 +204,13 @@ object Form7: TForm7
       Items.Strings = (
         'E'
       )
-      ItemHeight = 15
+      ItemHeight = 21
       ItemIndex = 0
       MultiSelect = True
+      OnClick = CheckListBox2Click
       OnDblClick = CheckListBox2DblClick
-      OnSelectionChange = CheckListBox2SelectionChange
+      OnKeyPress = CheckListBox2KeyPress
+      OnKeyUp = CheckListBox2KeyUp
       PopupMenu = PopupMenu2
       TabOrder = 2
       Data = {

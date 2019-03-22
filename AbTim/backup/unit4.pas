@@ -92,6 +92,7 @@ type { TForm4 } TForm4 = class(TForm)
     Splitter8: TSplitter;
     Splitter9: TSplitter;
 
+    procedure CheckBox2Change(Sender: TObject);
     procedure Edit10DblClick(Sender: TObject);
     procedure Edit11DblClick(Sender: TObject);
     procedure Edit12DblClick(Sender: TObject);
@@ -177,6 +178,9 @@ begin
   left:=form3.Left+form3.width-width-30;
   top:=form3.top+form3.height-height-10;
 end;
+
+
+
 procedure TForm4.MenuItem10Click(Sender: TObject);
 begin
  MenuItem10.Checked:=not MenuItem10.Checked;
@@ -397,6 +401,12 @@ begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
   I_SETM(Act,edit10);// Маршрутный примитив
 end;
+
+procedure TForm4.CheckBox2Change(Sender: TObject);
+begin
+
+end;
+
 procedure TForm4.Edit11DblClick(Sender: TObject);
 begin
   if edit11.TExt='0' then edit11.TExt:='-1' else edit11.TExt:='0';

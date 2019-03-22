@@ -1,7 +1,7 @@
 object Form5: TForm5
-  Left = 347
+  Left = 456
   Height = 249
-  Top = 179
+  Top = 208
   Width = 435
   BorderStyle = bsSizeToolWin
   Caption = 'Navigation'
@@ -15,7 +15,7 @@ object Form5: TForm5
   FormStyle = fsStayOnTop
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 34
@@ -36,11 +36,13 @@ object Form5: TForm5
     Items.Strings = (
       'Objects'
     )
-    ItemHeight = 15
+    ItemHeight = 21
     ItemIndex = 0
     MultiSelect = True
+    OnClick = CheckListBox1Click
     OnDblClick = CheckListBox1DblClick
-    OnSelectionChange = CheckListBox1SelectionChange
+    OnKeyPress = CheckListBox1KeyPress
+    OnKeyUp = CheckListBox1KeyUp
     PopupMenu = PopupMenu1
     TabOrder = 1
     Data = {
@@ -56,7 +58,7 @@ object Form5: TForm5
     Items.Strings = (
       'Animation'
     )
-    ItemHeight = 15
+    ItemHeight = 21
     ItemIndex = 0
     MultiSelect = True
     OnDblClick = CheckListBox2DblClick
@@ -87,7 +89,7 @@ object Form5: TForm5
     Items.Strings = (
       'Scripts'
     )
-    ItemHeight = 15
+    ItemHeight = 21
     ItemIndex = 0
     MultiSelect = True
     OnDblClick = CheckListBox3DblClick
