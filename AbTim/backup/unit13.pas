@@ -55,7 +55,7 @@ end;
 
 procedure TForm13.FormCreate(Sender: TObject);
 begin
-  Caption:='Script'
+  Caption:='Script';
   left:=OknoWidth(form3.left+form3.Width-width-10);
   top:=OknoHeight(form3.top+form3.height-height-50);
 end;

@@ -1,7 +1,7 @@
 object Form15: TForm15
-  Left = 921
+  Left = 329
   Height = 165
-  Top = 78
+  Top = 545
   Width = 344
   Caption = 'Form15'
   ClientHeight = 165
@@ -37,11 +37,14 @@ object Form15: TForm15
     Width = 344
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
+    Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Consolas'
     Font.Pitch = fpFixed
     Font.Quality = fqDraft
     ParentFont = False
+    ScrollBars = ssBoth
     TabOrder = 1
+    WordWrap = False
   end
 end

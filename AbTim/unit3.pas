@@ -191,6 +191,8 @@ const {Базовые Константы      ===========================}{%Regi
 
   MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
+  MaxKolSLS=8;// Для небольших списков
+
   T_VER=1;// Вршина
   T_PLO=2;// Плоскость
   T_LIN=3;// Линия
@@ -286,6 +288,10 @@ if (iCoo.z>=GMin.z) and (iCoo.z<=GMax.z) Then Rez:=true;
 Vhodit2D:=Rez;
 end;
 
+function  RCS3ToStr(iCoo:RCS3):RSTR;
+begin
+RCS3ToStr:='('+InString(iCoo.X)+' '+InString(iCoo.Y)+' '+InString(iCoo.Z)+')';
+end;
 function  CreRCS3(iX,iY,iZ:RSIN):RCS3;// Создание 3D координаты
 var Rez:RCS3;
 begin
@@ -492,6 +498,11 @@ B[2]:=iCOl.B;
 B[3]:=iCOl.A;
 RColRGBAtoInt:=REz;
 end;
+function  RColToStr(iCol:RCol):RSTR;
+begin
+RColToStr:='('+InString(iCol.R)+' '+InString(iCol.G)+
+           ' '+InString(iCol.B)+' '+InString(iCol.A)+')';
+end;
 
 {%EndRegion}
 var   {Базовые переменные     ===========================}{%Region /FOLD }
@@ -531,11 +542,19 @@ var   {Базовые переменные     ===========================}{%Reg
 var   {Базовые функции        ===========================}{%Region /FOLD }
                                                            Reg04:Longint;
 
+
+
+ procedure PRI(S:string);// Выводит Сообщение в консоль
+ begin
+ form15.memo1.lines.add(S);// Вывод в консоль сообщения об ошибки
+ end;
  procedure ERR(S:string);// Сообщение о ошибке
  begin
  GERR:=true;// Глобальный флаг ошибки что произошол сбой
- form15.memo1.lines.add(S);// Вывод в консоль сообщения об ошибки
+ PRI(S);
+ //form15.memo1.lines.add(S);// Вывод в консоль сообщения об ошибки
  end;
+
  procedure DelCpeSpa(var s:Ansistring);// Удаляет спец символы и пробелы
  var f:Longint;
  begin // удаляет из строки все символы меньше или рав пробела
@@ -708,6 +727,37 @@ var   {Базовые функции        ===========================}{%Region
  end;
  if lStr<>'' Then iMemo.Lines.add(lStr);
  end;
+ function  EtoRusBuk(iPos:Longint;iStr:AnsiString):boolean;
+ var
+ Rez:Boolean;
+ begin
+ // абвгдеёжзийклмнопрстуфхцчшщъыьэюя
+ // АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ
+ Rez:=false;
+ if ipos+1<=Length(iStr) then
+ if Ord(iStr[ipos])=208 then begin
+
+ if (Ord(iStr[ipos+1])>=144) and (Ord(iStr[ipos+1])<=191) then  REz:=True else
+ if (Ord(iStr[ipos+1])>=129) and (Ord(iStr[ipos+1])<=184) then  REz:=True ;
+
+ end else
+ if Ord(iStr[ipos])=209 Then begin
+
+ if (Ord(iStr[ipos+1])>=128) and (Ord(iStr[ipos+1])<=143) then  REz:=True else
+
+
+ end;
+ EtoRusBuk:=REz;
+ end;
+ function  AnsiUpperCase2(s:Ansistring):Ansistring;
+ var Rez:Ansistring;f:Longint;
+ begin
+  Rez:='';
+  s:=AnsiUpperCase(s);
+  for f:=1 to length(s) do
+  if s[f]<>' ' then Rez:=REz+S[f] else Rez:=REz+'_';
+  AnsiUpperCase2:=Rez;
+ end;
 
 {%EndRegion}
 
@@ -716,11 +766,72 @@ var   {Базовые функции        ===========================}{%Region
 var   {Базовые структуры      ===========================}{%Region /FOLD }
                                                            BAS02:Longint;
 
-var   {Описание Вершины       ===========================}{%Region /FOLD }
+var   {Описание списка        ===========================}{%Region /FOLD }
                                                            Reg05:Longint;
+
+TYPE TSLS=CLASS  // Описание Списка
+
+  SLS:array[1..MaxKolSLS] of RSTR;
+  Kol:Longint;// Количество записей
+  procedure RAS(iStr:Ansistring;iCha:Char);// Разбивает строку на подстроки
+  procedure Del(iNom:Longint);// удаляет строку номер
+  procedure Del(iStr:Ansistring);// Удаляет все строки с таким содержимым
+  procedure Add(iStr:Ansistring);// Доавблет строку в конец списка
+  procedure Cle;// Очищает список
+  Constructor Create;// Создает пустой спсико
+  Constructor Create(iStr:Ansistring;iCha:Char);// Создает списко из строки
+
+end;
+ procedure   TSLS.Cle;// Очищает список
+ begin
+ Kol:=0;
+ end;
+ procedure   TSLS.RAS(iStr:Ansistring;iCha:Char);// Разбивает строку на подстроки
+ var f:Longint;lStr:Ansistring; // iCha Разделитель
+ begin
+ lStr:='';
+ for f:=1 to Length(iStr) do
+ if iStr[f]<>iCha then lStr:=lStr+iStr[f] else begin
+ Add(lStr);
+ lStr:='';
+ end;
+ if lStr<>'' Then Add(lStr);
+ end;
+ procedure   TSLS.Del(iNom:Longint);// удаляет строку номер
+ var f:Longint;
+ begin
+ for f:=iNom to KOl do
+ SLS[f]:=SLS[f+1];
+ Kol:=Kol-1;
+ end;
+ procedure   TSLS.Del(iStr:Ansistring);// Удаляет все строки с таким содержимым
+ var f:Longint;
+ begin
+ f:=1;while f<=Kol do
+ if iStr=SLS[f] then  Del(f) else KOl:=Kol+1;
+ end;
+ procedure   TSLS.Add(iStr:Ansistring);// Доавблет строку в конец списка
+ begin
+ SLS[Kol+1]:=iStr;
+ Kol:=Kol+1;
+ end;
+ Constructor TSLS.Create;
+ begin
+ Cle;
+ end;
+ Constructor TSLS.Create(iStr:Ansistring;iCha:Char);
+ begin
+ cle;
+ Ras(iStr,iCha);
+ end;
+
+{%EndRegion}
+var   {Описание Вершины       ===========================}{%Region /FOLD }
+                                                           Regb5:Longint;
 TYPE TVER=CLASS  // Описание вершиины
 
-  NAM:RSTR;// Наименование элемента
+  NAM:RSTR;// Наименование примитива
+  LNA:RSTR;// Наименование примитива большими буквами
   MCL:RBYT;// Режим отрисовки Цветов
   TXT:RSTR;// Текст
   YYY:RSIN;// Высота обьекта
@@ -778,6 +889,7 @@ Constructor TVER.Create;// Создает вершину
 begin
 
   NAM:=''           ;// Уникальное Имя вершины
+  LNA:=''           ;
   VIS:=true         ;// Видимость примитива
   VVI:=true         ;// Видимость примитива если он не мешает видеть персонажа
   SEL:=false        ;// Не выделен примитив
@@ -1733,6 +1845,7 @@ var   {Интепретатор           ===========================}{%Region /
 Type  TEl=Class  // Элемент исполнения
 
   TXT:Ansistring;// Текс слова
+  SLS:TSLS;// Списко для разбивки имени
   Zna:Ansistring;// Значение
   TIP:LongWord;  // ТИп элемента
   FUN:Boolean;   // Если этот элемент являетсья описанием Функции;
@@ -1771,10 +1884,11 @@ Type  TEl=Class  // Элемент исполнения
   Procedure Op_MRA;// Меньше либо равно
   Procedure Op_NER;// Не равно
 
-  Procedure Op_Let;// Прсивоение
-  Procedure Op_SCO;// Скобка
-  Procedure Op_WHI;// While
-  Procedure Op_PRI;// Вывод в консоль
+  Procedure  Op_Let;// Прсивоение
+  Procedure  Op_SCO;// Скобка
+  Procedure  Op_WHI;// While
+  Procedure  Op_PRI;// Вывод в консоль
+  Destructor destroy;override;
 
 end;
 TYpe  TScr=class(Tver)
@@ -1797,6 +1911,10 @@ If Length(s)=0 Then Rez:=False;
 EtoCif:=REz;
 end;
 //------------------------------------------------------------------------------
+Destructor Tel.destroy;
+begin
+SLS.Free;
+end;
 Function  Tel.Del:Tel;// Изятие элемента из списка
 var
 Pr,Ne:TEl;
@@ -1840,6 +1958,7 @@ begin
  Rez:=Tel.Create;
  Rez.TXT:=S;
  Rez.ZNA:=S;
+ if T=TI_SLO Then REZ.SLS:=TSLS.Create(S,'.');
  REz.Tip:=T;// Указываем тип прочитаного элемента
  add(Rez);  // Добавляем внось созданый элемент
 end;
@@ -1863,7 +1982,7 @@ While Uka<>Nil do
   Uka:=Ne;
  end;
 end;
-Procedure TEl.VlogitPA;// Вложкение параметров
+Procedure TEl.VlogitPA ;// Вложкение параметров
 var
 UKA:Tel;
 Begin
@@ -1878,7 +1997,7 @@ Uka.VlogitPA;
 UKA:=UKA.NEX;
 end;
 end;
-Procedure TEl.VlogitBl;// Вложкение Исполнительных блоков
+Procedure TEl.VlogitBl ;// Вложкение Исполнительных блоков
 var
 UKA:Tel;
 Begin
@@ -2180,6 +2299,227 @@ Form15.PRI(co);
 end;
 
 //------------------------------------------------------------------------------
+function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;forward;
+function  I_FinNam(iNam:Ansistring):TVer;forward;
+function  SetParametr(iNam,iZna:Ansistring):Boolean;
+begin
+
+end;
+
+function GetRCS3_XYZ(iNS:Longint;iSLS:TSLS;iCoo:RCS3):Ansistring;
+var LRez:Ansistring;
+begin
+lRez:='';
+if iSLS.Kol=iNS then lRez:=RCS3ToStr(iCoo) else
+if iSLS.Kol>iNS then begin
+iNS:=iNS+1; with iCoo do
+if iSLS.SLS[iNS]='X' then lRez:=inString (X) else
+if iSLS.SLS[iNS]='Y' then lRez:=inString (Y) else
+if iSLS.SLS[iNS]='Z' then lRez:=inString (Z) ;
+end;
+GetRCS3_XYZ:=lREz;
+end;
+function GetRCOLRGBA(iNS:Longint;iSLS:TSLS;iCol:RCOL):Ansistring;
+var LRez:Ansistring;
+begin
+lRez:='';
+if iSLS.Kol=iNS then lRez:=RColToStr(iCol) else
+if iSLS.Kol>iNS then begin
+iNS:=iNS+1; with iCoL do
+if iSLS.SLS[iNS]='R' then lRez:=inString (R) else
+if iSLS.SLS[iNS]='G' then lRez:=inString (G) else
+if iSLS.SLS[iNS]='B' then lRez:=inString (B) else
+if iSLS.SLS[iNS]='A' then lRez:=inString (A) ;
+end;
+GetRCOLRGBA:=lREz;
+end;
+function GetTVER_PAR(iNS:Longint;iSLS:TSLS;iVer:Tver):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iVer=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+     iNS:=iNS+1;
+     if iSls.SLS[iNS]= 'NAM' then lRez:=          iVer.NAM  else
+     if iSls.SLS[iNS]= 'MCL' then lRez:=inString (iVer.MCL) else
+     if iSls.SLS[iNS]= 'TXT' then lRez:=          iVer.TXT  else
+     if iSls.SLS[iNS]= 'YYY' then lRez:=inString (iVer.YYY) else
+     if iSls.SLS[iNS]= 'VIS' then lRez:=BoolToStr(iVer.VIS) else
+     if iSls.SLS[iNS]= 'VVI' then lRez:=BoolToStr(iVer.VIS) else
+     if iSls.SLS[iNS]= 'CHE' then lRez:=inString (iVer.CHE) else
+     if iSls.SLS[iNS]= 'SEL' then lRez:=BoolToStr(iVer.SEL) else
+     if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
+
+     if iSls.SLS[iNS]= 'NOM' then lRez:=inString (iVer.NOM) else
+     if iSls.SLS[iNS]= 'TIP' then lRez:=inString (iVer.TIP) else
+     if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
+     if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
+
+     if iSls.SLS[iNS]= 'MAR' then lRez:=BoolToStr(iVer.MAR) else
+     if iSls.SLS[iNS]= 'DEL' then lRez:=BoolToStr(iVer.DEL) else
+     if iSls.SLS[iNS]= 'CRE' then lRez:=BoolToStr(iVer.CRE) else
+     if iSls.SLS[iNS]= 'OB3' then lRez:=inString (iVer.OB3) else
+     if iSls.SLS[iNS]= 'RAS' then lRez:=inString (iVer.RAS) else
+
+     if iSls.SLS[iNS]= 'LOC' then lRez:=GetRCS3_XYZ(iNs,iSls,iver.LOC ) else
+     if iSls.SLS[iNS]= 'MAT' then lRez:=GetRCS3_XYZ(iNs,iSls,iver.MAT ) else
+     if iSls.SLS[iNS]= 'REA' then lRez:=GetRCS3_XYZ(iNs,iSls,iver.REA ) else
+     if iSls.SLS[iNS]= 'ECR' then lRez:=GetRCS3_XYZ(iNs,iSls,iver.ECR ) else
+     if iSls.SLS[iNS]= 'GMax'then lRez:=GetRCS3_XYZ(iNs,iSls,iver.GMAX) else
+     if iSls.SLS[iNS]= 'GMin'then lRez:=GetRCS3_XYZ(iNs,iSls,iver.GMIN) else
+
+     if iSls.SLS[iNS]= 'COL' then lRez:=GetRCOLRGBA(iNs,iSls,iver.COL) else
+     if iSLS.SLS[iNS]= 'ECO' then lRez:=GetRCOLRGBA(iNs,iSls,iver.ECO) ;
+
+end;
+GetTVER_PAR:=lRez;
+end;
+
+function GetTLIN_PAR(iNS:Longint;iSLS:TSLS;iLin:TLin):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iLin=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iLin.Nam else
+if (iSls.KOl>iNS) Then begin
+
+     lRez:=GetTVER_PAR(iNs,iSls,TVER(iLin));
+
+     iNS:=iNS+1;
+     if lrez='' then
+     if iSls.SLS[iNs]='VER1' then lRez:=GetTVER_PAR(iNs,iSls,iLin.VERS[1]) else
+     if iSls.SLS[iNs]='VER2' then lRez:=GetTVER_PAR(iNs,iSls,iLin.VERS[2]) ;
+
+
+end;
+GetTLIN_PAR:=lRez;
+end;
+function GetTPLO_PAR(iNS:Longint;iSLS:TSLS;iPlo:TPlo):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iPlo=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iPlo.Nam else
+if (iSls.KOl>iNS) Then begin
+
+
+     lRez:=GetTVER_PAR(iNs,iSls,TVER(iPlo));
+
+     iNS:=iNS+1;
+     if lRez='' then
+     if iSls.SLS[iNs]='COL1' then lRez:=GetRCOLRGBA(iNs,iSls,iPlo.COLS[1]) else
+     if iSls.SLS[iNs]='COL2' then lRez:=GetRCOLRGBA(iNs,iSls,iPlo.COLS[2]) else
+     if iSls.SLS[iNs]='COL3' then lRez:=GetRCOLRGBA(iNs,iSls,iPlo.COLS[3]) else
+     if iSls.SLS[iNs]='COL4' then lRez:=GetRCOLRGBA(iNs,iSls,iPlo.COLS[4]) else
+     if iSls.SLS[iNs]='VER1' then lRez:=GetTVER_PAR(iNs,iSls,iPlo.VERS[1]) else
+     if iSls.SLS[iNs]='VER2' then lRez:=GetTVER_PAR(iNs,iSls,iPlo.VERS[2]) else
+     if iSls.SLS[iNs]='VER3' then lRez:=GetTVER_PAR(iNs,iSls,iPlo.VERS[3]) else
+     if iSls.SLS[iNs]='VER4' then lRez:=GetTVER_PAR(iNs,iSls,iPlo.VERS[4]) ;
+
+
+end;
+GetTPLO_PAR:=lRez;
+end;
+function GetTELE_PAR(iNS:Longint;iSLS:TSLS;iEle:TEle):Ansistring;
+var
+lRez:RSTR;// Реультат
+lPri:TVer;// Исокмый примитив
+begin
+lRez:='';
+if (iELE=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iEle.Nam else
+if (iSls.KOl>iNS) Then begin
+
+     lRez:=GetTVER_PAR(iNs,iSls,TVER(iEle));
+
+     iNS:=iNS+1;
+     if lRez='' Then
+     if iSls.SLS[iNs]='KOLE' then lRez:=inString(iEle.KolV) else
+     if iSls.SLS[iNs]='KOLV' then lRez:=inString(iEle.KolV) else
+     if iSls.SLS[iNs]='EUGL' then lRez:=GetRCS3_XYZ(iNs,iSls,iELE.EUGL);
+
+     if lRez='' Then begin
+     lPri:=I_FinNam(iEle,iSLS.SLS[iNs]);
+     if lPri<>Nil Then
+     if lPri.TIP=T_ELE then lRez:=GetTELE_PAR(iNs,iSls,TEle(lPri)) else
+     if lPri.TIP=T_VER then lRez:=GetTVER_PAR(iNs,iSls,TVer(lPri));
+     end;
+
+end;
+GetTELE_PAR:=lRez;
+end;
+function GetTOBJ_PAR(iNS:Longint;iSLS:TSLS;iObj:TObj):Ansistring;
+var
+lRez:RSTR;// Реультат
+lPri:TVer;// Исокмый примитив
+begin
+lRez:='';
+if (iObj=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iObj.Nam else
+if (iSls.KOl>iNS) Then begin
+
+     lRez:=GetTELE_PAR(iNs,iSls,TEle(iObj));
+
+     iNS:=iNS+1;
+
+     if lRez='' Then
+     if iSls.SLS[iNs]='KADR' then lRez:=inString(iObj.KADR) else
+     if iSls.SLS[iNs]='OCEL' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OCEL) else
+     if iSls.SLS[iNs]='OMOV' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OMOV) else
+     if iSls.SLS[iNs]='OPER' then lRez:=BoolToStr(iObj.OPER) else
+     if iSls.SLS[iNs]='MTP'  then lRez:=GetTVER_PAR(iNs,iSls,iObj.MTP) else
+     if iSls.SLS[iNs]='KOLP' then lRez:=inString(iObj.KOLP) else
+     if iSls.SLS[iNs]='KOLL' then lRez:=inString(iObj.KOLL) else
+     if iSls.SLS[iNs]='KOLD' then lRez:=inString(iObj.KOLD) ;
+
+
+     if lRez='' Then begin
+     lPri:=I_FinNam(iObj,iSLS.SLS[iNs]);
+     if lPri<>Nil Then
+     if lPri.TIP=T_PLO then lRez:=GetTPLO_PAR(iNs,iSls,tPlo(lPri)) else
+     if lPri.TIP=T_LIN then lRez:=GetTLin_PAR(iNs,iSls,tLin(lPri));
+     end;
+
+end;
+GetTOBJ_PAR:=lRez;
+end;
+function GetTSCR_PAR(iNS:Longint;iSLS:TSLS;iScr:TScr):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iScr=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+
+     iNS:=iNS+1;
+
+
+
+end;
+GetTSCR_PAR:=lRez;
+end;
+function GetTANI_PAR(iNS:Longint;iSLS:TSLS;iAni:TAni):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iANi=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+
+     iNS:=iNS+1;
+
+
+
+end;
+GetTANI_PAR:=lRez;
+end;
+
 Procedure Tel.TRun;// Выполняет 1 елемент
 Begin
 if Txt='+'              Then Op_ADD else // Сложение
@@ -2238,10 +2578,30 @@ end;
 Procedure Tel.RunFun;// Найти и выполнить пользовательскую функцию
 var
 F,Ru,l1,l2:Tel;
+lPri:TVer;
+lRez:AnsiString;
+lNs:Longint;
 begin
-F:=FinFun(Txt);
-if F<>Nil Then
-          begin
+//PRI(Txt);
+lRez:='';
+lPri:=Nil;
+lNs:=1;
+
+if (SLS<>Nil) and (SLS.Kol>0) Then lPri:=I_FinNam(SLS.SLS[lNs]);
+if lPri<>Nil
+then begin // Читаем параметры
+
+
+     if lPri.TIp=T_OBJ then lRez:=GetTOBJ_PAR(lNs,SLS,TObj(lPri)) else
+     if lPri.TIp=T_SCR then lRez:=GetTSCR_PAR(lNs,SLS,TScr(lPri)) else
+     if lPri.TIp=T_ANI then lRez:=GetTANI_PAR(lNs,SLS,TAni(lPri));
+
+     Zna:=lRez;
+
+     end
+else begin // Выполняем функцию
+     F:=FinFun(Txt);
+     if F<>Nil Then begin
           Ru:=F.Cop(Rod,Pre);
           Blo.TRun;
           L1:=Ru.Blo.Blo;
@@ -2258,27 +2618,39 @@ if F<>Nil Then
           Ru.Free;
           end;
 end;
+end;
 //------------------------------------------------------------------------------
 Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
 var
   REZ:Tel;     // Списко слов на которые разита программа
   UKA:LongWord;// указатель на читаемый символ
   LEN:LongWord;// Длина Строки
-
+  GT:Longint;
 Function REadSlo:Ansistring;// ДЛя чтения Операторов
 Var
   REz:Ansistring;
 begin
 REz:='';
+if (UKA<=LEN) then  if
+((S[UKA]>='A') and (S[UKA]<='Z')) or
+((S[UKA]>='a') and (S[UKA]<='z')) or
+( S[UKA]='_' ) or
+EtoRusBuk(UKA,S)
+then
 While (UKA<=LEN) and (
                         ((S[UKA]>='A') and (S[UKA]<='Z')) or
+                        ((S[UKA]>='0') and (S[UKA]<='9')) or
                         ((S[UKA]>='a') and (S[UKA]<='z')) or
                         ( S[UKA]='.' ) or
-                        ( S[UKA]='_' )
+                        ( S[UKA]='_' ) or
+                        EtoRusBuk(UKA,S)
                       ) do
       begin
-      REZ:=REZ+S[UKA];
-      UKA:=UKA+1;
+
+      if EtoRusBuk(UKA,S)
+      then begin REZ:=REZ+S[UKA];REZ:=REZ+S[UKA+1];UKA:=UKA+2;end
+      else begin REZ:=REZ+S[UKA];UKA:=UKA+1;end;
+
       end;
 REadSlo:=Rez;
 end;
@@ -2350,6 +2722,9 @@ begin
 REZ:=TEl.Create;
 REZ.TXT:='Program';
 UKA:=1;
+//for GT:=1 to Length(S) do
+//PRI(S[GT]+' '+IntToStr(ord(S[GT])));
+
 LEN:=Length(S);
 While UKA<=LEN Do
       If REZ.ADD(REadSlo,TI_SLO)=nil Then
@@ -2651,19 +3026,21 @@ var   {----------------------- Возавращает списки     ===}{%Reg
 function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
 var REz:TVer;f:longint;
 begin
+iNam:=ansiUpperCase2(iNam);
+
 rez:=Nil;
-     if iEle.Nam=iNam Then REz:=iEle;// Смотрю свое имя
+     if iEle.LNa=iNam Then REz:=iEle;// Смотрю свое имя
 //-------------------------------------------------
 f:=1;if (iEle.TIP=T_OBJ)  Then
      while (f<=TOBJ(iEle).KolP) and (REz=Nil) do // Ищу среди Плоскостей
-     if TOBJ(iEle).PLOS[f].NAM=iNAm then REz:=TOBJ(iEle).PLOS[f] else inc(f);
+     if TOBJ(iEle).PLOS[f].LNA=iNAm then REz:=TOBJ(iEle).PLOS[f] else inc(f);
 //-------------------------------------------------
 f:=1;if (iEle.TIP=T_OBJ)  Then // Ищу среди Линий
      while (f<=TOBJ(iEle).KolL) and (REz=Nil) do
-     if TObj(iEle).LINS[f].NAM=iNAm then REz:=TObj(iEle).LINS[f] else inc(f);
+     if TObj(iEle).LINS[f].LNA=iNAm then REz:=TObj(iEle).LINS[f] else inc(f);
 //-------------------------------------------------
 f:=1;while (f<=iEle.KolV) and (REz=Nil) do // Ищу среди вершин
-     if iEle.VERS[f].NAM=iNam then REz:=iEle.VERS[f] else inc(f);
+     if iEle.VERS[f].LNA=iNam then REz:=iEle.VERS[f] else inc(f);
 //-------------------------------------------------
 f:=1;while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элементов
      REz:=I_FinNam(iEle.ELES[f],inam);inc(f);end;
@@ -2675,29 +3052,59 @@ var
 REz:TVer;
 f:longint;
 begin
-REz:=Nil;f:=1;
+REz:=Nil;iNam:=ansiUpperCase2(iNam);
 
+f:=1;
+while (f<=MirObjs.KolO) and (REz=Nil) do begin
+if MirObjs.OBJS[f].LNA=iNam Then Rez:=MirObjs.OBJS[f];
+f:=f+1;
+end;
+
+f:=1;
+while (f<=MirAnis.KolA) and (REz=Nil) do begin
+if MirANIs.ANIS[f].LNA=iNam Then Rez:=MirANIs.ANIS[f];
+f:=f+1;
+end;
+
+f:=1;
+while (f<=MirScrs.KolS) and (REz=Nil) do begin
+if MirScrs.ScrS[f].LNA=iNam Then Rez:=MirScrs.ScrS[f];
+f:=f+1;
+end;
+
+I_FinNam:=Rez;
+end;
+
+
+
+function  I_FinNamGlo(iNam:Ansistring):TVer;// Глобальный поиск имени
+var
+REz:TVer;
+f:longint;
+begin
+REz:=Nil;f:=1;
+iNam:=ansiUpperCase2(iNam);
 
 while (f<=MirObjs.KolO) and (REz=Nil) do begin
 Rez:=I_FinNam(MirObjs.OBJS[f],iNAm);f:=f+1;
 end;
 
 while (f<=MirAnis.KolA) and (REz=Nil) do begin
-if MirANIs.ANIS[f].NAM=iNam Then Rez:=MirANIs.ANIS[f];
+if MirANIs.ANIS[f].LNA=iNam Then Rez:=MirANIs.ANIS[f];
 f:=f+1;
 end;
 
 while (f<=MirScrs.KolS) and (REz=Nil) do begin
-if MirScrs.ScrS[f].NAM=iNam Then Rez:=MirScrs.ScrS[f];
+if MirScrs.ScrS[f].LNA=iNam Then Rez:=MirScrs.ScrS[f];
 f:=f+1;
 end;
 
 
-I_FinNam:=Rez;
+I_FinNamGlo:=Rez;
 end;
 function  I_NewNamIdd(iStr:Ansistring):Ansistring;
 begin
-while (I_FinNam(iStr+IntToStr(GIDD))<>nil) do
+while (I_FinNamGlo(iStr+IntToStr(GIDD))<>nil) do
 GIDD:=GIDD+1000;
 I_NewNamIdd:=iStr+IntToStr(GIDD);
 end;
@@ -3208,6 +3615,7 @@ if (I_FinNam(iEdit.Text)=nil)or(pointer(I_FinNam(iEdit.Text))=iVer)
    then begin
    G_Change:=true;
    TVEr(iVer).NAM:=iEdit.Text;
+   TVEr(iVer).LNA:=AnsiUpperCase2(TVEr(iVer).NAM);
    iEdit.Color:=clDefault;
    I_RefreshActivePrimitiv;
    I_RefreshEditorPrimitiv(iVer);
@@ -3224,8 +3632,8 @@ if iVer<>Nil Then
 if (TVEr(iVer).Txt<>iMemo.Text) Then begin
   G_Change:=true;
   TVEr(iVer).Txt:=MemoToStr(iMemo);
-  I_RefreshActivePrimitiv;
-  I_RefreshEditorPrimitiv(iVer);
+  //I_RefreshActivePrimitiv;
+  //I_RefreshEditorPrimitiv(iVer);
 end;
 end;
 procedure I_SetM(iVer:Pointer;iEdit:TEdit);
@@ -3615,6 +4023,7 @@ nVer:=rEle.V(TVER(iEle).LOC.x+10,
              TVER(iEle).LOC.z);
 nVer.Col:=TVER(iEle).Col;
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 I_RefAllForm;
 I_AddVerCOP:=nVer;
 U_OpenPoint(nVer,nVer.Ele);
@@ -3663,6 +4072,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x*-1,TVER(iEle).LOC.y,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYX:=nVer;
@@ -3677,6 +4087,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y*-1,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYY:=nVer;
@@ -3691,6 +4102,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y,TVER(iEle).LOC.z*-1);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVerSYZ:=nVer;
@@ -3705,6 +4117,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y+150,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVer150:=nVer;
@@ -3719,6 +4132,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(TVER(iEle).LOC.x,TVER(iEle).LOC.y-150,TVER(iEle).LOC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=TVER(iEle).Col;
 I_RefAllForm;
 I_AddVni150:=nVer;
@@ -3738,6 +4152,7 @@ LCD:=SerRCS3(ic,id);
 LDA:=SerRCS3(id,ia);
 nVer:=rEle.V(LAC.x,LAC.y,LAC.z);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Col:=CreRcol(Random(100),Random(150)+100,100,255);
 nVer.MAR:=True;
 if iG<2 then begin
@@ -3785,6 +4200,7 @@ nVer:=rEle.V(
   0,
   (Hz*fz));
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 nVer.Loc.Y:=Random(25);
 nVer.Col:=CreRcol(Random(100),Random(150)+100,100,255);
 V[fx,fz]:=nVer;
@@ -3798,6 +4214,7 @@ nPl:=TObj(rEle).P(
              v[fx+1,fz+1],
              v[fx+1,fz  ]);
 nPl.Nam:=I_NewNamIdd('P ');
+nPl.LNa:=ansiUppercase2(nPl.Nam);
 nPl.Col:=TVER(iEle).Col;
 end;
 
@@ -3814,6 +4231,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nVer:=rEle.V(0,0,0);
 nVer.Nam:=I_NewNamIdd('V ');
+nVer.LNa:=ansiUppercase2(nVer.Nam);
 I_RefAllForm;
 I_AddVer:=nVer;
 end;
@@ -3831,6 +4249,7 @@ rObj:=I_GetOb(iObj);
 nLin:=rObj.L(lSel.SELS[2],
              lSel.SELS[1]);
 nLin.Nam:=I_NewNamIdd('L ');
+nLin.LNa:=ansiUppercase2(nLin.Nam);
 end;
 lSel.free;
 I_RefAllForm;
@@ -3846,6 +4265,7 @@ G_Change:=true;
 rObj:=I_GetOb(iObj);
 nLin:=rObj.L(rObj,rObj);
 nLin.Nam:=I_NewNamIdd('L ');
+nLin.LNa:=ansiUppercase2(nLin.Nam);
 I_AddPLi:=nLin;
 end;
 function   I_AddPlo(iObj:Pointer):Pointer;// Доабвляет Плоскос
@@ -3867,6 +4287,7 @@ if (lSel.SELS[1].OBJ=lSel.SELS[2].OBJ) and
                 lSel.SELS[2],
                 lSel.SELS[1]);
    nPlo.Nam:=I_NewNamIdd('P ');
+   nPlo.LNa:=ansiUppercase2(nPlo.Nam);
    end;
 lSel.free;
 I_AddPlo:=nPlo;
@@ -3880,6 +4301,7 @@ G_Change:=true;
 rObj:=I_GetOb(iObj);
 nPlo:=rObj.P(rObj,rObj,rObj,rObj);
 nPlo.Nam:=I_NewNamIdd('P ');
+nPlo.LNa:=ansiUppercase2(nPlo.Nam);
 I_AddPPl:=nPlo;
 end;
 function   I_AddEle(iEle:Pointer):Pointer;// Доабвляет Элемент
@@ -3891,6 +4313,7 @@ G_Change:=true;
 rEle:=I_GetEl(iEle);
 nEle:=rEle.E(0,0,0);
 nEle.Nam:=I_NewNamIDd('E ');
+nEle.LNa:=ansiUppercase2(nEle.Nam);
 I_AddEle:=nEle;
 end;
 function   I_AddObj:Pointer;// Добавляет новый обьект
@@ -3899,6 +4322,7 @@ begin
 G_Change:=true;
 nObj:=TObj.Create;
 nObj.Nam:=I_NewNamiDd('O ');
+nObj.LNa:=ansiUppercase2(nObj.Nam);
 MirObjs.AddO(nObj);
 I_RefAllForm;
 I_AddObj:=nObj;
@@ -3916,11 +4340,13 @@ G_Change:=true;
 // Следующие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
+nAni.LNa:=ansiUppercase2(nAni.Nam);
 I_TOBJ_ANI_01(TObj(lSelObjs.SELS[2]),TObj(lSelObjs.SELS[1]),nAni.TXT);
 MirAnis.AddA(nAni);
 // Предыдущие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
+nAni.LNa:=ansiUppercase2(nAni.Nam);
 I_TOBJ_ANI_01(TObj(lSelObjs.SELS[1]),TObj(lSelObjs.SELS[2]),nAni.TXT);
 MirAnis.AddA(nAni);
 I_RefAllForm;
@@ -3938,6 +4364,8 @@ G_Change:=true;
 // Следующие состояние
 nAni:=TAni.Create;
 nAni.Nam:=I_NewNamiDd('A ');
+nAni.LNa:=ansiUppercase2(nAni.Nam);
+
 MirAnis.AddA(nAni);
 I_RefAllForm;
 I_AddPAn:=nAni;
@@ -3948,6 +4376,8 @@ begin
 G_Change:=true;
 nScr:=TScr.Create;
 nScr.Nam:=I_NewNamiDd('S ');
+nScr.LNa:=ansiUppercase2(nScr.Nam);
+
 MirScrs.AddS(nScr);
 I_RefAllForm;
 I_AddScr:=nScr;
@@ -3958,6 +4388,7 @@ begin
 G_Change:=true;
 nScr:=TScr.Create;
 nScr.Nam:=I_NewNamiDd('S ');
+nScr.LNa:=ansiUppercase2(nScr.Nam);
 MirScrs.AddS(nScr);
 I_RefAllForm;
 I_AddPSc:=nScr;
@@ -4237,9 +4668,11 @@ var
 Rez:TAni;
 F:Longint;
 begin
+          iNam:=ansiUpperCase2(iNam);
+
           rez:=Nil;
           f:=1;while(f<=MirAnis.KOlA)and(REz=NIl)do
-          if (not MirAnis.AniS[f].DEL) and (MirAnis.AniS[f].NAM=iNam)
+          if (not MirAnis.AniS[f].DEL) and (MirAnis.AniS[f].LNA=iNam)
           then Rez:=MirAnis.ANiS[f]
           else f:=f+1;
           I_FIN_ANI:=Rez;
@@ -4249,9 +4682,11 @@ var
 Rez:TScr;
 F:Longint;
 begin
+          iNam:=ansiUpperCase2(iNam);
+
           rez:=Nil;
           f:=1;while(f<=MirScrs.KOlS)and(REz=NIl)do
-          if (not MirScrs.ScrS[f].DEL) and (MirScrs.ScrS[f].NAM=iNam)
+          if (not MirScrs.ScrS[f].DEL) and (MirScrs.ScrS[f].LNA=iNam)
           then Rez:=MirScrs.ScrS[f]
           else f:=f+1;
           I_FIN_Scr:=Rez;
@@ -4263,9 +4698,10 @@ var
 Rez:Tobj;
 F:Longint;
 begin
+          iNam:=ansiUpperCase2(iNam);
           rez:=Nil;
           f:=1;while(f<=MirObjs.KOlO)and(REz=NIl)do
-          if (not MirObjs.OBJS[f].DEL) and (MirObjs.OBJS[f].NAM=iNam)
+          if (not MirObjs.OBJS[f].DEL) and (MirObjs.OBJS[f].LNA=iNam)
           then Rez:=MirObjs.OBJS[f]
           else f:=f+1;
           I_FIN_OBJ:=Rez;
@@ -4278,7 +4714,7 @@ begin
      REz:=Nil;
      //--------------------------------------------------------
      f:=1;while (f<=iEle.KolV) and (REz=Nil) do
-     if (NOT iEle.VERS[f].DEL) and (iEle.VERS[f].NAM=iNAm)
+     if (NOT iEle.VERS[f].DEL) and (iEle.VERS[f].LNA=iNAm)
      Then Rez:=iEle.VERS[f] else f:=f+1;
      //--------------------------------------------------------
      f:=1;while (f<=iEle.KolE) and (Rez=nil) do begin
@@ -4288,7 +4724,9 @@ begin
      //--------------------------------------------------------
      L_FIN_VER:=REz;
      end;
-begin     I_FIN_VER:=l_fin_ver(TEle(iObj.Obj),iNam);
+begin
+iNam:=ansiUpperCase2(iNam);
+I_FIN_VER:=l_fin_ver(TEle(iObj.Obj),iNam);
 end;
 function  I_FIN_LIN(iObj:Tver;iNam:Ansistring):TLin;// Ищит  Линию
 var
@@ -4296,10 +4734,10 @@ f:Longint;
 lObj:TObj;
 Rez:TLin;
 begin
-          Rez:=Nil;
+          Rez:=Nil;iNam:=ansiUpperCase2(iNam);
           lObj:=TObj(iObj.OBJ);
           f:=1;while(f<=lObj.KolL)and(REz=nil)do
-          if lObj.LINS[f].NAM=iNAM
+          if lObj.LINS[f].LNA=iNAM
           Then Rez:=lObj.LINS[f] else f:=f+1;
           I_FIN_LIN:=Rez;
 end;
@@ -4309,10 +4747,10 @@ f:Longint;
 lObj:TObj;
 Rez:TPLo;
 begin
-          Rez:=Nil;
+          Rez:=Nil;iNam:=ansiUpperCase2(iNam);
           lObj:=TObj(iObj.OBJ);
           f:=1;while(f<=lObj.KolP)and(REz=nil)do
-          if lObj.PLOS[f].NAM=iNAM
+          if lObj.PLOS[f].LNA=iNAM
           Then Rez:=lObj.PLOS[f] else f:=f+1;
           I_FIN_PLO:=Rez;
 end;
@@ -4324,7 +4762,7 @@ begin
  REz:=Nil;
  //--------------------------------------------------------
  f:=1;while(f<=iEle.KOlE)and(REz=Nil)do
- if (NOT iEle.eles[f].DEL) and (iEle.eles[f].NAM=iNAm)
+ if (NOT iEle.eles[f].DEL) and (iEle.eles[f].LNA=iNAm)
  Then Rez:=iEle.eles[f] else f:=f+1;
  //--------------------------------------------------------
  f:=1;while(f<=iEle.KOlE)and(REz=Nil)do begin
@@ -4334,6 +4772,7 @@ begin
  L_FIN_ELE:=REz;
 end;
 begin
+iNam:=ansiUpperCase2(iNam);
 I_FIN_ELE:=l_fin_ele(TELE(iObj.Obj),iNam);
 end;
 
@@ -4687,10 +5126,13 @@ While lPos<Length(iStr) do begin    I_Del_Spac(lPos,iStr);// ПРопускаю 
           if fObj=nil then begin // Если такого обьекта не существует
                       lObj:=TObj(I_AddObj); // Создаю его
                       lObj.Nam:=lNam;// Назанчаю имя
+                      lObj.LNA:=ansiUppercase2(lNam);// Назанчаю имя
+
                       end
                       else begin
                       lObj:=TObj(I_AddObj); // Создаю его
                       lObj.Nam:=I_NewNamIdd(lNam);// Назанчаю имя
+                      lObj.LNA:=ansiUppercase2(lNam);// Назанчаю имя
                       end;
           lPri:=Tver(lObj);// Указываю текущим
           end
@@ -4701,6 +5143,7 @@ else if iStr[lPos]='E' Then begin INC(lPos);
      if fEle=nil then begin
                  lEle:=TEle(i_AddEle(lPri));// Если нету создаю элемент
                  lEle.Nam:=lNam;// Указываю имя
+                 lEle.LNA:=AnsiUppercase2(lEle.Nam);
                  end else lEle:=fEle;
      lPri:=lEle;// Назначаю текущим
      end
@@ -4711,11 +5154,13 @@ else if iStr[lPos]='K' Then begin INC(lPos);
      if fAni=nil then begin // Если такого анимация не существует
                  lAni:=TAni(I_AddPAn); // Создаю его
                  lAni.Nam:=lNam;// Назанчаю имя
+                 lAni.LNA:=AnsiUppercase2(lAni.Nam);
                  lAni.Txt:=lTxt;// Назанчаю Текст
                  end
                  else begin
                  lAni:=TAni(I_AddPAn); // Создаю его
                  lAni.Nam:=I_NewNamIdd(lNam);// Назанчаю Новое имя
+                 lAni.LNA:=AnsiUppercase2(lAni.Nam);
                  lAni.Txt:=lTxt;// Назначаю  текст
                  end;
      lAni:=TAni(lAni);// Указываю текущим
@@ -4727,11 +5172,13 @@ else if iStr[lPos]='S' Then begin INC(lPos);
      if fScr=nil then begin // Если такого анимация не существует
                  lScr:=TScr(I_AddPSc); // Создаю его
                  lScr.Nam:=lNam;// Назанчаю имя
+                 lScr.LNA:=AnsiUppercase2(lScr.Nam);
                  lScr.Txt:=lTxt;// Назанчаю имя
                  end
                  else begin
                  lScr:=TScr(I_AddPSc); // Создаю его
                  lScr.Nam:=I_NewNamIdd(lNam);// Назанчаю новое имя
+                 lScr.LNA:=AnsiUppercase2(lScr.Nam);
                  lScr.Txt:=lTxt;// Назанчаю имя
                  end;
      lScr:=TScr(lScr);// Указываю текущим
@@ -4742,6 +5189,7 @@ else if iStr[lPos]='L' Then begin INC(lPos);
      if fLin=nil then begin
                  lLin:=TLin(I_AddPLi(lObj));// Если нету создает Линию
                  lLin.Nam:=lNam;// Указываю имя
+                 lLin.LNA:=AnsiUppercase2(lLin.Nam);
                  end
                  else lLin:=fLin;
      lPri:=lLin;// Назначаю текущим
@@ -4752,6 +5200,7 @@ else if iStr[lPos]='P' Then begin INC(lPos);
      if fPlo=nil then begin
                       lPlo:=TPlo(I_AddPPl(lObj));// Если нету создает плоскость
                       lPlo.Nam:=lNam;// Указываю имя
+                      lPlo.LNA:=AnsiUppercase2(lPlo.Nam);
                       end
                       else lPlo:=fPlo;
      lPri:=lPlo;// Назначаю текущим
@@ -4763,6 +5212,7 @@ else if iStr[lPos]='V' Then begin INC(lPos);
                  begin
                  lVer:=TVer(I_AddVer(lPri));// Добавляю вершину
                  lVer.Nam:=lNam;// Указываю имя
+                 lVer.LNA:=AnsiUppercase2(lVer.Nam);
                  end
                  else lVer:=fVer;
      lPri:=lVer;// Назанчаю текущитм
@@ -4770,6 +5220,7 @@ else if iStr[lPos]='V' Then begin INC(lPos);
 // Имя          ----------------------------------------------------
 else if iStr[lPos]='N' Then begin INC(lPos);
      LPri.NAm:=I_GetSC(lPos,iStr);
+     LPri.LNA:=AnsiUppercase2(LPri.Nam);
      end
 else if iStr[lPos]='M' Then begin INC(lPos);
      LPri.Mar:=StrToBool(I_GetSC(lPos,iStr));
@@ -4953,7 +5404,10 @@ else if iStr[lPos]='V' Then begin INC(lPos);
 // Имя          ----------------------------------------------------
 else if iStr[lPos]='N' Then begin INC(lPos);
      lZna:=I_GetSC(lPos,iStr);
-     if R_O and R_P Then LPri.Nam:=lZna;
+     if R_O and R_P Then begin
+             LPri.Nam:=lZna;
+             LPri.LNa:=AnsiUppercase2(lZna);
+             end
      end
 else if iStr[lPos]='M' Then begin INC(lPos);
      lZna:=I_GetSC(lPos,iStr);
@@ -6363,13 +6817,4 @@ end;
 {%EndRegion}
 end.
 
-{
-procedure MATH;// Перевычисление обьектов
-var fo:RLON;
-begin
-for fo:=1 to MirObjs.KOlO do
-if not MirObjs.OBJS[Fo].DEL Then begin
-MirObjs.OBJS[Fo].O_MATH;
-end;
-end;
-}
+

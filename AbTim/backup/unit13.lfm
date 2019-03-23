@@ -64,6 +64,7 @@ object Form13: TForm13
     Width = 295
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
+    Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Consolas'
     Font.Pitch = fpFixed
@@ -75,5 +76,6 @@ object Form13: TForm13
     ParentFont = False
     ScrollBars = ssBoth
     TabOrder = 3
+    WordWrap = False
   end
 end

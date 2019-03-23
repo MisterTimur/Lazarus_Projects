@@ -75,5 +75,6 @@ object Form13: TForm13
     ParentFont = False
     ScrollBars = ssBoth
     TabOrder = 3
+    WordWrap = False
   end
 end

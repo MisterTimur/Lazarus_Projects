@@ -52,14 +52,12 @@ procedure TForm13.Edit1Change(Sender: TObject);
 begin
   I_SetN(Scr,Edit1);
 end;
-
 procedure TForm13.FormCreate(Sender: TObject);
 begin
   Caption:='Script';
   left:=OknoWidth(form3.left+form3.Width-width-10);
   top:=OknoHeight(form3.top+form3.height-height-50);
 end;
-
 procedure TForm13.Button1Click(Sender: TObject);
 begin
   I_RUN(Scr,memo1);
