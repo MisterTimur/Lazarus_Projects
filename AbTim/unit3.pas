@@ -503,7 +503,16 @@ begin
 RColToStr:='('+InString(iCol.R)+' '+InString(iCol.G)+
            ' '+InString(iCol.B)+' '+InString(iCol.A)+')';
 end;
-
+function  StrToRCS3(iCoo:AnsiString):RCS3;
+var Rez:RCS3;
+begin
+ StrToRCS3:=Rez;
+end;
+function  StrToRCol(iCoo:AnsiString):RCol;
+var Rez:RCol;
+begin
+ StrToRCol:=Rez;
+end;
 {%EndRegion}
 var   {Базовые переменные     ===========================}{%Region /FOLD }
 
@@ -1114,6 +1123,7 @@ var   {Описание Плоскоси      ===========================}{%Regi
 
 TYPE TPLO=CLASS(TVER)
   COLS:Array[1..4] of RCol;// Собственые цвета для вершин в плоскости
+  NOMS:Array[1..4] of RLON;// Номера собственых вершин при отрисовки
   VERS:Array[1..4] of TVER;// Вершины из котрых состоит плоскость
   Function    P_Viso(iCoo:RCS3):RSIN;// Определить высоту на плоскости
   Procedure   P_Gaba;// Вычислене габаритов
@@ -1603,6 +1613,7 @@ Constructor Create;
 end;
 var  MirObjs:TOBJS;
 var  PER:TOBJ;// Персонаж котрым будем управлять
+procedure SwapPLo(iPlo:TPlo);forward;
 procedure   TOBJ.O_MATH;// Перевычисление Реальных Координат
 var f:Longint;
 begin
@@ -1627,8 +1638,11 @@ for f:=1 to KolP do with PLOS[F] do ECR:=SerRCS3(ECR,REA);
 for f:=1 to KolL do with LINS[F] do ECR:=SerRCS3(ECR,REA);
 end;
 procedure   TOBJ.O_SWAP;// Вычисление Экранных координат
+var f:Longint;
 begin
 inherited E_SWAP;
+for f:=1 to KOlP do
+if not PLos[f].Del then SwapPLo(PLos[f]);
 end;
 Procedure   TOBJ.O_GABA;// Вычислене габаритов
 var f:Longint;
@@ -1888,6 +1902,35 @@ Type  TEl=Class  // Элемент исполнения
   Procedure  Op_SCO;// Скобка
   Procedure  Op_WHI;// While
   Procedure  Op_PRI;// Вывод в консоль
+  //----------------------------------------------------------
+  Procedure Op_CRE_VER;// Сздание вершины
+  Procedure Op_CRE_LIN;// Сздание Линии
+  Procedure Op_CRE_PLO;// Сздание Плоскости
+  Procedure Op_CRE_ELE;// Сздание Элемента
+  Procedure Op_CRE_OBJ;// Сздание ОБьекта
+  Procedure Op_CRE_SCR;// Сздание Скрипта
+  Procedure Op_CRE_ANI;// Сздание Анимации
+
+  Procedure Op_DEL_VER;// Удаление вершины
+  Procedure Op_DEL_LIN;// Удаление Линии
+  Procedure Op_DEL_PLO;// Удаление Плоскости
+  Procedure Op_DEL_ELE;// Удаление Элемента
+  Procedure Op_DEL_OBJ;// Удаление ОБьекта
+  Procedure Op_DEL_SCR;// Удаление Скрипта
+  Procedure Op_DEL_ANI;// Удаление Анимации
+
+  Procedure Op_CLE_SCE;// Очистка сцены
+  Procedure Op_SAV_SCE;// Сохранение  сцены
+  Procedure Op_LOA_SCE;// ЗАгрузка Сцены
+
+  Procedure Op_SAV_OBJ;// Сохраняет ОБьект в файл
+  Procedure Op_SAV_SCR;// Сохраняет Скрипт в файл
+  Procedure Op_SAV_ANI;// Сохраняет Анимацию в файл
+
+  Procedure Op_LOA_OBJ;// ЗАгружает ОБьект из файла
+  Procedure Op_LOA_SCR;// ЗАгружает Скрипт из файла
+  Procedure Op_LOA_ANI;// ЗАгружает Анимацию из файла
+  //----------------------------------------------------------
   Destructor destroy;override;
 
 end;
@@ -2241,15 +2284,302 @@ begin
 end;
 end;
 
+
+//------------------------------------------------------------------------------
+function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;forward;
+function  I_FinNam(iNam:Ansistring):TVer;forward;
+//------------------------------------------------------------------------------
+
+function SetRCS3_XYZ(iNS:Longint;iSLS:TSLS;var iCoo:RCS3;iZna:RSTR):Ansistring;
+var LRez:Ansistring;
+begin
+lRez:='';
+if iSLS.Kol=iNS then begin lRez:='1';iCoo:=StrToRCS3(iZna) end else
+if iSLS.Kol>iNS then begin
+iNS:=iNS+1; with iCoo do
+if iSLS.SLS[iNS]='X' then begin  lRez:='1';X:=InFloat(iZna) end else
+if iSLS.SLS[iNS]='Y' then begin  lRez:='1';Y:=InFloat(iZna) end else
+if iSLS.SLS[iNS]='Z' then begin  lRez:='1';Z:=InFloat(iZna) end ;
+end;
+SetRCS3_XYZ:=lREz;
+end;
+function SetRCOLRGBA(iNS:Longint;iSLS:TSLS;var iCol:RCOL;iZna:RSTR):Ansistring;
+var LRez:Ansistring;
+begin
+lRez:='';
+if iSLS.Kol=iNS then begin lRez:='1';iCol:=StrToRCol(iZna) end else
+if iSLS.Kol>iNS then begin
+iNS:=iNS+1; with iCoL do
+if iSLS.SLS[iNS]='R' then begin lRez:='1';R:=InInt(iZna) end else
+if iSLS.SLS[iNS]='G' then begin lRez:='1';G:=InInt(iZna) end else
+if iSLS.SLS[iNS]='B' then begin lRez:='1';B:=InInt(iZna) end else
+if iSLS.SLS[iNS]='A' then begin lRez:='1';A:=InInt(iZna) end  ;
+end;
+SetRCOLRGBA:=lREz;
+end;
+function SetTVER_PAR(iNS:Longint;iSLS:TSLS;iVer:Tver;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iVer=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+     iNS:=iNS+1;
+     if iSls.SLS[iNS]= 'NAM' then begin
+                   lRez:='1';
+                   iVer.NAM:=iZna;
+                   iVer.LNA:=ansiuppercase2(iZna);
+     end else
+     if iSls.SLS[iNS]= 'MCL' then begin
+                    lRez:='1';
+                    iVer.MCL:=inInt(iZna);
+     end else
+     if iSls.SLS[iNS]= 'TXT' then begin
+                     lRez:='1';
+                     iVer.TXT:=iZna;
+     end else
+     if iSls.SLS[iNS]= 'YYY' then begin
+                      lRez:='1';
+                      iVer.YYY:=InFloat(iZna);
+     end else
+     if iSls.SLS[iNS]= 'VIS' then begin
+                      lRez:='1';
+                      iVer.VIS:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'VVI' then begin
+                       lRez:='1';
+                       iVer.VVI:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'CHE' then begin
+                        lRez:='1';
+                        iVer.CHE:=inInt(iZna);
+     end else
+     if iSls.SLS[iNS]= 'SEL' then begin
+                        lRez:='1';
+                        iVer.SEL:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'IDD' then begin
+                        lRez:='1';
+                        iVer.IDD:=inInt(iZna);
+     end else
+
+     if iSls.SLS[iNS]= 'NOM' then begin
+                        lRez:='1';
+                        iVer.NOM:=inInt(iZna);
+     end else
+     if iSls.SLS[iNS]= 'TIP' then begin
+                        lRez:='1';
+                        iVer.TIP:=inInt(iZna);
+     end else
+
+     if iSls.SLS[iNS]= 'MAR' then begin
+                        lRez:='1';
+                        iVer.MAR:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'DEL' then begin
+                        lRez:='1';
+                        iVer.DEL:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'CRE' then begin
+                        lRez:='1';
+                        iVer.CRE:=StrToBool(iZna);
+     end else
+     if iSls.SLS[iNS]= 'OB3' then begin
+                        lRez:='1';
+                        iVer.OB3:=inFloat(iZna);
+     end else
+     if iSls.SLS[iNS]= 'RAS' then begin
+                        lRez:='1';
+                        iVer.RAS:=inFloat(iZna);
+     end else
+
+ if iSls.SLS[iNS]= 'LOC' then lRez:=SetRCS3_XYZ(iNs,iSls,iver.LOC ,iZna) else
+ if iSls.SLS[iNS]= 'MAT' then lRez:=SetRCS3_XYZ(iNs,iSls,iver.MAT ,iZna) else
+ if iSls.SLS[iNS]= 'REA' then lRez:=SetRCS3_XYZ(iNs,iSls,iver.REA ,iZna) else
+ if iSls.SLS[iNS]= 'ECR' then lRez:=SetRCS3_XYZ(iNs,iSls,iver.ECR ,iZna) else
+ if iSls.SLS[iNS]= 'GMax'then lRez:=SetRCS3_XYZ(iNs,iSls,iver.GMAX,iZna) else
+ if iSls.SLS[iNS]= 'GMin'then lRez:=SetRCS3_XYZ(iNs,iSls,iver.GMIN,iZna) else
+
+ if iSls.SLS[iNS]= 'COL' then lRez:=SetRCOLRGBA(iNs,iSls,iver.COL,iZna) else
+ if iSLS.SLS[iNS]= 'ECO' then lRez:=SetRCOLRGBA(iNs,iSls,iver.ECO,iZna) ;
+
+end;
+SetTVER_PAR:=lRez;
+end;
+
+function SetTLIN_PAR(iNS:Longint;iSLS:TSLS;iLin:TLin;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iLin=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iLin.Nam else
+if (iSls.KOl>iNS) Then begin
+
+ lRez:=SetTVER_PAR(iNs,iSls,TVER(iLin),iZna);
+
+ iNS:=iNS+1;
+ if lrez='' then
+ if iSls.SLS[iNs]='VER1' then lRez:=SetTVER_PAR(iNs,iSls,iLin.VERS[1],iZna) else
+ if iSls.SLS[iNs]='VER2' then lRez:=SetTVER_PAR(iNs,iSls,iLin.VERS[2],iZna) ;
+
+
+end;
+SetTLIN_PAR:=lRez;
+end;
+function SetTPLO_PAR(iNS:Longint;iSLS:TSLS;iPlo:TPlo;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iPlo=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iPlo.Nam else
+if (iSls.KOl>iNS) Then begin
+
+
+ lRez:=SetTVER_PAR(iNs,iSls,TVER(iPlo),iZna);
+
+ iNS:=iNS+1;
+ if lRez='' then
+ if iSls.SLS[iNs]='COL1' then lRez:=SetRCOLRGBA(iNs,iSls,iPlo.COLS[1],iZna) else
+ if iSls.SLS[iNs]='COL2' then lRez:=SetRCOLRGBA(iNs,iSls,iPlo.COLS[2],iZna) else
+ if iSls.SLS[iNs]='COL3' then lRez:=SetRCOLRGBA(iNs,iSls,iPlo.COLS[3],iZna) else
+ if iSls.SLS[iNs]='COL4' then lRez:=SetRCOLRGBA(iNs,iSls,iPlo.COLS[4],iZna) else
+ if iSls.SLS[iNs]='VER1' then lRez:=SetTVER_PAR(iNs,iSls,iPlo.VERS[1],iZna) else
+ if iSls.SLS[iNs]='VER2' then lRez:=SetTVER_PAR(iNs,iSls,iPlo.VERS[2],iZna) else
+ if iSls.SLS[iNs]='VER3' then lRez:=SetTVER_PAR(iNs,iSls,iPlo.VERS[3],iZna) else
+ if iSls.SLS[iNs]='VER4' then lRez:=SetTVER_PAR(iNs,iSls,iPlo.VERS[4],iZna) ;
+
+
+end;
+SetTPLO_PAR:=lRez;
+end;
+function SetTELE_PAR(iNS:Longint;iSLS:TSLS;iEle:TEle;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+lPri:TVer;// Исокмый примитив
+begin
+lRez:='';
+if (iELE=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iEle.Nam else
+if (iSls.KOl>iNS) Then begin
+
+ lRez:=SetTVER_PAR(iNs,iSls,TVER(iEle),iZna);
+
+ iNS:=iNS+1;
+ if lRez='' Then
+ if iSls.SLS[iNs]='EUGL' then lRez:=SetRCS3_XYZ(iNs,iSls,iELE.EUGL,iZna);
+
+ if lRez='' Then begin
+ lPri:=I_FinNam(iEle,iSLS.SLS[iNs]);
+ if lPri<>Nil Then
+ if lPri.TIP=T_ELE then lRez:=SetTELE_PAR(iNs,iSls,TEle(lPri),iZna) else
+ if lPri.TIP=T_VER then lRez:=SetTVER_PAR(iNs,iSls,TVer(lPri),iZna);
+ end;
+
+end;
+SetTELE_PAR:=lRez;
+end;
+function SetTOBJ_PAR(iNS:Longint;iSLS:TSLS;iObj:TObj;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+lPri:TVer;// Исокмый примитив
+begin
+lRez:='';
+if (iObj=Nil)  then lRez:='NIL'  else
+if (iSls.KOl=iNS) Then lRez:=iObj.Nam else
+if (iSls.KOl>iNS) Then begin
+
+ lRez:=SetTELE_PAR(iNs,iSls,TEle(iObj),iZna);
+
+ iNS:=iNS+1;
+
+if lRez='' Then
+if iSls.SLS[iNs]='KADR' then begin lRez:='1';iObj.KADR:=inInt(iZna);end else
+if iSls.SLS[iNs]='OCEL' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OCEL,iZna) else
+if iSls.SLS[iNs]='OMOV' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OMOV,iZna) else
+if iSls.SLS[iNs]='OPER' then begin lRez:='1';iObj.OPER:=StrToBool(iZna) end else
+if iSls.SLS[iNs]='MTP'  then lRez:=SetTVER_PAR(iNs,iSls,iObj.MTP,iZna) ;
+
+     if lRez='' Then begin
+     lPri:=I_FinNam(iObj,iSLS.SLS[iNs]);
+     if lPri<>Nil Then
+     if lPri.TIP=T_PLO then lRez:=SetTPLO_PAR(iNs,iSls,tPlo(lPri),iZNa) else
+     if lPri.TIP=T_LIN then lRez:=SetTLin_PAR(iNs,iSls,tLin(lPri),iZNa);
+     end;
+
+end;
+SetTOBJ_PAR:=lRez;
+end;
+function SetTSCR_PAR(iNS:Longint;iSLS:TSLS;iScr:TScr;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iScr=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+
+     iNS:=iNS+1;
+
+
+
+end;
+SetTSCR_PAR:=lRez;
+end;
+function SetTANI_PAR(iNS:Longint;iSLS:TSLS;iAni:TAni;iZna:RSTR):Ansistring;
+var
+lRez:RSTR;// Реультат
+begin
+lRez:='';
+if (iANi=Nil)  then lRez:='NIL'  else
+if (iSls.KOl>iNS) Then begin
+
+
+     iNS:=iNS+1;
+
+
+
+end;
+SetTANI_PAR:=lRez;
+end;
+
+//------------------------------------------------------------------------------
+
 Procedure Tel.Op_LET; // = Операция присваивания значения
 Var
-F:Tel;
+F:Tel;lPri:Tver;lNs:Longint;lRez:AnsiString;
 begin
 if (blo<>nil) and  (blo.nex<>nil) then
 begin
+
+lPri:=Nil;
+lNs:=1;
+
+if (Blo.SLS<>Nil) and (Blo.SLS.Kol>0) Then lPri:=I_FinNam(Blo.SLS.SLS[lNs]);
+if lPri<>Nil
+then begin // Читаем параметры
+
+   Blo.nex.TRun;
+
+   if lPri.TIp=T_OBJ then
+      lRez:=SetTOBJ_PAR(lNs,Blo.SLS,TObj(lPri),Blo.nex.Zna) else
+   if lPri.TIp=T_SCR then
+      lRez:=SetTSCR_PAR(lNs,Blo.SLS,TScr(lPri),Blo.nex.Zna) else
+   if lPri.TIp=T_ANI then
+      lRez:=SetTANI_PAR(lNs,Blo.SLS,TAni(lPri),Blo.nex.Zna);
+
+   Zna:=lRez;
+
+     end
+else begin
 Blo.nex.TRun;
 F:=FinFun(Blo.TXT);
 if F<>Nil Then F.Zna:=Blo.nex.Zna;
+end;
+
+
 end;
 end;
 Procedure Tel.Op_SCO; // Выполняет скобку
@@ -2299,13 +2629,6 @@ Form15.PRI(co);
 end;
 
 //------------------------------------------------------------------------------
-function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;forward;
-function  I_FinNam(iNam:Ansistring):TVer;forward;
-function  SetParametr(iNam,iZna:Ansistring):Boolean;
-begin
-
-end;
-
 function GetRCS3_XYZ(iNS:Longint;iSLS:TSLS;iCoo:RCS3):Ansistring;
 var LRez:Ansistring;
 begin
@@ -2347,15 +2670,13 @@ if (iSls.KOl>iNS) Then begin
      if iSls.SLS[iNS]= 'TXT' then lRez:=          iVer.TXT  else
      if iSls.SLS[iNS]= 'YYY' then lRez:=inString (iVer.YYY) else
      if iSls.SLS[iNS]= 'VIS' then lRez:=BoolToStr(iVer.VIS) else
-     if iSls.SLS[iNS]= 'VVI' then lRez:=BoolToStr(iVer.VIS) else
+     if iSls.SLS[iNS]= 'VVI' then lRez:=BoolToStr(iVer.VVI) else
      if iSls.SLS[iNS]= 'CHE' then lRez:=inString (iVer.CHE) else
      if iSls.SLS[iNS]= 'SEL' then lRez:=BoolToStr(iVer.SEL) else
      if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
 
      if iSls.SLS[iNS]= 'NOM' then lRez:=inString (iVer.NOM) else
      if iSls.SLS[iNS]= 'TIP' then lRez:=inString (iVer.TIP) else
-     if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
-     if iSls.SLS[iNS]= 'IDD' then lRez:=inString (iVer.IDD) else
 
      if iSls.SLS[iNS]= 'MAR' then lRez:=BoolToStr(iVer.MAR) else
      if iSls.SLS[iNS]= 'DEL' then lRez:=BoolToStr(iVer.DEL) else
@@ -2438,7 +2759,7 @@ if (iSls.KOl>iNS) Then begin
 
      iNS:=iNS+1;
      if lRez='' Then
-     if iSls.SLS[iNs]='KOLE' then lRez:=inString(iEle.KolV) else
+     if iSls.SLS[iNs]='KOLE' then lRez:=inString(iEle.KolE) else
      if iSls.SLS[iNs]='KOLV' then lRez:=inString(iEle.KolV) else
      if iSls.SLS[iNs]='EUGL' then lRez:=GetRCS3_XYZ(iNs,iSls,iELE.EUGL);
 
@@ -2519,6 +2840,117 @@ if (iSls.KOl>iNS) Then begin
 end;
 GetTANI_PAR:=lRez;
 end;
+//------------------------------------------------------------------------------
+Procedure TEl.Op_CRE_VER;// Сздание вершины
+begin
+
+
+//   Создает новую вершину
+//   CRE_VER('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+
+
+
+end;
+Procedure TEl.Op_CRE_LIN;// Сздание Линии
+begin
+
+end;
+Procedure TEl.Op_CRE_PLO;// Сздание Плоскости
+begin
+
+end;
+Procedure TEl.Op_CRE_ELE;// Сздание Элемента
+begin
+
+end;
+Procedure TEl.Op_CRE_OBJ;// Сздание ОБьекта
+begin
+
+end;
+Procedure TEl.Op_CRE_SCR;// Сздание Скрипта
+begin
+
+end;
+Procedure TEl.Op_CRE_ANI;// Сздание Анимации
+begin
+
+end;
+
+Procedure TEl.Op_DEL_VER;// Удаление вершины
+begin
+
+end;
+Procedure TEl.Op_DEL_LIN;// Удаление Линии
+begin
+
+end;
+Procedure TEl.Op_DEL_PLO;// Удаление Плоскости
+begin
+
+end;
+Procedure TEl.Op_DEL_ELE;// Удаление Элемента
+begin
+
+end;
+Procedure TEl.Op_DEL_OBJ;// Удаление ОБьекта
+begin
+
+end;
+Procedure TEl.Op_DEL_SCR;// Удаление Скрипта
+begin
+
+end;
+Procedure TEl.Op_DEL_ANI;// Удаление Анимации
+begin
+
+end;
+
+Procedure TEl.Op_CLE_SCE;// Очистка сцены
+begin
+
+end;
+Procedure TEl.Op_SAV_SCE;// Сохранение  сцены
+begin
+
+end;
+Procedure TEl.Op_LOA_SCE;// ЗАгрузка Сцены
+begin
+
+end;
+
+Procedure TEl.Op_SAV_OBJ;// Сохраняет ОБьект в файл
+begin
+
+end;
+Procedure TEl.Op_SAV_SCR;// Сохраняет Скрипт в файл
+begin
+
+end;
+Procedure TEl.Op_SAV_ANI;// Сохраняет Анимацию в файл
+begin
+
+end;
+
+Procedure TEl.Op_LOA_OBJ;// ЗАгружает ОБьект из файла
+begin
+
+end;
+Procedure TEl.Op_LOA_SCR;// ЗАгружает Скрипт из файла
+begin
+
+end;
+Procedure TEl.Op_LOA_ANI;// ЗАгружает Анимацию из файла
+begin
+
+end;
+//----------------------------------------------------------
+
+
+
+
+
+
 
 Procedure Tel.TRun;// Выполняет 1 елемент
 Begin
@@ -2535,6 +2967,35 @@ if Txt='!='             Then Op_NER else // Неравно
 if Txt=':='             Then Op_Let else // ПРисвоение
 if Txt='('              Then Op_Sco else // ОТкрывающаяся скобка
 if Txt='{'              Then TRuns  else // Открывающитйся блок
+//----------------------------------------------------------
+if Txt='CRE_VER'        Then Op_CRE_VER else // Сздание вершины
+if Txt='CRE_LIN'        Then Op_CRE_LIN else // Сздание Линии
+if Txt='CRE_PLO'        Then Op_CRE_PLO else // Сздание Плоскости
+if Txt='CRE_ELE'        Then Op_CRE_ELE else // Сздание Элемента
+if Txt='CRE_OBJ'        Then Op_CRE_OBJ else // Сздание ОБьекта
+if Txt='CRE_SCR'        Then Op_CRE_SCR else // Сздание Скрипта
+if Txt='CRE_ANI'        Then Op_CRE_ANI else // Сздание Анимации
+//----------------------------------------------------------
+if Txt='DEL_VER'        Then Op_DEL_VER else // Удаление вершины
+if Txt='DEL_LIN'        Then Op_DEL_LIN else // Удаление Линии
+if Txt='DEL_PLO'        Then Op_DEL_PLO else // Удаление Плоскости
+if Txt='DEL_ELE'        Then Op_DEL_ELE else // Удаление Элемента
+if Txt='DEL_OBJ'        Then Op_DEL_OBJ else // Удаление ОБьекта
+if Txt='DEL_SCR'        Then Op_DEL_SCR else // Удаление Скрипта
+if Txt='DEL_ANI'        Then Op_DEL_ANI else // Удаление Анимации
+//----------------------------------------------------------
+if Txt='CLE_SCE'        Then Op_CLE_SCE else // Очистка сцены
+if Txt='SAV_SCE'        Then Op_SAV_SCE else // Сохранение  сцены
+if Txt='LOA_SCE'        Then Op_LOA_SCE else // ЗАгрузка Сцены
+//----------------------------------------------------------
+if Txt='SAV_OBJ'        Then Op_SAV_OBJ else // Сохраняет ОБьект в файл
+if Txt='SAV_SCR'        Then Op_SAV_SCR else // Сохраняет Скрипт в файл
+if Txt='SAV_ANI'        Then Op_SAV_ANI else // Сохраняет Анимацию в файл
+//----------------------------------------------------------
+if Txt='LOA_OBJ'        Then Op_LOA_OBJ else // ЗАгружает ОБьект из файла
+if Txt='LOA_SCR'        Then Op_LOA_SCR else // ЗАгружает Скрипт из файла
+if Txt='LOA_ANI'        Then Op_LOA_ANI else // ЗАгружает Анимацию из файла
+//----------------------------------------------------------
 if Txt='WHILE'          Then Op_WHI else // Цикл while
 if Txt='PRINT'          Then Op_PRI else // Оператор PRINT
 if Tip=Ti_Slo           Then RunFun;
@@ -2950,6 +3411,26 @@ constructor Create;
 procedure   Swap;// Формирет масив вершин цаетов и индексов
 end;
 var MirCols:TCols;
+
+procedure SwapPLo(iPlo:TPlo);
+var f:longint;
+begin
+
+if (iPlo.MCL=2) or (iPlo.MCL=3) then begin
+
+MirCols.ECOO2[iPlo.NOMS[1]]:=
+SerRCS8(MirCols.ECOO2[iPlo.NOMS[1]],iPlo.VERS[1].ECR);
+MirCols.ECOO2[iPlo.NOMS[2]]:=
+SerRCS8(MirCols.ECOO2[iPlo.NOMS[2]],iPlo.VERS[2].ECR);
+MirCols.ECOO2[iPlo.NOMS[3]]:=
+SerRCS8(MirCols.ECOO2[iPlo.NOMS[3]],iPlo.VERS[3].ECR);
+MirCols.ECOO2[iPlo.NOMS[4]]:=
+SerRCS8(MirCols.ECOO2[iPlo.NOMS[4]],iPlo.VERS[4].ECR);
+
+end;
+
+end;
+
 function    TCols.addV(iVer:Tver;iCol:RCol):RLON;// Добавить вершину на от
 begin
  lDrKv:=lDrKv+1;
@@ -2997,7 +3478,10 @@ else if MCL=2 then begin // Используем для цвета цвет пл
      lver3:=addV(VERS[3],COL);
      lver4:=addV(VERS[4],COL);
      lPlo1:=addP(lVer1,lVer2,lVer3,lVer4);
-
+     NOMS[1]:=lver1;
+     NOMS[2]:=lver2;
+     NOMS[3]:=lver3;
+     NOMS[4]:=lver4;
      end
 else if MCL=3 then begin // Используем для цвета цвета заданые в самой плоскои
 
@@ -3006,6 +3490,10 @@ else if MCL=3 then begin // Используем для цвета цвета з
      lver3:=addV(VERS[3],COLS[3]);
      lver4:=addV(VERS[4],COLS[4]);
      lPlo1:=addP(lVer1,lVer2,lVer3,lVer4);
+     NOMS[1]:=lver1;
+     NOMS[2]:=lver2;
+     NOMS[3]:=lver3;
+     NOMS[4]:=lver4;
 
      end;
      Move(ECoo1,ECoo2,(lDrKv+1)*SizeOf(RCS3));
@@ -5523,6 +6011,7 @@ if iAni.Selected[fa]     then
 for fo:=1 to lSelObjs.KOl do begin
 lAni:=TAni(iAni.Items.Objects[fa]);
 sAni:='O('+lSelObjs.Sels[fo].NAM+')'+lAni.TXT;
+Tobj(lSelObjs.Sels[fo]).CHE:=100;
 I_SCENA_KAD_01(sAni);
 end;
 lSelObjs.free;
@@ -6816,5 +7305,14 @@ end;
 
 {%EndRegion}
 end.
+
+
+
+// 1. За чаем 5 мин .......
+// 2. Созадние удаление примитивов
+// 3. Функции сорхранения загрузки примитивов и сцены
+// 4. For
+
+
 
 
