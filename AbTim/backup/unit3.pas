@@ -1873,6 +1873,7 @@ Type  TEl=Class  // Элемент исполнения
   Function  Del:Tel;// Создает и Добавляет элемент в конец списка
 
   procedure VlogitSc(S1,S2:Ansistring); // Вложение скобок
+  Procedure VlogitCif;// Вложкение чисел
   Procedure VlogitPA;// Вложение параметров
   Procedure VlogitBl;// Вложкение Исполнительных блоков
   Procedure VlogitADD;// Вложение математических операций
@@ -1939,19 +1940,6 @@ PRG:Tel;// ПРограмма
 Function  ReadPars(S:Ansistring):Tel;
 Procedure ViewElem(E:Tel;O:Ansistring);
 Procedure ProgStru;
-end;
-Function  EtoCif(s:Ansistring):boolean;
-var
-f:Longint;
-rez:Boolean;
-begin
-rez:=true;
-
-for f:=1 to Length(s) do
-if (s[f]<'0') or (s[f]>'9')then begin rez:=false;break end;
-
-If Length(s)=0 Then Rez:=False;
-EtoCif:=REz;
 end;
 //------------------------------------------------------------------------------
 Destructor Tel.destroy;
@@ -2025,6 +2013,25 @@ While Uka<>Nil do
   Uka:=Ne;
  end;
 end;
+Procedure TEl.VlogitCif ;// Вложкение чисел
+var
+UKA:Tel;
+Begin
+UKA:=Blo;
+While UKA<>NIL do
+begin
+If (UKA.TIP=TI_CIF) THEN
+If (UKA.NEX<>NIL) AND (UKA.NEX.TIP=TI_CIF)
+Then begin
+UKA.ZNA:=inString(inFloat(UKA.ZNA)+inFloat(UKA.NEX.ZNA));
+UKA.TXT:=UKA.ZNA;
+UKA.NEX.DEL;
+end;
+Uka.VlogitCiF;
+UKA:=UKA.NEX;
+end;
+end;
+
 Procedure TEl.VlogitPA ;// Вложкение параметров
 var
 UKA:Tel;
@@ -2188,8 +2195,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
- zna:=FloatToStr(StrToFloat(Blo.zna)+StrToFloat(Blo.nex.zna)) else
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)+inFloat(Blo.nex.zna)) else
  zna:=Blo.zna+Blo.nex.zna;
 end;
 end;
@@ -2199,8 +2206,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
- zna:=FloatToStr(StrToFloat(Blo.zna)-StrToFloat(Blo.nex.zna)) else
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)-inFloat(Blo.nex.zna)) else
  ERR('Нельзя вычитать строки');
 end;
 end;
@@ -2210,9 +2217,9 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
- if StrToFloat(Blo.nex.zna)=0 then
- zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ if InFloat(Blo.nex.zna)<>0 then
+ zna:=InString(inFloat(Blo.zna)/inFloat(Blo.nex.zna)) else
  ERR('Делени на ноль') else ERR('Нельзя делить строки');
 end;
 end;
@@ -2222,8 +2229,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna) then
- zna:=FloatToStr(StrToFloat(Blo.zna)/StrToFloat(Blo.nex.zna)) else
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)*inFloat(Blo.nex.zna)) else
  ERR('Нельзя Умножать строки');
 end;
 end;
@@ -2234,8 +2241,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- then zna:= BoolToStr(StrToFloat(Blo.zna)<StrToFloat(Blo.nex.zna))
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<inFloat(Blo.nex.zna))
  else zna:= BoolToStr(Blo.zna<Blo.nex.zna);
 end;
 end;
@@ -2245,8 +2252,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- then zna:= BoolToStr(StrToFloat(Blo.zna)>StrToFloat(Blo.nex.zna))
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)>StrToFloat(Blo.nex.zna))
  else zna:= BoolToStr(Blo.zna>Blo.nex.zna);
 end;
 end;
@@ -2256,8 +2263,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- then zna:= BoolToStr(StrToFloat(Blo.zna)<=StrToFloat(Blo.nex.zna))
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<=inFloat(Blo.nex.zna))
  else zna:= BoolToStr(Blo.zna<=Blo.nex.zna);
 end;
 end;
@@ -2267,8 +2274,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- then zna:= BoolToStr(StrToFloat(Blo.zna)>=StrToFloat(Blo.nex.zna))
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)>=inFloat(Blo.nex.zna))
  else zna:= BoolToStr(Blo.zna>=Blo.nex.zna);
 end;
 end;
@@ -2278,8 +2285,8 @@ if (blo<>nil)  and (blo.nex<>nil) Then
 begin
  blo.TRun;
  blo.nex.TRun;
- if EtoCif(Blo.zna) and EtoCif(Blo.nex.zna)
- then zna:= BoolToStr(StrToFloat(Blo.zna)<>StrToFloat(Blo.nex.zna))
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<>inFloat(Blo.nex.zna))
  else zna:= BoolToStr(Blo.zna<>Blo.nex.zna);
 end;
 end;
@@ -2841,29 +2848,256 @@ end;
 GetTANI_PAR:=lRez;
 end;
 //------------------------------------------------------------------------------
-Procedure TEl.Op_CRE_VER;// Сздание вершины
+function  I_FinObj(iNam:Ansistring):Tobj;forward;
+function  I_FinEle(iNam:Ansistring):TEle;forward;
+function  I_FinVer(iNam:Ansistring):TVer;forward;
+function  I_AddPLi(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Линию
+function  I_AddPPl(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Плосскость
+function  I_SetN(iVer:Pointer;S:Ansistring):Boolean;forward;
+//------------------------------------------------------------------------------
+
+Procedure TEl.Op_CRE_VER;// Создание вершины
+var
+lEl:TEl;
+lEle:TEle;
+lVer:Tver;
+KP:Longint;
 begin
 
-
 //   Создает новую вершину
-//   CRE_VER( Нзавнаие_обьекта.Название_элемента , Имя_вершины );
+//   CRE_VER('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+//   CRE_VER ( Ele , x y z M R G B A  );
 
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+
+KP:=0;
+lEl:=Blo.Blo;
+while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
+
+lEl:=Blo.Blo;
+if KP>=1 Then begin lEle:=I_FinEle(lEl.Zna); end;// Опредеяю в какой эл доб вер
+if lEle<>Nil Then begin
+
+lVer:=TVer(I_AddVer(lEle));// Cоздаю вершину
+ZNA:=TOBJ(lVer.OBJ).LNA+'.'+lVer.LNA;
+if KP>=2  Then begin lEl:=lEl.NEX;lVer.LOC.X:=inFloat(lEl.ZNA);end;
+if KP>=3  Then begin lEl:=lEl.NEX;lVer.LOC.Y:=inFloat(lEl.ZNA);end;
+if KP>=4  Then begin lEl:=lEl.NEX;lVer.LOC.Z:=inFloat(lEl.ZNA);end;
+
+if KP>=5  Then begin lEl:=lEl.NEX;lVer.MAR:=StrToBool(lEl.ZNA);end;
+
+if KP>=6  Then begin lEl:=lEl.NEX;lVer.COL.R:=inInt(lEl.ZNA);end;
+if KP>=7  Then begin lEl:=lEl.NEX;lVer.COL.G:=inInt(lEl.ZNA);end;
+if KP>=8  Then begin lEl:=lEl.NEX;lVer.COL.B:=inInt(lEl.ZNA);end;
+if KP>=9  Then begin lEl:=lEl.NEX;lVer.COL.A:=inInt(lEl.ZNA);end;
+if KP>=10 Then begin lEl:=lEl.NEX;I_SetN(lVer,lEl.ZNA)      ;end;
+
+end;
+end else ERR('НЕ указан элемент в котором сзадаеться вершина ')
 
 end;
 Procedure TEl.Op_CRE_LIN;// Сздание Линии
+var
+lEl:TEl;
+lObj:TObj;
+lLin:TLin;
+lVe1:Tver;
+lVe2:Tver;
+KP:Longint;
 begin
 
+//   Создает новую вершину
+//   CRE_VER('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+//   CRE_LIN ( Obj , A , B , M , R , G , B , A , NAME );
+{
+
+
+CRE_LIN(O_1,
+CRE_VER(O_1,1,1,1),
+CRE_VER(O_1,2,2,2));
+
+}
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+
+KP:=0;
+lEl:=Blo.Blo;
+while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
+
+lEl:=Blo.Blo;
+if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
+if lObj<>Nil Then begin
+
+lLin:=TLin(I_AddPLi(lObj));// Cоздаю пустую  Линию
+ZNA:=TOBJ(lLin.OBJ).LNA+'.'+lLin.LNA;
+if KP>=2  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe1:=I_FinVer(lEl.ZNA);
+               if lVe1<>nil Then lLin.VERS[1]:=lVe1;
+               end;
+if KP>=3  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe2:=I_FinVer(lEl.ZNA);
+               if lVe2<>nil Then lLin.VERS[2]:=lVe2;
+               end;
+if KP>=4  Then begin lEl:=lEl.NEX;lLin.MAR:=StrToBool(lEl.ZNA);end;
+if KP>=5  Then begin lEl:=lEl.NEX;lLin.COL.R:=inInt(lEl.ZNA);end;
+if KP>=6  Then begin lEl:=lEl.NEX;lLin.COL.G:=inInt(lEl.ZNA);end;
+if KP>=7  Then begin lEl:=lEl.NEX;lLin.COL.B:=inInt(lEl.ZNA);end;
+if KP>=8  Then begin lEl:=lEl.NEX;lLin.COL.A:=inInt(lEl.ZNA);end;
+if KP>=9  Then begin lEl:=lEl.NEX;I_SetN(lLin,lEl.ZNA)      ;end;
+
+end;
+end else ERR('НЕ указан элемент в котором сзадаеться линия ');
 end;
 Procedure TEl.Op_CRE_PLO;// Сздание Плоскости
+var
+lEl:TEl;
+lObj:TObj;
+lPlo:TPlo;
+lVe1:Tver;
+lVe2:Tver;
+lVe3:Tver;
+lVe4:Tver;
+KP:Longint;
 begin
 
+//   Создает новую Плоскость
+//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+//   CRE_PLO ( Obj , A , B , C , D , M , R , G , B , A , NAME );
+{
+
+
+CRE_PLO(O_1,
+CRE_VER(O_1,1,1,1),
+CRE_VER(O_1,2,2,2),
+CRE_VER(O_1,3,3,3),
+CRE_VER(O_1,4,4,4));
+
+}
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+
+KP:=0;
+lEl:=Blo.Blo;
+while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
+
+lEl:=Blo.Blo;
+if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
+if lObj<>Nil Then begin
+
+lPlo:=TPLo(I_AddPPl(lObj));// Cоздаю пустую  Плоскость
+ZNA:=TOBJ(lPLo.OBJ).LNA+'.'+lPLo.LNA;
+if KP>=2  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe1:=I_FinVer(lEl.ZNA);
+               if lVe1<>nil Then lPLo.VERS[1]:=lVe1;
+               end;
+if KP>=3  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe2:=I_FinVer(lEl.ZNA);
+               if lVe2<>nil Then lPLo.VERS[2]:=lVe2;
+               end;
+if KP>=4  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe3:=I_FinVer(lEl.ZNA);
+               if lVe3<>nil Then lPLo.VERS[3]:=lVe3;
+               end;
+if KP>=5  Then begin lEl:=lEl.NEX;lEl.TRUN;
+               lVe4:=I_FinVer(lEl.ZNA);
+               if lVe4<>nil Then lPLo.VERS[4]:=lVe4;
+               end;
+
+if KP>=6  Then begin lEl:=lEl.NEX;lPLo.MAR:=StrToBool(lEl.ZNA);end;
+if KP>=7  Then begin lEl:=lEl.NEX;lPLo.COL.R:=inInt(lEl.ZNA);end;
+if KP>=8  Then begin lEl:=lEl.NEX;lPLo.COL.G:=inInt(lEl.ZNA);end;
+if KP>=9  Then begin lEl:=lEl.NEX;lPLo.COL.B:=inInt(lEl.ZNA);end;
+if KP>=10 Then begin lEl:=lEl.NEX;lPLo.COL.A:=inInt(lEl.ZNA);end;
+if KP>=11 Then begin lEl:=lEl.NEX;I_SetN(lPLo,lEl.ZNA)      ;end;
+
 end;
+end else ERR('НЕ указан элемент в котором сзадаеться Плоскость  ');
+end;
+
 Procedure TEl.Op_CRE_ELE;// Сздание Элемента
+var
+lEl:TEl;
+lObj:TObj;
+lEle:TEle;
+KP:Longint;
 begin
+
+//   Создает новую Плоскость
+//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+//   CRE_ELE ( Obj ,X, Y, Z , M , R , G , B , A , NAME );
+{                                                                 }
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+
+KP:=0;
+lEl:=Blo.Blo;
+while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
+
+lEl:=Blo.Blo;
+if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
+if lObj<>Nil Then begin
+
+
+lEle:=TEle(I_AddEle(lObj));// Cоздаю вершину
+ZNA:=TOBJ(lEle.OBJ).LNA+'.'+lEle.LNA;
+
+if KP>=2  Then begin lEl:=lEl.NEX;lEle.LOC.X:=inFloat(lEl.ZNA);end;
+if KP>=3  Then begin lEl:=lEl.NEX;lEle.LOC.Y:=inFloat(lEl.ZNA);end;
+if KP>=4  Then begin lEl:=lEl.NEX;lEle.LOC.Z:=inFloat(lEl.ZNA);end;
+
+if KP>=5  Then begin lEl:=lEl.NEX;lEle.MAR:=StrToBool(lEl.ZNA);end;
+
+if KP>=6  Then begin lEl:=lEl.NEX;lEle.COL.R:=inInt(lEl.ZNA)  ;end;
+if KP>=7  Then begin lEl:=lEl.NEX;lEle.COL.G:=inInt(lEl.ZNA)  ;end;
+if KP>=8  Then begin lEl:=lEl.NEX;lEle.COL.B:=inInt(lEl.ZNA)  ;end;
+if KP>=9  Then begin lEl:=lEl.NEX;lEle.COL.A:=inInt(lEl.ZNA)  ;end;
+if KP>=10 Then begin lEl:=lEl.NEX;I_SetN(lEle,lEl.ZNA)        ;end;
+
+
+end
+end else ERR('НЕ указан элемент в котором сзадаеться Элемент   ');
 
 end;
 Procedure TEl.Op_CRE_OBJ;// Сздание ОБьекта
+var
+lEl:TEl;
+lObj:TObj;
+KP:Longint;
 begin
+
+//   Создает новую Плоскость
+//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
+//   Возврашет true если удалося создать вершину
+//   CRE_ELE ( X, Y, Z , M , R , G , B , A , NAME );
+{                                                                 }
+
+
+KP:=0;
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+lEl:=Blo.Blo;
+while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
+lEl:=Blo.Blo;
+end;
+
+
+lObj:=TObj(I_AddObj);// Cоздаю обьект
+ZNA:=TOBJ(lOBJ).LNA;
+
+if KP>=1  Then begin lEl:=lEl.NEX;lObj.LOC.X:=inFloat(lEl.ZNA);end;
+if KP>=2  Then begin lEl:=lEl.NEX;lObj.LOC.Y:=inFloat(lEl.ZNA);end;
+if KP>=3  Then begin lEl:=lEl.NEX;lObj.LOC.Z:=inFloat(lEl.ZNA);end;
+
+if KP>=4  Then begin lEl:=lEl.NEX;lObj.MAR:=StrToBool(lEl.ZNA);end;
+
+if KP>=5  Then begin lEl:=lEl.NEX;lObj.COL.R:=inInt(lEl.ZNA)  ;end;
+if KP>=6  Then begin lEl:=lEl.NEX;lObj.COL.G:=inInt(lEl.ZNA)  ;end;
+if KP>=7  Then begin lEl:=lEl.NEX;lObj.COL.B:=inInt(lEl.ZNA)  ;end;
+if KP>=8  Then begin lEl:=lEl.NEX;lObj.COL.A:=inInt(lEl.ZNA)  ;end;
+if KP>=9  Then begin lEl:=lEl.NEX;I_SetN(lObj,lEl.ZNA)        ;end;
+
+
+
 
 end;
 Procedure TEl.Op_CRE_SCR;// Сздание Скрипта
@@ -2942,13 +3176,8 @@ Procedure TEl.Op_LOA_ANI;// ЗАгружает Анимацию из файла
 begin
 
 end;
+
 //----------------------------------------------------------
-
-
-
-
-
-
 
 Procedure Tel.TRun;// Выполняет 1 елемент
 Begin
@@ -3078,6 +3307,7 @@ else begin // Выполняем функцию
           end;
 end;
 end;
+
 //------------------------------------------------------------------------------
 Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
 var
@@ -3115,14 +3345,62 @@ REadSlo:=Rez;
 end;
 Function REadCif:Ansistring;// ДЛя чтения цифер
 Var
-  REz:Ansistring;
-begin
+REz:Ansistring;
+KT:Longint;
+R:Boolean;
+begin                // +.0 -.0    .0   +0 -0
+
 REz:='';
-While (UKA<=LEN) and ((S[UKA]>='0') and (S[UKA]<='9')) do
-      begin
-      REZ:=REZ+S[UKA];
-      UKA:=UKA+1;
-      end;
+R:=False;
+KT:=0;
+
+if not R Then
+if (LEN>=UKA+2) then
+if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
+if ((S[UKA+1] ='.')                    ) then
+if ((S[UKA+2]>='0') and (S[UKA+2]<='9')) then begin
+    R:=true;
+    KT:=KT+1;
+    Rez:=Rez+S[UKA+0]+S[UKA+1]+S[UKA+2];
+    UKA:=UKA+3;
+    end;
+
+if not R Then
+if (LEN>=UKA+1) then
+if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
+if ((S[UKA+1]>='0') and (S[UKA+1]<='9')) then begin
+    R:=true;
+    Rez:=Rez+S[UKA+0]+S[UKA+1];
+    UKA:=UKA+2;
+    end;
+
+if not R Then
+if (LEN>=UKA+1) then
+if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
+if ((S[UKA+1] ='.')                    ) then begin
+    R:=true;
+    KT:=KT+1;
+    Rez:=Rez+S[UKA+0]+S[UKA+1];
+    UKA:=UKA+2;
+    end;
+
+if not R Then
+if (LEN>=UKA) then
+if ((S[UKA+0]>='0') and (S[UKA+0]<='9')) then begin
+    R:=true;
+    Rez:=Rez+S[UKA+0];
+    UKA:=UKA+1;
+    end;
+
+
+if R Then
+While (UKA<=LEN) and
+      (((S[UKA]>='0') and (S[UKA]<='9'))OR (S[UKA]='.')) and
+      (KT<=1) do begin
+       if S[UKA]='.' Then KT:=KT+1;
+       if KT<2 THEN BEGIN REZ:=REZ+S[UKA];UKA:=UKA+1;END;
+       end;
+
 REadCif:=Rez;
 end;
 Function REadZna:Ansistring;// ДЛя чтения Знаков
@@ -3206,6 +3484,7 @@ While L<>Nil Do
 end;
 Procedure TScr.ProgStru;// Формирует структуру программы
 begin
+PRG.VlogitCif;
 PRG.VlogitSc('(',')');
 PRG.VlogitSc('{','}');
 PRG.VlogitPA;
@@ -3502,13 +3781,13 @@ end;
 
 {%EndRegion}
 
-
 {%EndRegion}
 var   {Интерфейс редактора    ===========================}{%Region /FOLD }
                                                            Reg11:Longint;
 
 var   {----------------------- Возавращает списки     ===}{%Region /FOLD }
                                                           A_Reg11:Longint;
+
 function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
 var REz:TVer;f:longint;
 begin
@@ -3533,31 +3812,82 @@ f:=1;while (f<=iEle.KolE) and (REz=Nil) do begin // Ищу среди Элеме
 //-------------------------------------------------
 I_FinNam:=Rez;
 end;
-function  I_FinNam(iNam:Ansistring):TVer;
+function  I_FinVer(iNam:Ansistring):TVer;
 var
-REz:TVer;
+lVer:TVer;
+f:longint;
+lSls:TSLS;
+begin
+lVer:=Nil;
+lSls:=TSLS.Create(iNam,'.');
+if lSLS.Kol>0 then begin
+lVer:=I_FinObj(lSls.sls[1]);
+if lSLS.Kol>1 then
+if lVer<>Nil then lVer:=I_FinNam(TEle(lVer),lSls.sls[2]);
+end;
+I_FinVer:=lVer;
+end;
+function  I_FinEle(iNam:Ansistring):TEle;
+var
+lRez:TEle;
+lVer:TVer;
+f:longint;
+lSls:TSLS;
+begin
+lRez:=Nil;
+lSls:=TSLS.Create(iNam,'.');
+if lSLS.Kol>0 then begin
+lVer:=I_FinObj(lSls.sls[1]);
+if lSLS.Kol>1 then
+if lVer<>Nil then lVer:=I_FinNam(TEle(lVer),lSls.sls[2]);
+if (lVer.Tip=T_ELE) or (lVer.Tip=T_OBJ) then lRez:=TEle(lVer);
+end;
+I_FinEle:=lRez;
+end;
+function  I_FinObj(iNam:Ansistring):Tobj;
+var
+REz:TObj;
 f:longint;
 begin
-REz:=Nil;iNam:=ansiUpperCase2(iNam);
-
-f:=1;
+f:=1;REz:=Nil;iNam:=ansiUpperCase2(iNam);
 while (f<=MirObjs.KolO) and (REz=Nil) do begin
 if MirObjs.OBJS[f].LNA=iNam Then Rez:=MirObjs.OBJS[f];
 f:=f+1;
 end;
-
-f:=1;
+I_FinObj:=REz;
+end;
+function  I_FinAni(iNam:Ansistring):TAni;
+var
+REz:TAni;
+f:longint;
+begin
+f:=1;REz:=Nil;iNam:=ansiUpperCase2(iNam);
 while (f<=MirAnis.KolA) and (REz=Nil) do begin
-if MirANIs.ANIS[f].LNA=iNam Then Rez:=MirANIs.ANIS[f];
+if MirAnis.ANIS[f].LNA=iNam Then Rez:=MirAnis.ANIS[f];
 f:=f+1;
 end;
-
-f:=1;
+I_FinAni:=REz;
+end;
+function  I_FinScr(iNam:Ansistring):TScr;
+var
+REz:TScr;
+f:longint;
+begin
+f:=1;REz:=Nil;iNam:=ansiUpperCase2(iNam);
 while (f<=MirScrs.KolS) and (REz=Nil) do begin
-if MirScrs.ScrS[f].LNA=iNam Then Rez:=MirScrs.ScrS[f];
+if MirScrs.ScrS[f].LNA=iNam Then Rez:=MirScrs.SCRS[f];
 f:=f+1;
 end;
-
+I_FinScr:=REz;
+end;
+function  I_FinNam(iNam:Ansistring):TVer;
+var
+REz:TVer;
+begin
+REz:=Nil;
+if rez=nil then Rez:=I_FinObj(iNam);
+if rez=nil then Rez:=I_FinAni(iNam);
+if rez=nil then Rez:=I_FinScr(iNam);
 I_FinNam:=Rez;
 end;
 
@@ -4092,8 +4422,38 @@ BLOK(iPlo);
 
 end;
 end;
+
+
+function  I_SetN(iVer:Pointer;S:Ansistring):Boolean;
+var Rez:Boolean;
+begin
+Rez:=TRue;
+if  iVer<>Nil Then
+if (TVEr(iVer).NAM<>S) Then begin
+
+if (I_FinNam(S)=nil)or(pointer(I_FinNam(S))=iVer)
+   then begin
+   G_Change:=true;
+   TVEr(iVer).NAM:=S;
+   TVEr(iVer).LNA:=AnsiUpperCase2(S);
+   I_RefreshActivePrimitiv;
+   I_RefreshEditorPrimitiv(iVer);
+   end
+   else begin
+   ERR(' I_SetN Это имя уже занято '+S);
+   rez:=false;
+   end;
+
+end;
+I_SetN:=REz;
+end;
 procedure I_SetN(iVer:Pointer;iEdit:TEdit);
 begin
+
+if not I_SetN(iVer,iEdit.Text)
+then iEdit.Color:=RGBToColor(255,0,0)
+else iEdit.Color:=clDefault;
+{
 if iVer<>Nil Then
 if (TVEr(iVer).NAM<>iEdit.Text) Then begin
 
@@ -4111,6 +4471,7 @@ if (I_FinNam(iEdit.Text)=nil)or(pointer(I_FinNam(iEdit.Text))=iVer)
    end;
 
 end else iEdit.Color:=clDefault;
+}
 end;
 procedure I_SetT(iVer:Pointer;iMemo:TMemo);
 begin
@@ -4881,12 +5242,12 @@ I_AddPSc:=nScr;
 end;
 function   I_RUN(iScr:Pointer;iMemo:TMemo):POinter;// Выполнить скрипт
 var lScr:TScr;
-begin
+begin                 // +1-(-2)=1+2=3
 lScr:=TScr(iScr);
 if lScr.PRG<>nil Then lScr.PRG.Cle;
 lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
 lScr.ProgStru;// Формирование структуры программы
-//lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
+lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
 lScr.PRG.TRUNS;
 I_RUN:=Nil;
 end;
