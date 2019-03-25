@@ -1874,6 +1874,7 @@ Type  TEl=Class  // Элемент исполнения
 
   procedure VlogitSc(S1,S2:Ansistring); // Вложение скобок
   Procedure VlogitCif;// Вложкение чисел
+  Procedure VlogitZZ;// Вложение параметров
   Procedure VlogitPA;// Вложение параметров
   Procedure VlogitBl;// Вложкение Исполнительных блоков
   Procedure VlogitADD;// Вложение математических операций
@@ -2021,7 +2022,8 @@ UKA:=Blo;
 While UKA<>NIL do
 begin
 If (UKA.TIP=TI_CIF) THEN
-If (UKA.NEX<>NIL) AND (UKA.NEX.TIP=TI_CIF)
+If (UKA.NEX<>NIL) then
+if (UKA.NEX.TIP=TI_CIF)
 Then begin
 UKA.ZNA:=inString(inFloat(UKA.ZNA)+inFloat(UKA.NEX.ZNA));
 UKA.TXT:=UKA.ZNA;
@@ -2032,6 +2034,31 @@ UKA:=UKA.NEX;
 end;
 end;
 
+
+
+Procedure TEl.VlogitZZ ;// Вложкение ZZ
+var
+UKA:Tel;
+X:Tel;
+Begin
+UKA:=Blo;
+While UKA<>NIL do
+begin
+If (UKA.TXT='-') or (UKA.TXT='+') THEN
+If (UKA.NEX<>NIL) then
+if (UKA.NEX.TIP=Ti_SLO)
+Then begin
+     UKA.Add('0',TI_CIF);
+     UKA.Add(UKA.TXT,Ti_ZNA);
+     UKA.TXT:='(';
+     UKA.TIP:=TI_ZNA;
+     UKA.NEX.VlogitZZ;
+     UKA.Add(UKA.NEX);
+     end;
+UKA.VlogitZZ;
+UKA:=UKA.NEX;
+end;
+end;
 Procedure TEl.VlogitPA ;// Вложкение параметров
 var
 UKA:Tel;
@@ -2086,8 +2113,8 @@ Begin
 Uka:=Blo;
 While UKA<>Nil do
 Begin
-if (Uka.pre<>nil) and (Uka.nex<>nil) and
-   ((Uka.TXT='+') or (Uka.TXT='-'))
+if  ((Uka.TXT='+') or (Uka.TXT='-')) then
+if (Uka.pre<>nil) and (Uka.nex<>nil)
    Then begin
    Uka.Add(UKA.Pre);
    Uka.Add(UKA.Nex);
@@ -2598,7 +2625,9 @@ rez:='';l:=Blo;
 while l<>nil do
 begin
 l.TRun;
-rez:=rez+l.zna;
+if isFloat(Rez) and isFloat(l.zna)
+then rez:=InString(inFloat(rez)+inFloat(l.zna))
+else rez:=rez+l.zna;
 l:=l.nex;
 end;
 zna:=rez;
@@ -2848,295 +2877,193 @@ end;
 GetTANI_PAR:=lRez;
 end;
 //------------------------------------------------------------------------------
+
 function  I_FinObj(iNam:Ansistring):Tobj;forward;
 function  I_FinEle(iNam:Ansistring):TEle;forward;
+function  I_FinPlo(iNam:Ansistring):TPlo;forward;
+function  I_FinLin(iNam:Ansistring):TLin;forward;
 function  I_FinVer(iNam:Ansistring):TVer;forward;
+function  I_FinScr(iNam:Ansistring):TScr;forward;
+function  I_FinAni(iNam:Ansistring):TAni;forward;
 function  I_AddPLi(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Линию
 function  I_AddPPl(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Плосскость
+//function  I_AddEle(iEle:Pointer):Pointer;forward;// Доабвляет Элемент
+//function  I_AddObj:Pointer;forward;// Добавляет новый обьект
+function  I_AddPSc:Pointer;forward;// Добавить пустой скрипт
+function  I_AddPAn:Pointer;forward;// Добавить пустую анимацию
 function  I_SetN(iVer:Pointer;S:Ansistring):Boolean;forward;
+
+
 //------------------------------------------------------------------------------
 
-Procedure TEl.Op_CRE_VER;// Создание вершины
+Procedure TEl.Op_CRE_VER;// Создание  вершины
 var
-lEl:TEl;
 lEle:TEle;
 lVer:Tver;
-KP:Longint;
 begin
-
-//   Создает новую вершину
-//   CRE_VER('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
-//   Возврашет true если удалося создать вершину
-//   CRE_VER ( Ele , x y z M R G B A  );
-
 if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
-
-KP:=0;
-lEl:=Blo.Blo;
-while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
-
-lEl:=Blo.Blo;
-if KP>=1 Then begin lEle:=I_FinEle(lEl.Zna); end;// Опредеяю в какой эл доб вер
+Blo.Blo.TRun;
+lEle:=I_FinEle(Blo.Blo.Zna);
 if lEle<>Nil Then begin
-
 lVer:=TVer(I_AddVer(lEle));// Cоздаю вершину
 ZNA:=TOBJ(lVer.OBJ).LNA+'.'+lVer.LNA;
-if KP>=2  Then begin lEl:=lEl.NEX;lVer.LOC.X:=inFloat(lEl.ZNA);end;
-if KP>=3  Then begin lEl:=lEl.NEX;lVer.LOC.Y:=inFloat(lEl.ZNA);end;
-if KP>=4  Then begin lEl:=lEl.NEX;lVer.LOC.Z:=inFloat(lEl.ZNA);end;
-
-if KP>=5  Then begin lEl:=lEl.NEX;lVer.MAR:=StrToBool(lEl.ZNA);end;
-
-if KP>=6  Then begin lEl:=lEl.NEX;lVer.COL.R:=inInt(lEl.ZNA);end;
-if KP>=7  Then begin lEl:=lEl.NEX;lVer.COL.G:=inInt(lEl.ZNA);end;
-if KP>=8  Then begin lEl:=lEl.NEX;lVer.COL.B:=inInt(lEl.ZNA);end;
-if KP>=9  Then begin lEl:=lEl.NEX;lVer.COL.A:=inInt(lEl.ZNA);end;
-if KP>=10 Then begin lEl:=lEl.NEX;I_SetN(lVer,lEl.ZNA)      ;end;
-
+end else ERR('Не сушествует элемента в котором пытаемся создать вершину');
+end else ERR('НЕ указан элемент в котором сзадаеться вершина ');
 end;
-end else ERR('НЕ указан элемент в котором сзадаеться вершина ')
-
-end;
-Procedure TEl.Op_CRE_LIN;// Сздание Линии
+Procedure TEl.Op_CRE_LIN;// Сздание     Линии
 var
-lEl:TEl;
 lObj:TObj;
 lLin:TLin;
-lVe1:Tver;
-lVe2:Tver;
-KP:Longint;
 begin
-
-//   Создает новую вершину
-//   CRE_VER('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
-//   Возврашет true если удалося создать вершину
-//   CRE_LIN ( Obj , A , B , M , R , G , B , A , NAME );
-{
-
-
-CRE_LIN(O_1,
-CRE_VER(O_1,1,1,1),
-CRE_VER(O_1,2,2,2));
-
-}
 if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
-
-KP:=0;
-lEl:=Blo.Blo;
-while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
-
-lEl:=Blo.Blo;
-if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
+Blo.Blo.TRUN;
+lObj:=I_FinObj(Blo.Blo.Zna);// Опредеяю в какой обьект добавляем  линию
 if lObj<>Nil Then begin
-
 lLin:=TLin(I_AddPLi(lObj));// Cоздаю пустую  Линию
 ZNA:=TOBJ(lLin.OBJ).LNA+'.'+lLin.LNA;
-if KP>=2  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe1:=I_FinVer(lEl.ZNA);
-               if lVe1<>nil Then lLin.VERS[1]:=lVe1;
-               end;
-if KP>=3  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe2:=I_FinVer(lEl.ZNA);
-               if lVe2<>nil Then lLin.VERS[2]:=lVe2;
-               end;
-if KP>=4  Then begin lEl:=lEl.NEX;lLin.MAR:=StrToBool(lEl.ZNA);end;
-if KP>=5  Then begin lEl:=lEl.NEX;lLin.COL.R:=inInt(lEl.ZNA);end;
-if KP>=6  Then begin lEl:=lEl.NEX;lLin.COL.G:=inInt(lEl.ZNA);end;
-if KP>=7  Then begin lEl:=lEl.NEX;lLin.COL.B:=inInt(lEl.ZNA);end;
-if KP>=8  Then begin lEl:=lEl.NEX;lLin.COL.A:=inInt(lEl.ZNA);end;
-if KP>=9  Then begin lEl:=lEl.NEX;I_SetN(lLin,lEl.ZNA)      ;end;
-
-end;
-end else ERR('НЕ указан элемент в котором сзадаеться линия ');
+end else ERR('НЕ Существует обьект в котором сзадаеться линия ')
+end else ERR('НЕ указан обьект в котором сзадаеться линия ');
 end;
 Procedure TEl.Op_CRE_PLO;// Сздание Плоскости
 var
-lEl:TEl;
 lObj:TObj;
 lPlo:TPlo;
-lVe1:Tver;
-lVe2:Tver;
-lVe3:Tver;
-lVe4:Tver;
-KP:Longint;
 begin
-
-//   Создает новую Плоскость
-//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
-//   Возврашет true если удалося создать вершину
-//   CRE_PLO ( Obj , A , B , C , D , M , R , G , B , A , NAME );
-{
-
-
-CRE_PLO(O_1,
-CRE_VER(O_1,1,1,1),
-CRE_VER(O_1,2,2,2),
-CRE_VER(O_1,3,3,3),
-CRE_VER(O_1,4,4,4));
-
-}
 if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
-
-KP:=0;
-lEl:=Blo.Blo;
-while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
-
-lEl:=Blo.Blo;
-if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
+Blo.Blo.TRUN;
+lObj:=I_FinObj(Blo.Blo.Zna);// Опредеяю в какой обьект добавляем  Плоскость
 if lObj<>Nil Then begin
-
 lPlo:=TPLo(I_AddPPl(lObj));// Cоздаю пустую  Плоскость
 ZNA:=TOBJ(lPLo.OBJ).LNA+'.'+lPLo.LNA;
-if KP>=2  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe1:=I_FinVer(lEl.ZNA);
-               if lVe1<>nil Then lPLo.VERS[1]:=lVe1;
-               end;
-if KP>=3  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe2:=I_FinVer(lEl.ZNA);
-               if lVe2<>nil Then lPLo.VERS[2]:=lVe2;
-               end;
-if KP>=4  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe3:=I_FinVer(lEl.ZNA);
-               if lVe3<>nil Then lPLo.VERS[3]:=lVe3;
-               end;
-if KP>=5  Then begin lEl:=lEl.NEX;lEl.TRUN;
-               lVe4:=I_FinVer(lEl.ZNA);
-               if lVe4<>nil Then lPLo.VERS[4]:=lVe4;
-               end;
-
-if KP>=6  Then begin lEl:=lEl.NEX;lPLo.MAR:=StrToBool(lEl.ZNA);end;
-if KP>=7  Then begin lEl:=lEl.NEX;lPLo.COL.R:=inInt(lEl.ZNA);end;
-if KP>=8  Then begin lEl:=lEl.NEX;lPLo.COL.G:=inInt(lEl.ZNA);end;
-if KP>=9  Then begin lEl:=lEl.NEX;lPLo.COL.B:=inInt(lEl.ZNA);end;
-if KP>=10 Then begin lEl:=lEl.NEX;lPLo.COL.A:=inInt(lEl.ZNA);end;
-if KP>=11 Then begin lEl:=lEl.NEX;I_SetN(lPLo,lEl.ZNA)      ;end;
-
+end else ERR('НЕ Существует обьект в котором сзадаеться Плоскость  ');
+end else ERR('НЕ Указан обьект в котором сзадаеться Плоскость  ');
 end;
-end else ERR('НЕ указан элемент в котором сзадаеться Плоскость  ');
-end;
-
-Procedure TEl.Op_CRE_ELE;// Сздание Элемента
+Procedure TEl.Op_CRE_ELE;// Сздание  Элемента
 var
-lEl:TEl;
-lObj:TObj;
 lEle:TEle;
-KP:Longint;
 begin
 
-//   Создает новую Плоскость
-//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
-//   Возврашет true если удалося создать вершину
-//   CRE_ELE ( Obj ,X, Y, Z , M , R , G , B , A , NAME );
-{                                                                 }
 if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRUN;
+lEle:=I_FinEle(Blo.Blo.Zna);// Опредеяю в какой Элементе добавляем  элемент
+if lEle<>Nil Then begin
 
-KP:=0;
-lEl:=Blo.Blo;
-while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
-
-lEl:=Blo.Blo;
-if KP>=1 Then begin lObj:=I_FinObj(lEl.Zna); end;// Опредеяю в какой эл доб вер
-if lObj<>Nil Then begin
-
-
-lEle:=TEle(I_AddEle(lObj));// Cоздаю вершину
+lEle:=TEle(I_AddEle(lEle));// Cоздаю Элемент
 ZNA:=TOBJ(lEle.OBJ).LNA+'.'+lEle.LNA;
 
-if KP>=2  Then begin lEl:=lEl.NEX;lEle.LOC.X:=inFloat(lEl.ZNA);end;
-if KP>=3  Then begin lEl:=lEl.NEX;lEle.LOC.Y:=inFloat(lEl.ZNA);end;
-if KP>=4  Then begin lEl:=lEl.NEX;lEle.LOC.Z:=inFloat(lEl.ZNA);end;
-
-if KP>=5  Then begin lEl:=lEl.NEX;lEle.MAR:=StrToBool(lEl.ZNA);end;
-
-if KP>=6  Then begin lEl:=lEl.NEX;lEle.COL.R:=inInt(lEl.ZNA)  ;end;
-if KP>=7  Then begin lEl:=lEl.NEX;lEle.COL.G:=inInt(lEl.ZNA)  ;end;
-if KP>=8  Then begin lEl:=lEl.NEX;lEle.COL.B:=inInt(lEl.ZNA)  ;end;
-if KP>=9  Then begin lEl:=lEl.NEX;lEle.COL.A:=inInt(lEl.ZNA)  ;end;
-if KP>=10 Then begin lEl:=lEl.NEX;I_SetN(lEle,lEl.ZNA)        ;end;
-
-
-end
+end else ERR('НЕ Существует элемент в котором сзадаеться Элемент   ')
 end else ERR('НЕ указан элемент в котором сзадаеться Элемент   ');
 
 end;
-Procedure TEl.Op_CRE_OBJ;// Сздание ОБьекта
+Procedure TEl.Op_CRE_OBJ;// Сздание   ОБьекта
+begin
+ZNA:=TObj(I_AddObj).LNA;
+end;
+Procedure TEl.Op_CRE_SCR;// Сздание   Скрипта
+begin
+ZNA:=TScr(I_AddPSc).LNA;
+end;
+Procedure TEl.Op_CRE_ANI;// Сздание  Анимации
+begin
+ZNA:=TAni(I_AddPAn).LNA;
+end;
+
+Procedure TEl.Op_DEL_VER;// Удаление   вершины
 var
-lEl:TEl;
-lObj:TObj;
-KP:Longint;
+lVer:Tver;
 begin
-
-//   Создает новую Плоскость
-//   CRE_PLO('Нзавнаие_обьекта.Название_элемента','Имя_вершины');
-//   Возврашет true если удалося создать вершину
-//   CRE_ELE ( X, Y, Z , M , R , G , B , A , NAME );
-{                                                                 }
-
-
-KP:=0;
 if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
-lEl:=Blo.Blo;
-while lEl<>Nil do begin KP:=KP+1;lEl:=lEl.Nex end;// Количество параметров
-lEl:=Blo.Blo;
+Blo.Blo.TRun;
+lVer:=I_FinVEr(Blo.Blo.Zna);
+if lVer<>Nil Then begin
+ZNA:=TOBJ(lVer.OBJ).LNA+'.'+lVer.LNA;
+I_DelVer(lVer);
+end else ERR('Не сушествует вершины котрую хотим удалить ');
+end else ERR('НЕ указано имя вершины для удаления  ');
 end;
-
-
-lObj:=TObj(I_AddObj);// Cоздаю обьект
-ZNA:=TOBJ(lOBJ).LNA;
-
-if KP>=1  Then begin lEl:=lEl.NEX;lObj.LOC.X:=inFloat(lEl.ZNA);end;
-if KP>=2  Then begin lEl:=lEl.NEX;lObj.LOC.Y:=inFloat(lEl.ZNA);end;
-if KP>=3  Then begin lEl:=lEl.NEX;lObj.LOC.Z:=inFloat(lEl.ZNA);end;
-
-if KP>=4  Then begin lEl:=lEl.NEX;lObj.MAR:=StrToBool(lEl.ZNA);end;
-
-if KP>=5  Then begin lEl:=lEl.NEX;lObj.COL.R:=inInt(lEl.ZNA)  ;end;
-if KP>=6  Then begin lEl:=lEl.NEX;lObj.COL.G:=inInt(lEl.ZNA)  ;end;
-if KP>=7  Then begin lEl:=lEl.NEX;lObj.COL.B:=inInt(lEl.ZNA)  ;end;
-if KP>=8  Then begin lEl:=lEl.NEX;lObj.COL.A:=inInt(lEl.ZNA)  ;end;
-if KP>=9  Then begin lEl:=lEl.NEX;I_SetN(lObj,lEl.ZNA)        ;end;
-
-
-
-
-end;
-Procedure TEl.Op_CRE_SCR;// Сздание Скрипта
+Procedure TEl.Op_DEL_LIN;// Удаление     Линии
+var
+lLin:Tlin;
 begin
-
-end;
-Procedure TEl.Op_CRE_ANI;// Сздание Анимации
-begin
-
-end;
-
-Procedure TEl.Op_DEL_VER;// Удаление вершины
-begin
-
-end;
-Procedure TEl.Op_DEL_LIN;// Удаление Линии
-begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lLin:=I_FinLin(Blo.Blo.Zna);
+if lLin<>Nil Then begin
+ZNA:=TOBJ(lLin.OBJ).LNA+'.'+lLin.LNA;
+I_DelLin(lLin);
+end else ERR('Не сушествует линия котрую хотим удалить ');
+end else ERR('НЕ указано имя линия  для удаления  ');
 end;
 Procedure TEl.Op_DEL_PLO;// Удаление Плоскости
+var
+lPlo:TPlo;
 begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lPlo:=I_FinPlo(Blo.Blo.Zna);
+if lPlo<>Nil Then begin
+ZNA:=TOBJ(lPlo.OBJ).LNA+'.'+lPlo.LNA;
+I_DelPlo(lPlo);
+end else ERR('Не сушествует Плоскость котрую хотим удалить ')
+end else ERR('НЕ указано Плоскость для удаления  ');
 end;
-Procedure TEl.Op_DEL_ELE;// Удаление Элемента
+Procedure TEl.Op_DEL_ELE;// Удаление  Элемента
+var
+lEle:TEle;
 begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lEle:=I_FinEle(Blo.Blo.Zna);
+if lEle<>Nil Then begin
+ZNA:=TOBJ(lEle.OBJ).LNA+'.'+lEle.LNA;
+I_DelEle(lEle);
+end else ERR('Не сушествует Элемента  котрую хотим удалить ')
+end else ERR('НЕ указано Элемента  для удаления  ');
 end;
-Procedure TEl.Op_DEL_OBJ;// Удаление ОБьекта
+Procedure TEl.Op_DEL_OBJ;// Удаление   ОБьекта
+var
+lObj:TObj;
 begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lObj:=I_FinObj(Blo.Blo.Zna);
+if lObj<>Nil Then begin
+ZNA:=lObj.LNA;
+I_DelObj(lObj);
+end else ERR('Не сушествует ОБьект котрую хотим удалить ')
+end else ERR('НЕ указано ОБьект для удаления  ');
 end;
-Procedure TEl.Op_DEL_SCR;// Удаление Скрипта
+Procedure TEl.Op_DEL_SCR;// Удаление   Скрипта
+var
+lScr:TScr;
 begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lScr:=I_FinScr(Blo.Blo.Zna);
+if lScr<>Nil Then begin
+ZNA:=lScr.LNA;
+I_DelScr(lScr);
+end else ERR('Не сушествует Скрипт котрую хотим удалить ')
+end else ERR('НЕ указано Скрипт для удаления  ');
 end;
-Procedure TEl.Op_DEL_ANI;// Удаление Анимации
+Procedure TEl.Op_DEL_ANI;// Удаление  Анимации
+var
+lAni:TAni;
 begin
-
+if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
+Blo.Blo.TRun;
+lAni:=I_FinAni(Blo.Blo.Zna);
+if lAni<>Nil Then begin
+ZNA:=lAni.LNA;
+I_DelAni(lAni);
+end else ERR('Не сушествует Анимации котрую хотим удалить ')
+end else ERR('НЕ указано Анимации для удаления  ');
 end;
+
+//------------------------------------------------------
+
+// Осталося вот это прописать и можно отлаживать
+// За чаем 5 мин .......
 
 Procedure TEl.Op_CLE_SCE;// Очистка сцены
 begin
@@ -3489,6 +3416,7 @@ PRG.VlogitSc('(',')');
 PRG.VlogitSc('{','}');
 PRG.VlogitPA;
 PRG.VlogitBl;
+PRG.VlogitZZ;
 PRG.VlogitMUL;
 PRG.VlogitADD;
 PRG.VlogitSRA;
@@ -3788,10 +3716,10 @@ var   {Интерфейс редактора    ===========================}{%Re
 var   {----------------------- Возавращает списки     ===}{%Region /FOLD }
                                                           A_Reg11:Longint;
 
-function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;
-var REz:TVer;f:longint;
+function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;// Ищим примитив
+var REz:TVer;f:RLON;// В заданом элементе или обьекте
 begin
-iNam:=ansiUpperCase2(iNam);
+iNam:=ansiUpperCase2(iNam);// Преоразем пробелы в _
 
 rez:=Nil;
      if iEle.LNa=iNam Then REz:=iEle;// Смотрю свое имя
@@ -3827,6 +3755,44 @@ if lVer<>Nil then lVer:=I_FinNam(TEle(lVer),lSls.sls[2]);
 end;
 I_FinVer:=lVer;
 end;
+function  I_FinLin(iNam:Ansistring):TLin;
+var
+lObj:TVer;
+lLin:TLin;
+lVer:TVer;
+f:longint;
+lSls:TSLS;
+begin
+lVer:=Nil;lLin:=Nil;lObj:=Nil;
+lSls:=TSLS.Create(iNam,'.');
+if lSLS.Kol>0 then begin
+lObj:=I_FinObj(lSls.sls[1]);
+if lSLS.Kol>1 then
+if lObj<>Nil then lVer:=I_FinNam(TEle(lObj),lSls.sls[2]);
+if lVer<>Nil then
+if lVer.TIP<>T_LIN Then lLin:=Nil else lLin:=TLin(lVer);
+end;
+I_FinLin:=lLin;
+end;
+function  I_FinPlo(iNam:Ansistring):TPlo;
+var
+lObj:TVer;
+lPlo:TPlo;
+lVer:TVer;
+f:longint;
+lSls:TSLS;
+begin
+lVer:=Nil;lPlo:=Nil;lObj:=Nil;
+lSls:=TSLS.Create(iNam,'.');
+if lSLS.Kol>0 then begin
+lObj:=I_FinObj(lSls.sls[1]);
+if lSLS.Kol>1 then
+if lObj<>Nil then lVer:=I_FinNam(TEle(lObj),lSls.sls[2]);
+if lVer<>Nil then
+if lVer.TIP<>T_PLO Then lPlo:=Nil else lPlo:=TPlo(lVer);
+end;
+I_FinPlo:=lPlo;
+end;
 function  I_FinEle(iNam:Ansistring):TEle;
 var
 lRez:TEle;
@@ -3844,6 +3810,7 @@ if (lVer.Tip=T_ELE) or (lVer.Tip=T_OBJ) then lRez:=TEle(lVer);
 end;
 I_FinEle:=lRez;
 end;
+
 function  I_FinObj(iNam:Ansistring):Tobj;
 var
 REz:TObj;
@@ -3890,8 +3857,6 @@ if rez=nil then Rez:=I_FinAni(iNam);
 if rez=nil then Rez:=I_FinScr(iNam);
 I_FinNam:=Rez;
 end;
-
-
 
 function  I_FinNamGlo(iNam:Ansistring):TVer;// Глобальный поиск имени
 var
@@ -5248,7 +5213,7 @@ if lScr.PRG<>nil Then lScr.PRG.Cle;
 lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
 lScr.ProgStru;// Формирование структуры программы
 lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
-lScr.PRG.TRUNS;
+//lScr.PRG.TRUNS;
 I_RUN:=Nil;
 end;
 
@@ -7666,11 +7631,15 @@ end;
 end.
 
 
-
 // 1. За чаем 5 мин .......
 // 2. Созадние удаление примитивов
 // 3. Функции сорхранения загрузки примитивов и сцены
 // 4. For
+
+
+
+
+
 
 
 
