@@ -27,6 +27,7 @@ type
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox1ClickCheck(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
     procedure CheckListBox1KeyPress(Sender: TObject; var Key: char);
     procedure CheckListBox1KeyUp(Sender: TObject; var Key: Word;
@@ -166,6 +167,18 @@ procedure TForm5.CheckListBox1Click(Sender: TObject);
 begin
  TimSelectionChange(Sender);
 end;
+
+procedure TForm5.CheckListBox1ClickCheck(Sender: TObject);
+begin
+ if CheckListBox1.itemindex<CheckListBox1.items.count then
+ if CheckListBox1.itemindex>0 then
+ I_SetVis(
+ TCheckListBox(Sender).items.objects[CheckListBox1.itemindex],
+ TCheckListBox(Sender).Checked[CheckListBox1.itemindex])
+
+
+end;
+
 procedure TForm5.TimSelectionChange(Sender: TObject);
 var F:Longint;
 begin

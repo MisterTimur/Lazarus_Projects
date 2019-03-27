@@ -68,6 +68,7 @@ type { TForm4 } TForm4 = class(TForm)
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     OpenDialog1: TOpenDialog;
+    OpenDialog2: TOpenDialog;
     Panel1: TPanel;
     Panel10: TPanel;
     Panel11: TPanel;
@@ -81,6 +82,7 @@ type { TForm4 } TForm4 = class(TForm)
     Panel8: TPanel;
     Panel9: TPanel;
     SaveDialog1: TSaveDialog;
+    SaveDialog2: TSaveDialog;
     Splitter1: TSplitter;
     Splitter10: TSplitter;
     Splitter2: TSplitter;
@@ -342,11 +344,20 @@ end;
 procedure TForm4.MenuItem44Click(Sender: TObject);
 begin
   // Загрузить обьект из файла
+  if OpenDialog2.Execute then begin
+  G_FileName:=OpenDialog2.FileName;
+  I_LoadSelects(G_FileName);
+  G_Change:=true;
+  end;
 end;
 
 procedure TForm4.MenuItem46Click(Sender: TObject);
 begin
   // Сохранить обьект в Файл
+  if SaveDialog2.Execute then begin
+     G_FileName:=SaveDialog2.FileName;
+     I_SaveSelects(G_FileName);
+  end;
 end;
 
 procedure TForm4.MenuItem47Click(Sender: TObject);

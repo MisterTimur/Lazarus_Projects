@@ -130,6 +130,7 @@ procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
+procedure I_SetVis(iPri:pointer;iVis:boolean);
 
 function  isFloat(s:AnsiString):Boolean;
 function  inFloat(s:AnsiString):real;
@@ -137,6 +138,8 @@ function  InString(i:REal):ansiString;
 procedure I_ClearScena;// Очищает Сцену
 procedure I_SaveScena(iNamFile:Ansistring);// Сохраняет сцену
 procedure I_LoadScena(iNamFile:Ansistring);// Сохраняет сцену
+procedure I_SaveSelects(iNamFile:Ansistring);// Сохранение выбраного
+procedure I_LoadSelects(iNamFile:Ansistring);// ДоЗагрузка в сцену
 procedure I_DoubleObject(iTObj:Pointer;LiS:TCheckListBox);// Создает копию обьекта
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Приеняет кадр анимации
 function  I_AddVerLan(iEle:Pointer):Pointer;
@@ -192,6 +195,7 @@ const {Базовые Константы      ===========================}{%Regi
   MaxKolSelPris=1024*64;// Максимальнео количество выделеных примитивов
 
   MaxKolSLS=8;// Для небольших списков
+  MaxKolPar=1024;// МАсимальнео количнство глобальных переменных
 
   T_VER=1;// Вршина
   T_PLO=2;// Плоскость
@@ -1579,6 +1583,7 @@ TYPE TOBJ=CLASS(TELE)
   OCEL:RCS3;// Цель куда нужно перпемесчаться глобально
   OMOV:RCS3;// Куда нужно перемещаться в данный момент времени
   OPER:RBOL;// Если это управляемый персонаж
+  OGTI:RSTR;// ТИп обьекта
   MTP :TVER;// Маршрутная точка через котрую нужно пройти
   //OGRA:RBOL;// Являеться ли обьект гравитационным
   KolP:RLON;// Количество плоскостей
@@ -1852,11 +1857,57 @@ end;
 
 
 {%EndRegion}
+var   {Глобальные параметры   ===========================}{%Region /FOLD }
+                                                           RegI3:Longint;
+Type TPARS=class
+     Kol:Longint;
+     NAM:Array[0..MaxKolPar] of AnsiString;// Имя Глобального пармертра
+     ZNA:Array[0..MaxKolPar] of AnsiString;//  Занчение пармертра
+     function    Ad(iNam,IZna:Ansistring):Longint;// Доабвлет новый параметр
+     function    Fi(iNam:Ansistring):Longint;// Ищит параметр
+     function    Ge(iNam:Ansistring):Ansistring;// Читет занчеие параметра
+     function    Se(iNam,iZna:Ansistring):Longint;// Устаналваиает параметр
+     constructor create;// конструктор
+end;
+var MirPars:TPARS;// Глобальные параметры
+constructor TPARS.create;
+begin
+Kol:=0;
+ZNA[0]:='';
+end;
+function  TPARS.Ad(iNam,IZna:Ansistring):Longint;
+begin
+Kol:=Kol+1;
+NAM[Kol]:=AnsiUpperCase2(Inam);
+ZNA[Kol]:=IZna;
+Ad:=Kol;
+end;
+function  TPARS.Fi(iNam:Ansistring):Longint;
+var f,rez:Longint;
+begin
+iNam:=AnsiUpperCase2(iNam);
+f:=1;Rez:=0;
+while (f<Kol) and (REz=0) do
+if NAM[f]=iNam Then REz:=f else f:=f+1;
+Fi:=REz;
+end;
+function  TPARS.Ge(iNam:Ansistring):Ansistring;
+begin
+Ge:=Zna[Fi(iNam)];
+end;
+function  TPARS.Se(iNam,iZna:Ansistring):Longint;
+var REz:Longint;
+begin
+Rez:=Fi(iNam);
+if Rez=0 Then Rez:=Ad(iNam,iZna) else ZNa[Rez]:=iZna;
+Se:=rez;
+end;
+
+{%EndRegion}
 var   {Интепретатор           ===========================}{%Region /FOLD }
                                                            RegI0:Longint;
-
 //------------------------------------------------------------------------------
-Type  TEl=Class  // Элемент исполнения
+Type  TEl=Class(Tobject)  // Элемент исполнения
 
   TXT:Ansistring;// Текс слова
   SLS:TSLS;// Списко для разбивки имени
@@ -1932,6 +1983,10 @@ Type  TEl=Class  // Элемент исполнения
   Procedure Op_LOA_OBJ;// ЗАгружает ОБьект из файла
   Procedure Op_LOA_SCR;// ЗАгружает Скрипт из файла
   Procedure Op_LOA_ANI;// ЗАгружает Анимацию из файла
+
+  Procedure Op_SET_ANI;// Устанавливает Анимацию
+  Procedure Op_FIN_TIP;// Ищит Ближайший обьект по типу
+
   //----------------------------------------------------------
   Destructor destroy;override;
 
@@ -2044,6 +2099,7 @@ Begin
 UKA:=Blo;
 While UKA<>NIL do
 begin
+UKA.VlogitZZ;
 If (UKA.TXT='-') or (UKA.TXT='+') THEN
 If (UKA.NEX<>NIL) then
 if (UKA.NEX.TIP=Ti_SLO)
@@ -2055,7 +2111,6 @@ Then begin
      UKA.NEX.VlogitZZ;
      UKA.Add(UKA.NEX);
      end;
-UKA.VlogitZZ;
 UKA:=UKA.NEX;
 end;
 end;
@@ -2322,6 +2377,9 @@ end;
 //------------------------------------------------------------------------------
 function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;forward;
 function  I_FinNam(iNam:Ansistring):TVer;forward;
+function  I_FIN_OBJ(iNam:Ansistring):TObj;forward;// Ищит Обьект
+function  I_FIN_ANI(iNam:Ansistring):TAni;forward;// Ищит Анимацию
+procedure I_SET_ANIMATION(iObj:Tobj;iAni:TAni);forward;
 //------------------------------------------------------------------------------
 
 function SetRCS3_XYZ(iNS:Longint;iSLS:TSLS;var iCoo:RCS3;iZna:RSTR):Ansistring;
@@ -2530,6 +2588,7 @@ if (iSls.KOl>iNS) Then begin
  iNS:=iNS+1;
 
 if lRez='' Then
+if iSls.SLS[iNs]='OGTI' then begin lRez:='1';iObj.OGTI:=iZna;end else
 if iSls.SLS[iNs]='KADR' then begin lRez:='1';iObj.KADR:=inInt(iZna);end else
 if iSls.SLS[iNs]='OCEL' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OCEL,iZna) else
 if iSls.SLS[iNs]='OMOV' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OMOV,iZna) else
@@ -2610,7 +2669,7 @@ then begin // Читаем параметры
 else begin
 Blo.nex.TRun;
 F:=FinFun(Blo.TXT);
-if F<>Nil Then F.Zna:=Blo.nex.Zna;
+if F<>Nil Then F.Zna:=Blo.nex.Zna else MirPars.Se(Blo.TXT,Blo.nex.Zna);
 end;
 
 
@@ -2824,6 +2883,7 @@ if (iSls.KOl>iNS) Then begin
      iNS:=iNS+1;
 
      if lRez='' Then
+     if iSls.SLS[iNs]='OGTI' then lRez:=         iObj.OGTI  else
      if iSls.SLS[iNs]='KADR' then lRez:=inString(iObj.KADR) else
      if iSls.SLS[iNs]='OCEL' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OCEL) else
      if iSls.SLS[iNs]='OMOV' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OMOV) else
@@ -3104,6 +3164,37 @@ begin
 
 end;
 
+
+Procedure TEl.Op_FIN_TIP;// Ищит Ближайший обьект по типу
+var f:longint;lobj,RezObj:Tobj;RezRas:RSIN;lCoo:RCS3;
+begin
+// FIN_OBJ_TIP(lObj,ТИП)
+REzObj:=Nil;RezRas:=GMAxRAsInMir;lobj:=I_FIN_OBJ(BLO.ZNA);
+
+if lObj<>Nil then begin
+lCoo:=lobj.LOC;
+for f:=1 to MirObjs.KOlO do
+if not MirObjs.OBJS[f].DEL then
+if MirObjs.OBJS[f].OGTI=BLO.ZNA then
+if (REzObj=Nil) Or (RasRCS3( lCoo , MirObjs.OBJS[f].LOC)<RezRas) then begin
+RezRas:=RasRCS3( lCoo , MirObjs.OBJS[f].LOC);
+RezObj:=MirObjs.OBJS[f];
+end;
+end;
+If RezObj<>Nil Then ZNA:=RezObj.NAm else ZNA:='';
+end;
+
+Procedure TEl.Op_SET_ANI;// Устанавливает Анимацию
+var Lobj:Tobj;lAni:TAni;
+begin
+
+//SET_ANI(_USER,ANIMATION_1);
+lObj:=I_FIN_OBJ(BLO.ZNA);// Ищим обьект
+lAni:=I_FIN_ANI(BLO.ZNA);// Ишим анимацию
+if (lObj<>Nil) and (lAni<>Nil) Then I_SET_ANIMATION(lObj,lAni);
+
+end;
+
 //----------------------------------------------------------
 
 Procedure Tel.TRun;// Выполняет 1 елемент
@@ -3231,7 +3322,8 @@ else begin // Выполняем функцию
           Zna:=Ru.Zna;
           Ru.Cle;
           Ru.Free;
-          end;
+     end else ZNA:=MirPars.Ge(Txt);// Глобальные переменные
+
 end;
 end;
 
@@ -3241,7 +3333,7 @@ var
   REZ:Tel;     // Списко слов на которые разита программа
   UKA:LongWord;// указатель на читаемый символ
   LEN:LongWord;// Длина Строки
-  GT:Longint;
+
 Function REadSlo:Ansistring;// ДЛя чтения Операторов
 Var
   REz:Ansistring;
@@ -3386,8 +3478,6 @@ begin
 REZ:=TEl.Create;
 REZ.TXT:='Program';
 UKA:=1;
-//for GT:=1 to Length(S) do
-//PRI(S[GT]+' '+IntToStr(ord(S[GT])));
 
 LEN:=Length(S);
 While UKA<=LEN Do
@@ -3666,6 +3756,8 @@ begin
 lDrKp:=0;
 lDrKv:=0;
 for f:=1 to MirPLos.KolP do with MirPLos.PLos[f] do
+if obj.VIS then
+if ELE.VIS then
 if not Del and Vis and VVI then
      if MCL=1 then begin // Используем для цвета цвета вершин
      {
@@ -4014,7 +4106,7 @@ NomItems:=NomItems+1;
 if NomItems<iLis.Items.count then begin
 // Изменяем записи в списке только если обьект в списке изменился
    iLis.selected[NomItems]:=MirObjs.OBJS[f].Sel;
-   //form4.CheckListBox6.Checked[NomItems]:=MirObjs.OBJS[f].Sel;
+   iLis.Checked[NomItems]:=MirObjs.OBJS[f].VIS;
    iLis.Items[NomItems]:=MirObjs.OBJS[f].NAM;
 if iLis.Items.Objects[NomItems]<>MirObjs.OBJS[f] then
    iLis.Items.Objects[NomItems]:=MirObjs.OBJS[f];
@@ -4023,6 +4115,7 @@ else
 begin
 iLis.Items.AddObject(MirObjs.OBJS[f].Nam,MirObjs.OBJS[f]);
 iLis.selected[iLis.Count-1]:=MirObjs.OBJS[f].Sel;
+iLis.Checked[iLis.Count-1]:=MirObjs.OBJS[f].Vis;
 end
 
 end;
@@ -5212,8 +5305,8 @@ lScr:=TScr(iScr);
 if lScr.PRG<>nil Then lScr.PRG.Cle;
 lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
 lScr.ProgStru;// Формирование структуры программы
-lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
-//lScr.PRG.TRUNS;
+//lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
+lScr.PRG.TRUNS;
 I_RUN:=Nil;
 end;
 
@@ -5592,7 +5685,7 @@ end;
 var   {----------------------- Сохранение примитива   ===}{%Region /FOLD }
                                                            H_Reg11:Longint;
 
-
+// V M X Y Z C L e f P Q a b c d h i j l E x y z O K S
 // Сохраниение структуры
 Procedure I_TVER_PUT_01(iVer:TVer;var iStr:Ansistring);
 begin
@@ -5721,7 +5814,6 @@ if NOT MirObjs.OBJS[f].DEL Then I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
 iStr:=iStr+LN;
 iStr:=iStr+LN;
 end;
-
 
 Procedure I_TANI_PUT_01(iAni:TAni;var iStr:Ansistring);// Записать анимцию
 var f:Longint;
@@ -5893,6 +5985,40 @@ iStr:=iStr+'O(self)'+LN;// Сохраняю Текущий контекст
 I_TELE_ANI_01(iObj2,iObj1.Eles[f],iStr);
 end;
 end;
+
+
+Procedure I_OBJS_SEL_PUT_01(var iStr:Ansistring);// Сохраняет обьекты
+var f:Longint;
+begin
+for f:=1 to MirObjs.KOLO do
+if NOT MirObjs.OBJS[f].DEL Then
+if     MirObjs.OBJS[f].SEL Then
+I_TOBJ_PUT_01(MirObjs.OBJS[f],iStr);
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+Procedure I_ANIS_SEL_PUT_01(var iStr:Ansistring);// Сохраняет анимации
+var f:Longint;
+begin
+for f:=1 to MirAnis.KOLA do
+if NOT MirAnis.ANIS[f].DEL Then
+if     MirAnis.ANIS[f].SEL Then
+I_TANI_PUT_01(MirAnis.ANIS[f],iStr);
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+Procedure I_SCRS_SEL_PUT_01(var iStr:Ansistring);// Сохраняет скрипты
+var f:Longint;
+begin
+for f:=1 to MirSCRs.KOLS do
+if NOT MirScrs.SCRS[f].DEL Then
+if     MirScrs.SCRS[f].SEL Then
+I_TSCR_PUT_01(MirScrs.SCRS[f],iStr);
+iStr:=iStr+LN;
+iStr:=iStr+LN;
+end;
+
+
 
 {%EndRegion}
 var   {----------------------- Сохранение и загрузка  ===}{%Region /FOLD }
@@ -6322,6 +6448,17 @@ else if iStr[lPos]='"' Then I_GetKa(lPos,iStr) else inc(lPos);
 end
 // A, B, C, D, E, F, Z, H, I, K, L, M, N, O, P, Q, R, S, T, V и X.
 end;
+
+
+procedure I_SET_ANIMATION(iObj:Tobj;iAni:TAni);
+var sAni:Ansistring;
+begin
+sAni:='';
+sAni:='O('+iObj.NAM+')'+iAni.TXT;
+I_SCENA_KAD_01(sAni);
+iObj.CHE:=100;
+end;
+
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Устанавливает анимацию
 var
 fa,fo:Longint;
@@ -6333,10 +6470,11 @@ lSelObjs:=MirSels.SELObjS;
 for fa:=1 to iAni.Items.count-1 do
 if iAni.Selected[fa]     then
 for fo:=1 to lSelObjs.KOl do begin
-lAni:=TAni(iAni.Items.Objects[fa]);
-sAni:='O('+lSelObjs.Sels[fo].NAM+')'+lAni.TXT;
-Tobj(lSelObjs.Sels[fo]).CHE:=100;
-I_SCENA_KAD_01(sAni);
+//lAni:=TAni(iAni.Items.Objects[fa]);
+//sAni:='O('+lSelObjs.Sels[fo].NAM+')'+lAni.TXT;
+//Tobj(lSelObjs.Sels[fo]).CHE:=100;
+//I_SCENA_KAD_01(sAni);
+I_SET_ANIMATION(TObj(lSelObjs.Sels[fo]),TAni(iAni.Items.Objects[fa]));
 end;
 lSelObjs.free;
 end;
@@ -6367,6 +6505,33 @@ end;
 MARHS;// Раставляем маршрутные точки
 OBINS;// Определяем какой обьект в каком
 end;
+procedure I_SaveSelects(iNamFile:Ansistring);// Сохранить выделеныое
+var lStr:Ansistring;
+begin
+lStr:='"'+TREM+'"'+LN+LN;
+I_OBJS_SEL_PUT_01(lStr);// Сохраняет выбраные обьекты в сцене в виде строки
+I_ANIS_SEL_PUT_01(lStr);// Сохраняет выбраные анимации в сцене в виде строки
+I_SCRS_SEL_PUT_01(lStr);// Сохраняет выбраные скрипты в сцене в виде строки
+StrToFile(iNamFile,lStr);// Сохраняет Строку в Файл
+end;
+procedure I_LoadSelects(iNamFile:Ansistring);// ДоЗагрузка в сцену
+var
+lStr:AnsiString;
+f:longint;
+begin
+FileToStr(iNamFile,lStr);// Читает файл в строку
+I_SCENA_DOU_01(lStr);// Преобразет строку в Обьекты
+for f:=1 to MirObjs.KolO do
+if not MirObjs.OBJS[f].DEL then begin
+MirObjs.OBJS[f].O_MATH;
+MirObjs.OBJS[f].O_INIC;
+end;
+MARHS;// Раставляем маршрутные точки
+OBINS;// Определяем какой обьект в каком
+end;
+
+
+
 
 {%EndRegion}
 var   {----------------------- Бардак                 ===}{%Region /FOLD }
@@ -6443,6 +6608,53 @@ then MirSels.Add(TVer(iPri))
 else MirSels.Del(TVer(iPri));
 // Выборка активного примитива в данный момент времени -------------------------
 if MirSels.Kol<>0 then form4.Act:=MirSels.Sels[1] else form4.Act:=Nil;
+I_RefreshActivePrimitiv;
+// -----------------------------------------------------------------------------
+end;
+procedure I_SetVis(iPri:pointer;iVis:Boolean);
+var F,I:Longint;
+begin
+// Выделени примитива на формах ------------------------------------------------
+for f:=0 to application.ComponentCount-1 do
+     if (application.Components[f] is tform7) then begin
+
+      with (application.Components[f] as tform7).CheckListBox1 do
+      for i:=1 to items.count-1 do // Вершины
+      if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+      with (application.Components[f] as tform7).CheckListBox2 do
+      for i:=1 to items.count-1 do // Элементы
+      if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     end
+else if (application.Components[f] is tform6) then begin
+
+     with (application.Components[f] as tform6).CheckListBox1 do
+     for i:=1 to items.count-1 do // Вершины
+     if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     with (application.Components[f] as tform6).CheckListBox2 do
+     for i:=1 to items.count-1 do // Линии
+     if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     with (application.Components[f] as tform6).CheckListBox3 do
+     for i:=1 to items.count-1 do // Плоскости
+     if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     with (application.Components[f] as tform6).CheckListBox4 do
+     for i:=1 to items.count-1 do // Элементы
+     if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     end
+else if (application.Components[f] is tform5) then begin
+
+     with (application.Components[f] as tform5).CheckListBox1 do
+     for i:=1 to items.count-1 do // Обьекты
+     if Pointer(items.objects[i])=iPri then Checked[i]:=iVis;
+
+     end;
+
+Tver(iPri).VIS:=iVis;
 I_RefreshActivePrimitiv;
 // -----------------------------------------------------------------------------
 end;
@@ -6869,6 +7081,8 @@ SC:=SC+MaxKOlVerInMir; begin // Рисую   Вершины
 if form4.MenuItem16.Checked then
 for f:=1 to MirVers.KolV do
 if not MirVers.VERS[f].DEL then
+if     MirVers.VERS[f].OBJ.VIS then
+if     MirVers.VERS[f].ELE.VIS then
 if     MirVers.VERS[f].VIS then
 if     MirVers.VERS[f].MAR then
 I_DrVer(MirVers.VERS[f],IntToCol(f+SC));
@@ -6878,6 +7092,8 @@ SC:=SC+MaxKOlVerInMir; begin // Рисую     Линии
 if form4.MenuItem22.Checked then
 for f:=1 to MirLins.KolL do
 if not MirLins.LINS[f].DEL then
+if     MirLins.LINS[f].OBJ.VIS then
+if     MirLins.LINS[f].ELE.VIS then
 if     MirLins.LINS[f].VIS then
 if Not MirLins.LINS[f].MAR then
 I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
@@ -6886,6 +7102,8 @@ SC:=SC+MaxKOlLinInMir; begin // Рисую МАР Линии
 if form4.MenuItem31.Checked then
 for f:=1 to MirLins.KolL do  // Маршрутные линии
 if not  MirLins.LINS[f].DEL then
+if      MirLins.LINS[f].OBJ.VIS then
+if      MirLins.LINS[f].ELE.VIS then
 if      MirLins.LINS[f].VIS then
 if      MirLins.LINS[f].MAR then
 I_DrLin(MirLins.LINS[f],IntToCol(f+SC)); end;
@@ -6894,6 +7112,8 @@ SC:=SC+MaxKOlLinInMir; begin // Рисую Плоскости
 if form4.MenuItem13.Checked then
 for f:=1 to MirPlos.KolP do
 if not MirPlos.PLOS[f].DEL then
+if     MirPlos.PLOS[f].OBJ.VIS then
+if     MirPlos.PLOS[f].ELE.VIS then
 if     MirPlos.PLOS[f].VIS then
 if     MirPlos.PLOS[f].VVI then
 I_DrPlo(MirPLos.PLOS[f],IntToCol(f+SC)); end;
@@ -6902,6 +7122,8 @@ SC:=SC+MaxKOlPloInMir; begin // Рисую  элементы
 if form4.MenuItem12.Checked then
 for f:=1 to MirEles.KolE do
 if not MirEles.ELES[f].DEL then
+if     MirEles.ELES[f].OBJ.VIS then
+if     MirEles.ELES[f].ELE.VIS then
 if     MirEles.ELES[f].VIS then
 I_DrEle(MirEles.ELES[f],IntToCol(f+SC)); end;
 //------------------------------------------------------------------------------
@@ -7127,6 +7349,8 @@ glClearColor(0.0,0.0,0.0,1);// Указываем цвет очистки экр
 glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 for f:=1 to MirPlos.KolP do
 if   not MirPLos.Plos[f].DEL then
+if       MirPLos.Plos[f].OBJ.VIS then
+if       MirPLos.Plos[f].ELE.VIS then
 if       MirPLos.Plos[f].VVI then
 if       MirPLos.Plos[f].VIS then
 with MirPLos.Plos[f] do
@@ -7174,104 +7398,7 @@ glEnableClientState(GL_COLOR_ARRAY);
 end;
 end;
 //------------------------------------------------------------------------------
-{
-function  TheadMath(Par:Pointer):DWORD;stdcall;// Вычисление
-var F:Longint;
-begin
-   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
-   while Clos=false do begin
-     sleep(33);//----------------------------------------------
-     for f:=1 to MirObjs.KolO do
-     with MirObjs.OBJS[f] do if(not Del)and(CHE>0)THEN
-     begin
-       CHE:=CHE-1;
-       O_MATH;
-       O_SWAP;
-       sleep(1);
-     end;
-     MPERS;
-   end;
-result:=0;
-end;
-function  TheadSwap(Par:Pointer):DWORD;stdcall;// Вывод сцены в буфер
-var
-F:Longword;// ДЛя циклов
-lDrKp:Longword;// Реальное количество Вершин Плоскостей
-lDrKL:Longword;// Реальное количество Вершин Линий
-begin
-   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
-   while Clos=false do begin
-     sleep(500);
-     // ========================================================================
-     with MirVers do for f:=1 to KOlV do
-     if   NOT Tobj(Vers[f].OBJ).OPER then
-     if   Vers[f].ELE.VIS then
-     if       Vers[f].VIS then
-     if   not Vers[f].DEL then
-     with Vers[f] do begin
-     ECOO1[f]:=ECR;sleep(1);
-     ECOL1[f]:=Col;
-     end;
-     // ========================================================================
-     lDrKp:=0;
-     with MirPlos do for f:=1 to KolP do
-     if   Plos[f].OBJ.VIS then
-     if   Plos[f].ELE.VIS then
-     if       Plos[f].VIS then
-     if   not Plos[f].DEL then
-     if       Plos[f].VVI then
-     if   Plos[f].MCL=1   then // Не использовать собственые цвета
-     with Plos[f] do begin
-     lDrKp:=lDrKp+1;sleep(1);
-     EPlo1[lDrKp].VERS[1]:=Vers[1].Nom;
-     EPlo1[lDrKp].VERS[2]:=Vers[2].Nom;
-     EPlo1[lDrKp].VERS[3]:=Vers[3].Nom;
-     EPlo1[lDrKp].VERS[4]:=Vers[3].Nom;
-     EPlo1[lDrKp].VERS[5]:=Vers[4].Nom;
-     EPlo1[lDrKp].VERS[6]:=Vers[1].Nom;
-     end;
-     MirPLos.DrKp:=lDrKp;
-     // ========================================================================
-     lDrKl:=0;
-     with MirLins do for f:=1 to KolL do
-     if   Lins[f].OBJ.VIS then
-     if   Lins[f].ELE.VIS then
-     if       Lins[f].VIS then
-     if   not Lins[f].DEL then
-     if   not Lins[f].MAR then
-     with Lins[f] do begin
-     lDrKl:=lDrKl+1;sleep(1);
-     ELin1[lDrKl].VERS[1]:=Vers[1].Nom;
-     ELin1[lDrKl].VERS[2]:=Vers[2].Nom;
-     end;
-     MirLins.DrKl:=lDrKl;
-     // ========================================================================
-     with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
-     with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
-     with MirLins do Move(ELin1,ELin2,(DrKl+0)*SizeOf(RLIN));
-     with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
-     // ========================================================================
-     MirCols.Swap;
-   end;
-   result:=0;
-end;
-function  TheadSSwa(Par:Pointer):DWORD;stdcall;// Вывод сцены в буфер
-var
-FO:Longword;// ДЛя циклов
-begin
-   SetThreadPriority(GetCurrentThread,THREAD_PRIORITY_LOWEST);
-   while Clos=false do begin
-     sleep(100);
 
-     // ========================================================================
-     //with MirObjs do for fo:=1 to KOlO do begin
-     //sleep(1);
-     //if OBJS[FO].CHE>0 THEN OBJS[FO].O_SWAP;
-     //end;
-   end;
-   result:=0;
-end;
-}
 var   {Потоки                 ===========================}{%Region /FOLD }
                                                            Reg1T:Longint;
 
@@ -7295,13 +7422,20 @@ begin
     begin
       sleep(33);//----------------------------------------------
       for f:=1 to MirObjs.KolO do
-      with MirObjs.OBJS[f] do if(not Del)and(CHE>0)THEN
+      with MirObjs.OBJS[f] do
+      if not Del  then // Если обьект не удален
+      if   CHE>0  THEN // Если есть изменения котрые нужно перевычислить
       begin
         CHE:=CHE-1;
         O_MATH;
         O_SWAP;
         sleep(1);
+      end else begin
+
+      // Выполнять скрипт
+
       end;
+
       MPERS;
     end;
 end;
@@ -7330,7 +7464,8 @@ begin
     sleep(500);
     // ========================================================================
     with MirVers do for f:=1 to KOlV do
-    if   NOT Tobj(Vers[f].OBJ).OPER then
+    //if   NOT Tobj(Vers[f].OBJ).OPER then
+    if   Vers[f].OBJ.VIS then
     if   Vers[f].ELE.VIS then
     if       Vers[f].VIS then
     if   not Vers[f].DEL then
@@ -7430,6 +7565,8 @@ Timer1.enabled:=false;// Отключаем запускатор
   MirAnis:=TAniS.Create;// Создаем списки анимаций
   MirScrs:=TScrS.Create;// Создаем списки скриптов
   MirCols:=TCols.Create;// Создает Цветные Плоскости
+  MirPars:=TPars.Create;// Создает Глобальные парметры
+
   // Отдельный поток для расчета координат всех вершин
   headMath:=TheadMath.Create(false);
   headSwap:=TheadSwap.Create(false);

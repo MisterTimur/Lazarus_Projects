@@ -2,10 +2,10 @@ object Form15: TForm15
   Left = 329
   Height = 165
   Top = 545
-  Width = 344
+  Width = 343
   Caption = 'Form15'
   ClientHeight = 165
-  ClientWidth = 344
+  ClientWidth = 343
   Font.CharSet = RUSSIAN_CHARSET
   Font.Height = -13
   Font.Name = 'Consolas'
@@ -18,7 +18,7 @@ object Form15: TForm15
     Left = 0
     Height = 32
     Top = 0
-    Width = 344
+    Width = 343
     Align = alTop
     Caption = 'Terminal'
     Font.CharSet = RUSSIAN_CHARSET
@@ -34,7 +34,7 @@ object Form15: TForm15
     Left = 0
     Height = 133
     Top = 32
-    Width = 344
+    Width = 343
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -19

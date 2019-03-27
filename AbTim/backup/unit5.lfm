@@ -1,10 +1,10 @@
 object Form5: TForm5
-  Left = 347
+  Left = 456
   Height = 249
-  Top = 179
+  Top = 208
   Width = 435
   BorderStyle = bsSizeToolWin
-  Caption = 'Form5'
+  Caption = 'Navigation'
   ClientHeight = 249
   ClientWidth = 435
   Font.CharSet = RUSSIAN_CHARSET
@@ -39,8 +39,11 @@ object Form5: TForm5
     ItemHeight = 15
     ItemIndex = 0
     MultiSelect = True
+    OnClick = CheckListBox1Click
+    OnClickCheck = CheckListBox1ClickCheck
     OnDblClick = CheckListBox1DblClick
-    OnSelectionChange = CheckListBox1SelectionChange
+    OnKeyPress = CheckListBox1KeyPress
+    OnKeyUp = CheckListBox1KeyUp
     PopupMenu = PopupMenu1
     TabOrder = 1
     Data = {

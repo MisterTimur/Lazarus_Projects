@@ -26,8 +26,13 @@ type
     PopupMenu3: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox1ClickCheck(Sender: TObject);
     procedure CheckListBox1DblClick(Sender: TObject);
-    procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+    procedure CheckListBox1KeyPress(Sender: TObject; var Key: char);
+    procedure CheckListBox1KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    //procedure CheckListBox1SelectionChange(Sender: TObject; User: boolean);
     procedure CheckListBox2DblClick(Sender: TObject);
     procedure CheckListBox3DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -48,6 +53,7 @@ type
   public
   mHeight:longint;
   procedure U_RefreshObjs;
+  procedure TimSelectionChange(Sender: TObject);
   end;
 
 var
@@ -148,11 +154,36 @@ begin
   if CheckListBox1.itemindex>0 then
   U_OpenObject(CheckListBox1.items.objects[CheckListBox1.itemindex]);
 end;
-procedure TForm5.CheckListBox1SelectionChange(Sender: TObject; User: boolean);
+procedure TForm5.CheckListBox1KeyPress(Sender: TObject; var Key: char);
+begin
+ TimSelectionChange(Sender);
+end;
+procedure TForm5.CheckListBox1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  TimSelectionChange(Sender);
+end;
+procedure TForm5.CheckListBox1Click(Sender: TObject);
+begin
+ TimSelectionChange(Sender);
+end;
+
+procedure TForm5.CheckListBox1ClickCheck(Sender: TObject);
+begin
+ if CheckListBox1.itemindex<CheckListBox1.items.count then
+ if CheckListBox1.itemindex>0 then
+ I_SetVis(
+ TCheckListBox(Sender).items.objects[CheckListBox1.itemindex],
+ TCheckListBox(Sender).Checked[CheckListBox1.itemindex])
+
+
+end;
+
+procedure TForm5.TimSelectionChange(Sender: TObject);
 var F:Longint;
 begin
- for f:=1 to CheckListBox1.items.Count-1 do
- I_SetSel(CheckListBox1.items.objects[f],CheckListBox1.Selected[f])
+ for f:=1 to TCheckListBox(Sender).items.Count-1 do
+ I_SetSel(TCheckListBox(Sender).items.objects[f],TCheckListBox(Sender).Selected[f])
 end;
 procedure TForm5.CheckListBox2DblClick(Sender: TObject);
 begin
@@ -184,6 +215,5 @@ begin
   I_RefSpiScrs(CheckListBox3);
   end;
 end;
-
 end.
 

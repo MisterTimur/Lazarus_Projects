@@ -37,7 +37,6 @@ object Form15: TForm15
     Width = 344
     Align = alClient
     Font.CharSet = RUSSIAN_CHARSET
-    Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Consolas'
     Font.Pitch = fpFixed
