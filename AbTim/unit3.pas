@@ -608,6 +608,7 @@ var   {Базовые функции        ===========================}{%Region
     if (Length(s)>=1)and(S[1]='.')then s:='0'+s;           // .0
     if (Length(s)>=2)and(S[1]='-')and(S[2]='.')then insert('0',s,2);//-.
     if (Length(s)>=1)and(S[Length(s)]='.')then delete(s,Length(s),1);// 12.
+
     if (Length(s)<>0)then
     if (isFloat(s))then val(s,REz,c)
     else ERR('Строка не являеться числом');
@@ -624,7 +625,8 @@ var   {Базовые функции        ===========================}{%Region
  begin
  Kz:=0;
  T:=False;
- lStr:=FloatToStr(i);
+ //lStr:=FloatToStr(i);
+ STR(I:10:10,lStr);
  for f:=1 to Length(lStr) do
  begin
  // Заменяю запятую на точку и узнаю есть ли вообще точка
@@ -1887,7 +1889,7 @@ var f,rez:Longint;
 begin
 iNam:=AnsiUpperCase2(iNam);
 f:=1;Rez:=0;
-while (f<Kol) and (REz=0) do
+while (f<=Kol) and (REz=0) do
 if NAM[f]=iNam Then REz:=f else f:=f+1;
 Fi:=REz;
 end;
@@ -1924,8 +1926,7 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Function  Del:Tel;// Создает и Добавляет элемент в конец списка
 
   procedure VlogitSc(S1,S2:Ansistring); // Вложение скобок
-  Procedure VlogitCif;// Вложкение чисел
-  Procedure VlogitZZ;// Вложение параметров
+  Procedure VlogitZZ;// ++ -- *- /- +- -+
   Procedure VlogitPA;// Вложение параметров
   Procedure VlogitBl;// Вложкение Исполнительных блоков
   Procedure VlogitADD;// Вложение математических операций
@@ -1939,7 +1940,8 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Function  Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
   Procedure TRuns ;// Выполняет структуру
   Procedure TRun  ;// Выполняет 1 елемент
-  Procedure RunFun;// Найти и выполнить пользовательскую функцию
+  Procedure RunFun1;// Найти и выполнить пользовательскую функцию
+  Procedure RunFun2;// Найти и выполнить пользовательскую функцию
   Procedure Op_ADD;// Сложение
   Procedure Op_SUB;// Вычитание
   Procedure Op_DIV;// Деление
@@ -1954,6 +1956,8 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Procedure  Op_Let;// Прсивоение
   Procedure  Op_SCO;// Скобка
   Procedure  Op_WHI;// While
+  Procedure  Op_IFF;// IF
+  Procedure  Op_FOR;// FOR
   Procedure  Op_PRI;// Вывод в консоль
   //----------------------------------------------------------
   Procedure Op_CRE_VER;// Сздание вершины
@@ -1961,7 +1965,6 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Procedure Op_CRE_PLO;// Сздание Плоскости
   Procedure Op_CRE_ELE;// Сздание Элемента
   Procedure Op_CRE_OBJ;// Сздание ОБьекта
-  Procedure Op_CRE_SCR;// Сздание Скрипта
   Procedure Op_CRE_ANI;// Сздание Анимации
 
   Procedure Op_DEL_VER;// Удаление вершины
@@ -1969,7 +1972,6 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Procedure Op_DEL_PLO;// Удаление Плоскости
   Procedure Op_DEL_ELE;// Удаление Элемента
   Procedure Op_DEL_OBJ;// Удаление ОБьекта
-  Procedure Op_DEL_SCR;// Удаление Скрипта
   Procedure Op_DEL_ANI;// Удаление Анимации
 
   Procedure Op_CLE_SCE;// Очистка сцены
@@ -1991,18 +1993,11 @@ Type  TEl=Class(Tobject)  // Элемент исполнения
   Destructor destroy;override;
 
 end;
-TYpe  TScr=class(Tver)
-PRG:Tel;// ПРограмма
-Function  ReadPars(S:Ansistring):Tel;
-Procedure ViewElem(E:Tel;O:Ansistring);
-Procedure ProgStru;
-end;
-//------------------------------------------------------------------------------
 Destructor Tel.destroy;
 begin
 SLS.Free;
 end;
-Function  Tel.Del:Tel;// Изятие элемента из списка
+Function   Tel.Del:Tel;// Изятие элемента из списка
 var
 Pr,Ne:TEl;
 Begin
@@ -2016,7 +2011,7 @@ Pre:=Nil;
 Rod:=Nil;
 Del:=Self;
 end;
-Function  Tel.Lst:Tel;// Возвращает последний элемент из списка
+Function   Tel.Lst:Tel;// Возвращает последний элемент из списка
 Var
 rez:Tel;
 Begin
@@ -2025,7 +2020,7 @@ If REz<>Nil Then
 While REz.Nex<>Nil do REz:=Rez.Nex;
 Lst:=Rez;
 end;
-Function  Tel.Add(El:Tel):Tel;// Добавить существующий элемент в список
+Function   Tel.Add(El:Tel):Tel;// Добавить существующий элемент в список
 Begin
 El.Del;// Изымаем элемент
 El.Rod:=Self;// Указываем родителя
@@ -2035,7 +2030,7 @@ Then Lst.NEX:=El // Присоеденяемс к посоледнему эле�
 Else Blo:=El;    // Указываем себя как первый элемент в списке
 Add:=El;
 end;
-Function  Tel.Add(S:AnsiString;T:LongWord):Tel;
+Function   Tel.Add(S:AnsiString;T:LongWord):Tel;
 Var // Создает и Добавляет элемент в конец списка
 Rez:Tel;
 begin
@@ -2043,7 +2038,7 @@ Rez:=nil;
 If S<>'' then
 begin
  Rez:=Tel.Create;
- Rez.TXT:=S;
+ Rez.TXT:=ansiUppercase(S);
  Rez.ZNA:=S;
  if T=TI_SLO Then REZ.SLS:=TSLS.Create(S,'.');
  REz.Tip:=T;// Указываем тип прочитаного элемента
@@ -2051,7 +2046,52 @@ begin
 end;
 Add:=Rez;
 end;
+Procedure  Tel.Cle;// Очистка элемента
+var
+L1,L2:Tel;
+Begin
+L2:=Blo;
+While L2<>Nil do
+   begin
+   L1:=L2;
+   L1.Cle;
+   L2:=L1.Nex;
+   L1.Free;
+   end;
+end;
+Function   Tel.Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
+Var
+Rez,Ne,Pr:Tel;
+Begin
+REz:=Tel.Create;
+REz.TXT:=Txt;
+REz.Zna:=Zna;
+REz.Tip:=Tip;
+Rez.Fun:=Fun;
+
+REz.Rod:=IRod;
+REz.Pre:=IPre;
+Rez.NEX:=Nil;
+Rez.Blo:=Nil;
+
+If Blo<>Nil  Then
+begin
+   Rez.Blo:=Blo.Cop(REz,Nil);
+   Ne:=Blo.Nex;
+   pr:=Rez.BLO;
+   While NE<>Nil do
+   begin
+   Pr.Nex:=Ne.Cop(Rez,Pr);
+   Ne:=Ne.Nex;
+   Pr:=Pr.Nex;
+   end;
+end;
+Cop:=Rez;
+end;
 //------------------------------------------------------------------------------
+var   {Вложение Элементов    }{%Region /FOLD }
+                               RegV0:Longint;
+
 Procedure Tel.VlogitSc(S1,S2:Ansistring);// Вложение скобок
 var
 Kon,   // Контенер Куда складываем элементы
@@ -2069,48 +2109,32 @@ While Uka<>Nil do
   Uka:=Ne;
  end;
 end;
-Procedure TEl.VlogitCif ;// Вложкение чисел
+Procedure TEl.VlogitZZ ;// Вложкение параметров
 var
 UKA:Tel;
 Begin
 UKA:=Blo;
 While UKA<>NIL do
 begin
-If (UKA.TIP=TI_CIF) THEN
-If (UKA.NEX<>NIL) then
-if (UKA.NEX.TIP=TI_CIF)
-Then begin
-UKA.ZNA:=inString(inFloat(UKA.ZNA)+inFloat(UKA.NEX.ZNA));
-UKA.TXT:=UKA.ZNA;
-UKA.NEX.DEL;
-end;
-Uka.VlogitCiF;
-UKA:=UKA.NEX;
-end;
-end;
 
-
-
-Procedure TEl.VlogitZZ ;// Вложкение ZZ
-var
-UKA:Tel;
-X:Tel;
-Begin
-UKA:=Blo;
-While UKA<>NIL do
-begin
-UKA.VlogitZZ;
+If (UKA.PRE    =NIL) or
+   (UKA.PRE.TXT='-') or
+   (UKA.PRE.TXT='+') or
+   (UKA.PRE.TXT='*') or
+   (UKA.PRE.TXT='/') or
+   (UKA.PRE.TXT=':=')
+   THEN
 If (UKA.TXT='-') or (UKA.TXT='+') THEN
-If (UKA.NEX<>NIL) then
-if (UKA.NEX.TIP=Ti_SLO)
-Then begin
-     UKA.Add('0',TI_CIF);
-     UKA.Add(UKA.TXT,Ti_ZNA);
-     UKA.TXT:='(';
-     UKA.TIP:=TI_ZNA;
-     UKA.NEX.VlogitZZ;
-     UKA.Add(UKA.NEX);
-     end;
+If (UKA.NEX<>NIL) Then begin
+
+UKA.Add('0',TI_CIF);
+UKA.Add(UKA.TXT,TI_ZNA);
+UKA.Add(UKA.NEX);
+UKA.TXT:='(';
+UKA.TIP:=TI_ZNA;
+
+end ;
+Uka.VlogitZZ;
 UKA:=UKA.NEX;
 end;
 end;
@@ -2138,7 +2162,15 @@ While UKA<>NIL do
 begin
 If (UKA.TIP=TI_SLO) THEN
 If (UKA.NEX<>NIL) AND (UKA.NEX.TXT='{')
-Then begin UKA.Add(UKA.NEX);if UKA.TXT<>'WHILE' Then UKA.FUN:=True; end
+Then begin
+UKA.Add(UKA.NEX);
+
+ if UKA.TXT<>'WHILE' Then begin
+ UKA.FUN:=True;
+ If (UKA.NEX<>NIL) AND (UKA.NEX.TXT='{') then UKA.Add(UKA.NEX);
+ end;
+
+end
 Else UKA.Add('(',TI_ZNA);
 Uka.VlogitBl;
 UKA:=UKA.NEX;
@@ -2212,168 +2244,10 @@ UKA.VlogitLET;
 Uka:=Uka.Nex;
 end;
 end;
-//------------------------------------------------------------------------------
-Procedure Tel.Cle;// Очистка элемента
-var
-L1,L2:Tel;
-Begin
-L2:=Blo;
-While L2<>Nil do
-   begin
-   L1:=L2;
-   L1.Cle;
-   L2:=L1.Nex;
-   L1.Free;
-   end;
-end;
-Function  Tel.Cop(iRod,iPre:Tel):Tel;// Создает копию элемента
-Var
-Rez,Ne,Pr:Tel;
-Begin
-REz:=Tel.Create;
-REz.TXT:=Txt;
-REz.Zna:=Zna;
-REz.Tip:=Tip;
-Rez.Fun:=Fun;
 
-REz.Rod:=IRod;
-REz.Pre:=IPre;
-Rez.NEX:=Nil;
-Rez.Blo:=Nil;
-
-If Blo<>Nil  Then
-begin
-   Rez.Blo:=Blo.Cop(REz,Nil);
-   Ne:=Blo.Nex;
-   pr:=Rez.BLO;
-   While NE<>Nil do
-   begin
-   Pr.Nex:=Ne.Cop(Rez,Pr);
-   Ne:=Ne.Nex;
-   Pr:=Pr.Nex;
-   end;
-end;
-Cop:=Rez;
-end;
-Procedure TEl.TRuns;// Выполняет структуру
-Var
-Uka:Tel;
-Begin
-Uka:=Blo;
-While UKA<>Nil do
-Begin
- sleep(1);
- If (Not UKA.FUN)    or
-    (Uka.Txt='WHILE')or
-    (UKA.Txt='IF')   Then Uka.TRun;
-Uka:=Uka.Nex;
-end;
-end;
-//------------------------------------------------------------------------------
-
-Procedure Tel.Op_ADD;//  Сложение
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
- zna:=InString(inFloat(Blo.zna)+inFloat(Blo.nex.zna)) else
- zna:=Blo.zna+Blo.nex.zna;
-end;
-end;
-Procedure Tel.Op_SUB;// Вычитание
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
- zna:=InString(inFloat(Blo.zna)-inFloat(Blo.nex.zna)) else
- ERR('Нельзя вычитать строки');
-end;
-end;
-Procedure Tel.Op_DIV;//   Деление
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
- if InFloat(Blo.nex.zna)<>0 then
- zna:=InString(inFloat(Blo.zna)/inFloat(Blo.nex.zna)) else
- ERR('Делени на ноль') else ERR('Нельзя делить строки');
-end;
-end;
-Procedure Tel.Op_MUL;// Умножение
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
- zna:=InString(inFloat(Blo.zna)*inFloat(Blo.nex.zna)) else
- ERR('Нельзя Умножать строки');
-end;
-end;
-
-Procedure Tel.Op_MEN;//    Меньше
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
- then zna:= BoolToStr(inFloat(Blo.zna)<inFloat(Blo.nex.zna))
- else zna:= BoolToStr(Blo.zna<Blo.nex.zna);
-end;
-end;
-Procedure Tel.Op_BOL;//    Больше
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
- then zna:= BoolToStr(inFloat(Blo.zna)>StrToFloat(Blo.nex.zna))
- else zna:= BoolToStr(Blo.zna>Blo.nex.zna);
-end;
-end;
-Procedure Tel.Op_MRA;// Меньше Ра
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
- then zna:= BoolToStr(inFloat(Blo.zna)<=inFloat(Blo.nex.zna))
- else zna:= BoolToStr(Blo.zna<=Blo.nex.zna);
-end;
-end;
-Procedure Tel.Op_BRA;// Больше Ра
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
- then zna:= BoolToStr(inFloat(Blo.zna)>=inFloat(Blo.nex.zna))
- else zna:= BoolToStr(Blo.zna>=Blo.nex.zna);
-end;
-end;
-Procedure Tel.Op_NER;//  Не равно
-begin
-if (blo<>nil)  and (blo.nex<>nil) Then
-begin
- blo.TRun;
- blo.nex.TRun;
- if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
- then zna:= BoolToStr(inFloat(Blo.zna)<>inFloat(Blo.nex.zna))
- else zna:= BoolToStr(Blo.zna<>Blo.nex.zna);
-end;
-end;
-
-
+{%EndRegion}
+var   {GET И SET             }{%Region /FOLD }
+                               RegV1:Longint;
 //------------------------------------------------------------------------------
 function  I_FinNam(iEle:TEle;iNam:Ansistring):TVer;forward;
 function  I_FinNam(iNam:Ansistring):TVer;forward;
@@ -2605,22 +2479,6 @@ if iSls.SLS[iNs]='MTP'  then lRez:=SetTVER_PAR(iNs,iSls,iObj.MTP,iZna) ;
 end;
 SetTOBJ_PAR:=lRez;
 end;
-function SetTSCR_PAR(iNS:Longint;iSLS:TSLS;iScr:TScr;iZna:RSTR):Ansistring;
-var
-lRez:RSTR;// Реультат
-begin
-lRez:='';
-if (iScr=Nil)  then lRez:='NIL'  else
-if (iSls.KOl>iNS) Then begin
-
-
-     iNS:=iNS+1;
-
-
-
-end;
-SetTSCR_PAR:=lRez;
-end;
 function SetTANI_PAR(iNS:Longint;iSLS:TSLS;iAni:TAni;iZna:RSTR):Ansistring;
 var
 lRez:RSTR;// Реультат
@@ -2636,91 +2494,6 @@ if (iSls.KOl>iNS) Then begin
 
 end;
 SetTANI_PAR:=lRez;
-end;
-
-//------------------------------------------------------------------------------
-
-Procedure Tel.Op_LET; // = Операция присваивания значения
-Var
-F:Tel;lPri:Tver;lNs:Longint;lRez:AnsiString;
-begin
-if (blo<>nil) and  (blo.nex<>nil) then
-begin
-
-lPri:=Nil;
-lNs:=1;
-
-if (Blo.SLS<>Nil) and (Blo.SLS.Kol>0) Then lPri:=I_FinNam(Blo.SLS.SLS[lNs]);
-if lPri<>Nil
-then begin // Читаем параметры
-
-   Blo.nex.TRun;
-
-   if lPri.TIp=T_OBJ then
-      lRez:=SetTOBJ_PAR(lNs,Blo.SLS,TObj(lPri),Blo.nex.Zna) else
-   if lPri.TIp=T_SCR then
-      lRez:=SetTSCR_PAR(lNs,Blo.SLS,TScr(lPri),Blo.nex.Zna) else
-   if lPri.TIp=T_ANI then
-      lRez:=SetTANI_PAR(lNs,Blo.SLS,TAni(lPri),Blo.nex.Zna);
-
-   Zna:=lRez;
-
-     end
-else begin
-Blo.nex.TRun;
-F:=FinFun(Blo.TXT);
-if F<>Nil Then F.Zna:=Blo.nex.Zna else MirPars.Se(Blo.TXT,Blo.nex.Zna);
-end;
-
-
-end;
-end;
-Procedure Tel.Op_SCO; // Выполняет скобку
-var
-l:TEl;
-rez:Ansistring;
-begin
-rez:='';l:=Blo;
-while l<>nil do
-begin
-l.TRun;
-if isFloat(Rez) and isFloat(l.zna)
-then rez:=InString(inFloat(rez)+inFloat(l.zna))
-else rez:=rez+l.zna;
-l:=l.nex;
-end;
-zna:=rez;
-end;
-Procedure Tel.Op_WHI; // Оператор WHITE
-var
-F:Tel;
-begin
-if (blo<>nil) and  (blo.nex<>nil) then
-begin
-Blo.TRun;
-While Blo.zna='1' do
-begin
-Blo.nex.TRun;
-Blo.TRun;
-end;
-end;
-end;
-Procedure Tel.Op_PRI; // Вывод в консоль
-var
-l:Tel;
-Co:Ansistring;
-begin
-if Blo<>nil then
-begin
-l:=Blo.Blo;
-while l<>nil do
-begin
-l.TRun;
-Co:=Co+l.zna;
-L:=l.nex;
-end;
-end;
-Form15.PRI(co);
 end;
 
 //------------------------------------------------------------------------------
@@ -2904,22 +2677,6 @@ if (iSls.KOl>iNS) Then begin
 end;
 GetTOBJ_PAR:=lRez;
 end;
-function GetTSCR_PAR(iNS:Longint;iSLS:TSLS;iScr:TScr):Ansistring;
-var
-lRez:RSTR;// Реультат
-begin
-lRez:='';
-if (iScr=Nil)  then lRez:='NIL'  else
-if (iSls.KOl>iNS) Then begin
-
-
-     iNS:=iNS+1;
-
-
-
-end;
-GetTSCR_PAR:=lRez;
-end;
 function GetTANI_PAR(iNS:Longint;iSLS:TSLS;iAni:TAni):Ansistring;
 var
 lRez:RSTR;// Реультат
@@ -2937,13 +2694,15 @@ end;
 GetTANI_PAR:=lRez;
 end;
 //------------------------------------------------------------------------------
-
+{%EndRegion}
+var   {CRE И DEL SAV LOA     }{%Region /FOLD }
+                               RegV2:Longint;
+//------------------------------------------------------------------------------
 function  I_FinObj(iNam:Ansistring):Tobj;forward;
 function  I_FinEle(iNam:Ansistring):TEle;forward;
 function  I_FinPlo(iNam:Ansistring):TPlo;forward;
 function  I_FinLin(iNam:Ansistring):TLin;forward;
 function  I_FinVer(iNam:Ansistring):TVer;forward;
-function  I_FinScr(iNam:Ansistring):TScr;forward;
 function  I_FinAni(iNam:Ansistring):TAni;forward;
 function  I_AddPLi(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Линию
 function  I_AddPPl(iObj:Pointer):Pointer;forward;// Доабвляет пустую  Плосскость
@@ -3019,10 +2778,6 @@ Procedure TEl.Op_CRE_OBJ;// Сздание   ОБьекта
 begin
 ZNA:=TObj(I_AddObj).LNA;
 end;
-Procedure TEl.Op_CRE_SCR;// Сздание   Скрипта
-begin
-ZNA:=TScr(I_AddPSc).LNA;
-end;
 Procedure TEl.Op_CRE_ANI;// Сздание  Анимации
 begin
 ZNA:=TAni(I_AddPAn).LNA;
@@ -3093,19 +2848,6 @@ I_DelObj(lObj);
 end else ERR('Не сушествует ОБьект котрую хотим удалить ')
 end else ERR('НЕ указано ОБьект для удаления  ');
 end;
-Procedure TEl.Op_DEL_SCR;// Удаление   Скрипта
-var
-lScr:TScr;
-begin
-if (BLO<>NIl) and (Blo.Blo<>Nil) Then begin
-Blo.Blo.TRun;
-lScr:=I_FinScr(Blo.Blo.Zna);
-if lScr<>Nil Then begin
-ZNA:=lScr.LNA;
-I_DelScr(lScr);
-end else ERR('Не сушествует Скрипт котрую хотим удалить ')
-end else ERR('НЕ указано Скрипт для удаления  ');
-end;
 Procedure TEl.Op_DEL_ANI;// Удаление  Анимации
 var
 lAni:TAni;
@@ -3167,84 +2909,246 @@ end;
 
 Procedure TEl.Op_FIN_TIP;// Ищит Ближайший обьект по типу
 var f:longint;lobj,RezObj:Tobj;RezRas:RSIN;lCoo:RCS3;
-begin
-// FIN_OBJ_TIP(lObj,ТИП)
-REzObj:=Nil;RezRas:=GMAxRAsInMir;lobj:=I_FIN_OBJ(BLO.ZNA);
-
+begin // FIN_OBJ_TIP(lObj,ТИП)
+if (BLO<>NIL) and (BLO.BLO<>NIL) and  (BLO.BLO.NEX<>NIL) Then begin
+REzObj:=Nil;RezRas:=GMAxRAsInMir;lobj:=I_FIN_OBJ(BLO.BLO.ZNA);
 if lObj<>Nil then begin
 lCoo:=lobj.LOC;
 for f:=1 to MirObjs.KOlO do
 if not MirObjs.OBJS[f].DEL then
-if MirObjs.OBJS[f].OGTI=BLO.ZNA then
+if MirObjs.OBJS[f].OGTI=BLO.BLO.NEX.ZNA then
 if (REzObj=Nil) Or (RasRCS3( lCoo , MirObjs.OBJS[f].LOC)<RezRas) then begin
 RezRas:=RasRCS3( lCoo , MirObjs.OBJS[f].LOC);
 RezObj:=MirObjs.OBJS[f];
 end;
 end;
+end;
 If RezObj<>Nil Then ZNA:=RezObj.NAm else ZNA:='';
 end;
-
 Procedure TEl.Op_SET_ANI;// Устанавливает Анимацию
 var Lobj:Tobj;lAni:TAni;
 begin
 
 //SET_ANI(_USER,ANIMATION_1);
-lObj:=I_FIN_OBJ(BLO.ZNA);// Ищим обьект
-lAni:=I_FIN_ANI(BLO.ZNA);// Ишим анимацию
+if (BLO<>NIL) and (BLO.BLO<>NIL) and  (BLO.BLO.NEX<>NIL) Then begin
+lObj:=I_FIN_OBJ(BLO.BLO.ZNA);// Ищим обьект
+lAni:=I_FIN_ANI(BLO.BLO.NEX.ZNA);// Ишим анимацию
 if (lObj<>Nil) and (lAni<>Nil) Then I_SET_ANIMATION(lObj,lAni);
-
+end;
 end;
 
 //----------------------------------------------------------
-
-Procedure Tel.TRun;// Выполняет 1 елемент
-Begin
-if Txt='+'              Then Op_ADD else // Сложение
-if Txt='-'              Then Op_SUB else // Вычитание
-if Txt='/'              Then Op_DIV else // Деление
-if Txt='*'              Then Op_MUL else // Умножение
-if Txt='<'              Then Op_MEN else // Меньше
-if Txt='>'              Then Op_BOL else // Больше
-if Txt='>='             Then Op_BRA else // Больше либо равно
-if Txt='<='             Then Op_MRA else // Меньше либо равно
-if Txt='<>'             Then Op_NER else // Неравно
-if Txt='!='             Then Op_NER else // Неравно
-if Txt=':='             Then Op_Let else // ПРисвоение
-if Txt='('              Then Op_Sco else // ОТкрывающаяся скобка
-if Txt='{'              Then TRuns  else // Открывающитйся блок
-//----------------------------------------------------------
-if Txt='CRE_VER'        Then Op_CRE_VER else // Сздание вершины
-if Txt='CRE_LIN'        Then Op_CRE_LIN else // Сздание Линии
-if Txt='CRE_PLO'        Then Op_CRE_PLO else // Сздание Плоскости
-if Txt='CRE_ELE'        Then Op_CRE_ELE else // Сздание Элемента
-if Txt='CRE_OBJ'        Then Op_CRE_OBJ else // Сздание ОБьекта
-if Txt='CRE_SCR'        Then Op_CRE_SCR else // Сздание Скрипта
-if Txt='CRE_ANI'        Then Op_CRE_ANI else // Сздание Анимации
-//----------------------------------------------------------
-if Txt='DEL_VER'        Then Op_DEL_VER else // Удаление вершины
-if Txt='DEL_LIN'        Then Op_DEL_LIN else // Удаление Линии
-if Txt='DEL_PLO'        Then Op_DEL_PLO else // Удаление Плоскости
-if Txt='DEL_ELE'        Then Op_DEL_ELE else // Удаление Элемента
-if Txt='DEL_OBJ'        Then Op_DEL_OBJ else // Удаление ОБьекта
-if Txt='DEL_SCR'        Then Op_DEL_SCR else // Удаление Скрипта
-if Txt='DEL_ANI'        Then Op_DEL_ANI else // Удаление Анимации
-//----------------------------------------------------------
-if Txt='CLE_SCE'        Then Op_CLE_SCE else // Очистка сцены
-if Txt='SAV_SCE'        Then Op_SAV_SCE else // Сохранение  сцены
-if Txt='LOA_SCE'        Then Op_LOA_SCE else // ЗАгрузка Сцены
-//----------------------------------------------------------
-if Txt='SAV_OBJ'        Then Op_SAV_OBJ else // Сохраняет ОБьект в файл
-if Txt='SAV_SCR'        Then Op_SAV_SCR else // Сохраняет Скрипт в файл
-if Txt='SAV_ANI'        Then Op_SAV_ANI else // Сохраняет Анимацию в файл
-//----------------------------------------------------------
-if Txt='LOA_OBJ'        Then Op_LOA_OBJ else // ЗАгружает ОБьект из файла
-if Txt='LOA_SCR'        Then Op_LOA_SCR else // ЗАгружает Скрипт из файла
-if Txt='LOA_ANI'        Then Op_LOA_ANI else // ЗАгружает Анимацию из файла
-//----------------------------------------------------------
-if Txt='WHILE'          Then Op_WHI else // Цикл while
-if Txt='PRINT'          Then Op_PRI else // Оператор PRINT
-if Tip=Ti_Slo           Then RunFun;
+{%EndRegion}
+//------------------------------------------------------------------------------
+Procedure Tel.Op_ADD;//  Сложение
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)+inFloat(Blo.nex.zna)) else
+ zna:=Blo.zna+Blo.nex.zna;
 end;
+end;
+Procedure Tel.Op_SUB;// Вычитание
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)-inFloat(Blo.nex.zna)) else
+ ERR('Нельзя вычитать строки');
+end;
+end;
+Procedure Tel.Op_DIV;//   Деление
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ if InFloat(Blo.nex.zna)<>0 then
+ zna:=InString(inFloat(Blo.zna)/inFloat(Blo.nex.zna)) else
+ ERR('Делени на ноль') else ERR('Нельзя делить строки');
+end;
+end;
+Procedure Tel.Op_MUL;// Умножение
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna) then
+ zna:=InString(inFloat(Blo.zna)*inFloat(Blo.nex.zna)) else
+ ERR('Нельзя Умножать строки');
+end;
+end;
+Procedure Tel.Op_MEN;//    Меньше
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<inFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_BOL;//    Больше
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)>StrToFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna>Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_MRA;// Меньше Ра
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<=inFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<=Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_BRA;// Больше Ра
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)>=inFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna>=Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_NER;//  Не равно
+begin
+if (blo<>nil)  and (blo.nex<>nil) Then
+begin
+ blo.TRun;
+ blo.nex.TRun;
+ if isFloat(Blo.zna) and isFloat(Blo.nex.zna)
+ then zna:= BoolToStr(inFloat(Blo.zna)<>inFloat(Blo.nex.zna))
+ else zna:= BoolToStr(Blo.zna<>Blo.nex.zna);
+end;
+end;
+Procedure Tel.Op_LET; // = Операция присваивания значения
+Var
+F:Tel;lPri:Tver;lNs:Longint;lRez:AnsiString;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+
+lPri:=Nil;
+lNs:=1;
+
+if (Blo.SLS<>Nil) and (Blo.SLS.Kol>0) Then lPri:=I_FinNam(Blo.SLS.SLS[lNs]);
+if lPri<>Nil
+then begin // Читаем параметры
+
+   Blo.nex.TRun;
+
+   if lPri.TIp=T_OBJ then
+      lRez:=SetTOBJ_PAR(lNs,Blo.SLS,TObj(lPri),Blo.nex.Zna) else
+   if lPri.TIp=T_ANI then
+      lRez:=SetTANI_PAR(lNs,Blo.SLS,TAni(lPri),Blo.nex.Zna);
+
+   Zna:=lRez;
+
+     end
+else begin
+Blo.nex.TRun;
+F:=FinFun(Blo.TXT);
+
+if F<>Nil
+Then begin F.Zna:=Blo.nex.Zna;Blo.RunFun2; end
+else MirPars.Se(Blo.TXT,Blo.nex.Zna);
+
+
+end;
+
+
+end;
+end;
+Procedure Tel.Op_SCO; // Выполняет скобку
+var
+l:TEl;
+rez:Ansistring;
+begin
+rez:='';l:=Blo;
+while l<>nil do
+begin
+l.TRun;
+rez:=rez+l.zna;
+l:=l.nex;
+end;
+zna:=rez;
+end;
+Procedure Tel.Op_WHI; // Оператор WHITE
+var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+Blo.TRun;
+While Blo.zna='-1' do
+begin
+Blo.nex.TRun;
+Blo.TRun;
+end;
+end;
+end;
+
+Procedure Tel.Op_IFF; // Оператор IFF
+var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+Blo.TRun;if Blo.zna='-1' then Blo.nex.TRun;
+end;
+Procedure Tel.Op_FOR; // Оператор FOR
+var
+F:Tel;
+begin
+if (blo<>nil) and  (blo.nex<>nil) then
+begin
+//Blo.TRun;
+//While Blo.zna='-1' do
+//begin
+//Blo.nex.TRun;
+//Blo.TRun;
+//end;
+end;
+end;
+
+
+
+Procedure Tel.Op_PRI; // Вывод в консоль
+var
+l:Tel;
+Co:Ansistring;
+begin
+if Blo<>nil then
+begin
+l:=Blo.Blo;
+while l<>nil do
+begin
+l.TRun;
+Co:=Co+l.zna;
+L:=l.nex;
+end;
+end;
+Form15.PRI(co);
+end;
+
 Function  Tel.FinFun(N:Ansistring):Tel;// ПОиск функции или переменной
 var
 l,REz:Tel;
@@ -3281,7 +3185,74 @@ If  (REz=Nil)         and
 if (REz=Nil) and (Rod<>Nil) Then REz:=Rod.FinFun(n);
 FinFun:=REz;
 end;
-Procedure Tel.RunFun;// Найти и выполнить пользовательскую функцию
+Procedure TEl.TRuns;// Выполняет структуру
+Var
+Uka:Tel;
+Begin
+Uka:=Blo;
+While UKA<>Nil do
+Begin
+ sleep(1);
+ If (Not UKA.FUN)    or  // Если это не Функция
+    (Uka.Txt='WHILE')or
+    (UKA.Txt='IF')   or
+    (UKA.Txt='FOR')
+    Then Uka.TRun;
+Uka:=Uka.Nex;
+end;
+end;
+Procedure Tel.TRun;// Выполняет 1 елемент
+Begin
+if Txt='+'              Then Op_ADD else // Сложение
+if Txt='-'              Then Op_SUB else // Вычитание
+if Txt='/'              Then Op_DIV else // Деление
+if Txt='*'              Then Op_MUL else // Умножение
+if Txt='<'              Then Op_MEN else // Меньше
+if Txt='>'              Then Op_BOL else // Больше
+if Txt='>='             Then Op_BRA else // Больше либо равно
+if Txt='<='             Then Op_MRA else // Меньше либо равно
+if Txt='<>'             Then Op_NER else // Неравно
+if Txt='!='             Then Op_NER else // Неравно
+if Txt=':='             Then Op_Let else // ПРисвоение
+if Txt='('              Then Op_Sco else // ОТкрывающаяся скобка
+if Txt='{'              Then TRuns  else // Открывающитйся блок
+//----------------------------------------------------------
+if Txt='CRE_VER'        Then Op_CRE_VER else // Сздание вершины
+if Txt='CRE_LIN'        Then Op_CRE_LIN else // Сздание Линии
+if Txt='CRE_PLO'        Then Op_CRE_PLO else // Сздание Плоскости
+if Txt='CRE_ELE'        Then Op_CRE_ELE else // Сздание Элемента
+if Txt='CRE_OBJ'        Then Op_CRE_OBJ else // Сздание ОБьекта
+if Txt='CRE_ANI'        Then Op_CRE_ANI else // Сздание Анимации
+//----------------------------------------------------------
+if Txt='DEL_VER'        Then Op_DEL_VER else // Удаление вершины
+if Txt='DEL_LIN'        Then Op_DEL_LIN else // Удаление Линии
+if Txt='DEL_PLO'        Then Op_DEL_PLO else // Удаление Плоскости
+if Txt='DEL_ELE'        Then Op_DEL_ELE else // Удаление Элемента
+if Txt='DEL_OBJ'        Then Op_DEL_OBJ else // Удаление ОБьекта
+if Txt='DEL_ANI'        Then Op_DEL_ANI else // Удаление Анимации
+//----------------------------------------------------------
+if Txt='CLE_SCE'        Then Op_CLE_SCE else // Очистка сцены
+if Txt='SAV_SCE'        Then Op_SAV_SCE else // Сохранение  сцены
+if Txt='LOA_SCE'        Then Op_LOA_SCE else // ЗАгрузка Сцены
+//----------------------------------------------------------
+if Txt='SAV_OBJ'        Then Op_SAV_OBJ else // Сохраняет ОБьект в файл
+if Txt='SAV_SCR'        Then Op_SAV_SCR else // Сохраняет Скрипт в файл
+if Txt='SAV_ANI'        Then Op_SAV_ANI else // Сохраняет Анимацию в файл
+//----------------------------------------------------------
+if Txt='LOA_OBJ'        Then Op_LOA_OBJ else // ЗАгружает ОБьект из файла
+if Txt='LOA_SCR'        Then Op_LOA_SCR else // ЗАгружает Скрипт из файла
+if Txt='LOA_ANI'        Then Op_LOA_ANI else // ЗАгружает Анимацию из файла
+//----------------------------------------------------------
+if Txt='FIN_TIP'        Then Op_FIN_TIP else // Ищит обьект задоного типа
+if Txt='SET_ANI'        Then Op_SET_ANI else // Устанавливает анимацию
+//----------------------------------------------------------
+if Txt='FOR'            Then Op_FOR else // ЦИкл For
+if Txt='IF'             Then Op_IFF else // Условие
+if Txt='WHILE'          Then Op_WHI else // Цикл while
+if Txt='PRINT'          Then Op_PRI else // Оператор PRINT
+if Tip=Ti_Slo           Then RunFun1;
+end;
+Procedure Tel.RunFun1;// Найти и выполнить пользовательскую функцию
 var
 F,Ru,l1,l2:Tel;
 lPri:TVer;
@@ -3299,7 +3270,6 @@ then begin // Читаем параметры
 
 
      if lPri.TIp=T_OBJ then lRez:=GetTOBJ_PAR(lNs,SLS,TObj(lPri)) else
-     if lPri.TIp=T_SCR then lRez:=GetTSCR_PAR(lNs,SLS,TScr(lPri)) else
      if lPri.TIp=T_ANI then lRez:=GetTANI_PAR(lNs,SLS,TAni(lPri));
 
      Zna:=lRez;
@@ -3322,12 +3292,50 @@ else begin // Выполняем функцию
           Zna:=Ru.Zna;
           Ru.Cle;
           Ru.Free;
-     end else ZNA:=MirPars.Ge(Txt);// Глобальные переменные
+     end else begin
+
+
+     if MirPars.Fi(Txt)<>0 then
+     ZNA:=MirPars.Ge(Txt);// Глобальные переменные
+
+     end;
 
 end;
+end;
+Procedure Tel.RunFun2;// Найти и выполнить пользовательскую функцию
+var
+F,Ru,l1,l2:Tel;
+begin
+
+     F:=FinFun(Txt);
+     if (F<>Nil) Then
+     if (F.Blo.Nex.NEX<>Nil) Then
+          begin
+          Ru:=F.Cop(Rod,Pre);
+          Blo.TRun;
+          L1:=Ru.Blo.Blo;
+          L2:=Blo.Blo;
+          While (l1<>Nil) and (L2<>Nil) do
+                Begin
+                L1.Zna:=L2.Zna;
+                L1:=L1.Nex;
+                L2:=L2.Nex;
+                end;
+          Ru.Blo.Nex.NEX.TRun;
+          Zna:=Ru.Zna;
+          Ru.Cle;
+          Ru.Free;
+     end
+
 end;
 
 //------------------------------------------------------------------------------
+TYpe  TScr=class(Tver)
+PRG:Tel;// ПРограмма
+Function  ReadPars(S:Ansistring):Tel;
+Procedure ViewElem(E:Tel;O:Ansistring);
+Procedure ProgStru;
+end;
 Function  TScr.ReadPars(S:Ansistring):Tel; //  Разбивает строку на слова
 var
   REZ:Tel;     // Списко слов на которые разита программа
@@ -3372,36 +3380,6 @@ begin                // +.0 -.0    .0   +0 -0
 REz:='';
 R:=False;
 KT:=0;
-
-if not R Then
-if (LEN>=UKA+2) then
-if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
-if ((S[UKA+1] ='.')                    ) then
-if ((S[UKA+2]>='0') and (S[UKA+2]<='9')) then begin
-    R:=true;
-    KT:=KT+1;
-    Rez:=Rez+S[UKA+0]+S[UKA+1]+S[UKA+2];
-    UKA:=UKA+3;
-    end;
-
-if not R Then
-if (LEN>=UKA+1) then
-if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
-if ((S[UKA+1]>='0') and (S[UKA+1]<='9')) then begin
-    R:=true;
-    Rez:=Rez+S[UKA+0]+S[UKA+1];
-    UKA:=UKA+2;
-    end;
-
-if not R Then
-if (LEN>=UKA+1) then
-if ((S[UKA+0] ='-')  or (S[UKA+0] ='+')) then
-if ((S[UKA+1] ='.')                    ) then begin
-    R:=true;
-    KT:=KT+1;
-    Rez:=Rez+S[UKA+0]+S[UKA+1];
-    UKA:=UKA+2;
-    end;
 
 if not R Then
 if (LEN>=UKA) then
@@ -3503,7 +3481,6 @@ While L<>Nil Do
 end;
 Procedure TScr.ProgStru;// Формирует структуру программы
 begin
-PRG.VlogitCif;
 PRG.VlogitSc('(',')');
 PRG.VlogitSc('{','}');
 PRG.VlogitPA;
@@ -3514,7 +3491,7 @@ PRG.VlogitADD;
 PRG.VlogitSRA;
 PRG.VlogitLET;
 end;
-
+//------------------------------------------------------------------------------
 TYPE TScrS=CLASS
 SEL:Boolean;
 KOLS:Longint;
@@ -5305,7 +5282,7 @@ var lScr:TScr;
 begin                 // +1-(-2)=1+2=3
 lScr:=TScr(iScr);
 if lScr.PRG<>nil Then lScr.PRG.Cle;
-lScr.PRG:=lScr.ReAdPArs(AnsiUpperCase(lScr.TXT));
+lScr.PRG:=lScr.ReAdPArs(lScr.TXT);
 lScr.ProgStru;// Формирование структуры программы
 //lScr.ViewElem(lScr.PRG,''); //Для отладки вывод структуры
 lScr.PRG.TRUNS;
