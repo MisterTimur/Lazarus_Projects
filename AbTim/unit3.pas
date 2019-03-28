@@ -128,6 +128,16 @@ procedure I_SeUX(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUY(iEle:Pointer;iEdit:TEdit);
 procedure I_SeUZ(iEle:Pointer;iEdit:TEdit);
 
+
+procedure I_OBJ_VVE(iObj:Pointer);
+procedure I_ANI_VVE(iAni:Pointer);
+procedure I_SCR_VVE(iScr:Pointer);
+
+procedure I_OBJ_VNI(iObj:Pointer);
+procedure I_ANI_VNI(iAni:Pointer);
+procedure I_SCR_VNI(iScr:Pointer);
+
+
 function  I_RodEle(iEle,iObj:Pointer):Boolean;
 procedure I_SetSel(iPri:pointer;iSel:boolean);
 procedure I_SetVis(iPri:pointer;iVis:boolean);
@@ -610,7 +620,8 @@ var   {Базовые функции        ===========================}{%Region
     if (Length(s)>=1)and(S[Length(s)]='.')then delete(s,Length(s),1);// 12.
 
     if (Length(s)<>0)then
-    if (isFloat(s))then val(s,REz,c)
+    if (isFloat(s))then
+    val(s,REz,c)
     else ERR('Строка не являеться числом');
    inFloat:=Rez;
  end;
@@ -625,8 +636,11 @@ var   {Базовые функции        ===========================}{%Region
  begin
  Kz:=0;
  T:=False;
- //lStr:=FloatToStr(i);
- STR(I:10:10,lStr);
+ i:=i*1000;
+ i:=Trunc(I);
+ i:=I/1000;
+ lStr:=FloatToStr(i);
+ //STR(I:10:10,lStr);
  for f:=1 to Length(lStr) do
  begin
  // Заменяю запятую на точку и узнаю есть ли вообще точка
@@ -1581,7 +1595,7 @@ end;
 var   {Описание Обьекта       ===========================}{%Region /FOLD }
                                                            Reg08:Longint;
 TYPE TOBJ=CLASS(TELE)
-  KAdr:RSIN;// Номер кадра для анимации
+  KAdr:RSTR;// Нзвание кадра для анимации
   OCEL:RCS3;// Цель куда нужно перпемесчаться глобально
   OMOV:RCS3;// Куда нужно перемещаться в данный момент времени
   OPER:RBOL;// Если это управляемый персонаж
@@ -1739,7 +1753,7 @@ Constructor TOBJ.Create;// Конструктор
 begin
 inherited Create;
 TIP:=T_OBJ;
-Kadr:=1;
+Kadr:='';
 OBJ:=Self;
 KolL:=0;
 KolP:=0;
@@ -1909,7 +1923,7 @@ end;
 var   {Интепретатор           ===========================}{%Region /FOLD }
                                                            RegI0:Longint;
 //------------------------------------------------------------------------------
-Type  TEl=Class(Tobject)  // Элемент исполнения
+Type  TEl=Class  // Элемент исполнения
 
   TXT:Ansistring;// Текс слова
   SLS:TSLS;// Списко для разбивки имени
@@ -2463,7 +2477,7 @@ if (iSls.KOl>iNS) Then begin
 
 if lRez='' Then
 if iSls.SLS[iNs]='OGTI' then begin lRez:='1';iObj.OGTI:=iZna;end else
-if iSls.SLS[iNs]='KADR' then begin lRez:='1';iObj.KADR:=inInt(iZna);end else
+if iSls.SLS[iNs]='KADR' then begin lRez:='1';iObj.KADR:=iZna;end else
 if iSls.SLS[iNs]='OCEL' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OCEL,iZna) else
 if iSls.SLS[iNs]='OMOV' then lRez:=SetRCS3_XYZ(iNs,iSls,iObj.OMOV,iZna) else
 if iSls.SLS[iNs]='OPER' then begin lRez:='1';iObj.OPER:=StrToBool(iZna) end else
@@ -2657,7 +2671,7 @@ if (iSls.KOl>iNS) Then begin
 
      if lRez='' Then
      if iSls.SLS[iNs]='OGTI' then lRez:=         iObj.OGTI  else
-     if iSls.SLS[iNs]='KADR' then lRez:=inString(iObj.KADR) else
+     if iSls.SLS[iNs]='KADR' then lRez:=iObj.KADR           else
      if iSls.SLS[iNs]='OCEL' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OCEL) else
      if iSls.SLS[iNs]='OMOV' then lRez:=GetRCS3_XYZ(iNs,iSls,iObj.OMOV) else
      if iSls.SLS[iNs]='OPER' then lRez:=BoolToStr(iObj.OPER) else
@@ -3679,6 +3693,7 @@ ECOL1:Array[0..MaxKolVerInMir] of RCOL;// Цвета всех вершин
 ECOL2:Array[0..MaxKolVerInMir] of RCOL;// Цвета всех вершин для отрисовки
 EPlo1:Array[1..MaxKolPloInMir] of RPLO;// Индексы вершин Плоскостей формируються
 EPlo2:Array[1..MaxKolPloInMir] of RPLO;// Индексы вершин Плоскостей для Экрана
+
 function addV(iVer:Tver;iCol:RCol):RLON;
 function addP(iVer1,iVer2,iVer3,iVer4:RLON):RLON;
 constructor Create;
@@ -3701,6 +3716,13 @@ SerRCS8(MirCols.ECOO2[iPlo.NOMS[3]],iPlo.VERS[3].ECR);
 MirCols.ECOO2[iPlo.NOMS[4]]:=
 SerRCS8(MirCols.ECOO2[iPlo.NOMS[4]],iPlo.VERS[4].ECR);
 
+
+MirCols.ECOO1[iPlo.NOMS[1]]:=MirCols.ECOO2[iPlo.NOMS[1]];
+MirCols.ECOO1[iPlo.NOMS[2]]:=MirCols.ECOO2[iPlo.NOMS[2]];
+MirCols.ECOO1[iPlo.NOMS[3]]:=MirCols.ECOO2[iPlo.NOMS[3]];
+MirCols.ECOO1[iPlo.NOMS[4]]:=MirCols.ECOO2[iPlo.NOMS[4]];
+
+
 end;
 
 end;
@@ -3709,7 +3731,7 @@ function    TCols.addV(iVer:Tver;iCol:RCol):RLON;// Добавить верши�
 begin
  lDrKv:=lDrKv+1;
  EVERS[lDrKv]:=Iver;
- ECOO1[lDrKv]:=Iver.ECR;// Экранная коорддината
+ ECOO1[lDrKv]:=SerRCS8(ECOO1[lDrKv],Iver.ECR);// Экранная коорддината
  ECOL1[lDrKv]:=iCol;// Экранн цвет
  addV:=lDrKv;
 end;
@@ -3734,7 +3756,8 @@ var lVer1,lVer2,lVer3,lVer4,lPlo1:RLON;f:RLON;
 begin
 lDrKp:=0;
 lDrKv:=0;
-for f:=1 to MirPLos.KolP do with MirPLos.PLos[f] do
+for f:=1 to MirPLos.KolP do
+with MirPLos.PLos[f] do
 if obj.VIS then
 if ELE.VIS then
 if not Del and Vis and VVI then
@@ -3758,8 +3781,10 @@ else if MCL=2 then begin // Используем для цвета цвет пл
      NOMS[2]:=lver2;
      NOMS[3]:=lver3;
      NOMS[4]:=lver4;
+
      end
 else if MCL=3 then begin // Используем для цвета цвета заданые в самой плоскои
+
 
      lver1:=addV(VERS[1],COLS[1]);sleep(1);
      lver2:=addV(VERS[2],COLS[2]);
@@ -3776,6 +3801,7 @@ else if MCL=3 then begin // Используем для цвета цвета з
      Move(ECol1,ECol2,(lDrKv+1)*SizeOf(RCOL));
      Move(EPlo1,EPlo2,(lDrKP+0)*SizeOf(RPLO));
      DrKP:=lDrKP;
+
 end;
 
 {%EndRegion}
@@ -4773,6 +4799,157 @@ if iEdit.Text<>inString(TEle(iEle).EUGL.Z)  then begin
 end;
 end;
 
+//------------------------------------------------
+
+procedure I_OBJ_VVE(iObj:Pointer);
+var
+f:Longint;
+PreObj:Longint;Rez:Boolean;
+begin
+   f:=1;Rez:=False;PreObj:=0;
+   while (f<=MirObjs.KolO) and (Rez=false) do begin
+
+      if MirObjs.OBJS[f]=Tobj(iObj) Then begin
+      REz:=true;
+      if PreObj<>0 then
+      if MirObjs.OBJS[PreObj]<>Tobj(iObj) Then begin
+      MirObjs.OBJS[f]:=MirObjs.OBJS[PreObj];
+      MirObjs.OBJS[PreObj]:=Tobj(iObj);
+      MirObjs.OBJS[f].NOM:=PreObj;
+      MirObjs.OBJS[PreObj].NOM:=f;
+      end;
+      end;
+
+      if Not MirObjs.OBJS[f].DEL Then PreObj:=f;
+
+   F:=F+1;
+   end;
+end;
+procedure I_SCR_VVE(iScr:Pointer);
+var
+f:Longint;
+PreScr:Longint;Rez:Boolean;
+begin
+   f:=1;Rez:=False;PreScr:=0;
+   while (f<=MirScrs.KolS) and (Rez=false) do begin
+
+      if MirScrs.ScrS[f]=TScr(iScr) Then begin
+      REz:=true;
+      if PreScr<>0 then
+      if MirScrs.ScrS[PreScr]<>TScr(iScr) Then begin
+      MirScrs.ScrS[f]:=MirScrs.ScrS[PreScr];
+      MirScrs.ScrS[PreScr]:=TScr(iScr);
+      MirScrs.ScrS[f].NOM:=PreScr;
+      MirScrs.ScrS[PreScr].NOM:=f;
+      end;
+      end;
+
+      if Not MirScrs.ScrS[f].DEL Then PreScr:=f;
+
+   F:=F+1;
+   end;
+end;
+procedure I_ANI_VVE(iANI:Pointer);
+var
+f:Longint;
+PreANI:Longint;REz:Boolean;
+begin
+   f:=1;Rez:=False;PreANi:=0;
+   while (f<=MirANIs.KolA) and (Rez=false) do begin
+
+      if MirANIs.ANIS[f]=TAni(iANI) Then begin
+      REz:=true;
+      if PreAni<>0 then
+      if MirANIs.AniS[PreANI]<>TAni(iAni) Then begin
+      MirANIs.AniS[f]:=MirAnis.AniS[PreANI];
+      MirANIs.ANiS[PreANI]:=TAni(iANI);
+      MirANIs.AniS[f].NOM:=PreANI;
+      MirANIs.AniS[PreANI].NOM:=f;
+      end;
+      end;
+
+      if Not MirANIs.ANIS[f].DEL Then PreANI:=f;
+
+   F:=F+1;
+   end;
+end;
+
+procedure I_OBJ_VNI(iObj:Pointer);
+var
+f:Longint;
+PreObj:Longint;Rez:Boolean;
+begin
+   f:=MirObjs.KolO;Rez:=False;PreObj:=0;
+   while (f>0) and (Rez=false) do begin
+
+      if MirObjs.OBJS[f]=Tobj(iObj) Then begin
+      REz:=true;
+      if PreObj<>0 then
+      if MirObjs.OBJS[PreObj]<>Tobj(iObj) Then begin
+      MirObjs.OBJS[f]:=MirObjs.OBJS[PreObj];
+      MirObjs.OBJS[PreObj]:=Tobj(iObj);
+      MirObjs.OBJS[f].NOM:=PreObj;
+      MirObjs.OBJS[PreObj].NOM:=f;
+      end;
+      end;
+
+      if Not MirObjs.OBJS[f].DEL Then PreObj:=f;
+
+   F:=F-1;
+   end;
+end;
+procedure I_SCR_VNI(iScr:Pointer);
+var
+f:Longint;
+PreScr:Longint;Rez:Boolean;
+begin
+   f:=MirScrs.KolS;Rez:=False;PreScr:=0;
+   while (f>0) and (Rez=false) do begin
+
+      if MirScrs.ScrS[f]=TScr(iScr) Then begin
+      REz:=true;
+      if PreScr<>0 then
+      if MirScrs.ScrS[PreScr]<>TScr(iScr) Then begin
+      MirScrs.ScrS[f]:=MirScrs.ScrS[PreScr];
+      MirScrs.ScrS[PreScr]:=TScr(iScr);
+      MirScrs.ScrS[f].NOM:=PreScr;
+      MirScrs.ScrS[PreScr].NOM:=f;
+      end;
+      end;
+
+      if Not MirScrs.ScrS[f].DEL Then PreScr:=f;
+
+   F:=F-1;
+   end;
+end;
+procedure I_ANI_VNI(iANI:Pointer);
+var
+f:Longint;
+PreANI:Longint;REz:Boolean;
+begin
+   f:=MirANIs.KolA;Rez:=False;PreANi:=0;
+   while (f>0) and (Rez=false) do begin
+
+      if MirANIs.ANIS[f]=TAni(iANI) Then begin
+      REz:=true;
+      if PreAni<>0 then
+      if MirANIs.AniS[PreANI]<>TAni(iAni) Then begin
+      MirANIs.AniS[f]:=MirAnis.AniS[PreANI];
+      MirANIs.ANiS[PreANI]:=TAni(iANI);
+      MirANIs.AniS[f].NOM:=PreANI;
+      MirANIs.AniS[PreANI].NOM:=f;
+      end;
+      end;
+
+      if Not MirANIs.ANIS[f].DEL Then PreANI:=f;
+
+   F:=F-1;
+   end;
+end;
+
+
+
+           // За чаем 5 мин ......
 
 {%EndRegion}
 var   {----------------------- Отрисовкка примитивов  ===}{%Region /FOLD }
@@ -6274,6 +6451,11 @@ else if iStr[lPos]='E' Then begin INC(lPos);
                  end;
      end;
      end
+else if iStr[lPos]='J' Then begin INC(lPos);
+
+     lObj.KADR:=I_GetSC(lPos,iStr);// Следующая анимация по порядку
+
+     end
 else if iStr[lPos]='K' Then begin INC(lPos);
      lNam:=I_GetSC(lPos,iStr);// Запоминаю имя анимации
      lTxt:=I_GetKa(lPos,iStr);// Запоминаю Текст Анимации
@@ -6427,8 +6609,6 @@ else if iStr[lPos]='"' Then I_GetKa(lPos,iStr) else inc(lPos);
 end
 // A, B, C, D, E, F, Z, H, I, K, L, M, N, O, P, Q, R, S, T, V и X.
 end;
-
-
 procedure I_SET_ANIMATION(iObj:Tobj;iAni:TAni);
 var sAni:Ansistring;
 begin
@@ -6437,7 +6617,6 @@ sAni:='O('+iObj.NAM+')'+iAni.TXT;
 I_SCENA_KAD_01(sAni);
 iObj.CHE:=100;
 end;
-
 procedure I_SET_ANIMATION(iAni:TCheckListBox);// Устанавливает анимацию
 var
 fa,fo:Longint;
@@ -7394,7 +7573,7 @@ begin
   inherited Create(CreateSuspended);
 end;
 procedure   TheadMath.Execute;
-var f:Longint;
+var f:Longint;lAni:TAni;
 begin
   Priority:=tpIdle;
   while (not Terminated) and (Clos=false) do
@@ -7411,7 +7590,12 @@ begin
         sleep(1);
       end else begin
 
-      // Выполнять скрипт
+      if MirObjs.OBJS[f].KAdr<>'' THEN begin
+        lAni:=I_FIN_ANI(MirObjs.OBJS[f].KAdr);
+        if lAni<>Nil Then
+        I_SET_ANIMATION(MirObjs.OBJS[f],lAni);
+        CHE:=30;
+      end;
 
       end;
 
@@ -7440,10 +7624,10 @@ begin
   Priority:=tpIdle;
   while (not Terminated) and (Clos=false) do
     begin
-    sleep(500);
     // ========================================================================
     with MirVers do for f:=1 to KOlV do
     //if   NOT Tobj(Vers[f].OBJ).OPER then
+    if   Tobj(Vers[f].OBJ).CHE=0 then
     if   Vers[f].OBJ.VIS then
     if   Vers[f].ELE.VIS then
     if       Vers[f].VIS then
@@ -7491,6 +7675,7 @@ begin
     with MirLins do Move(ELin1,ELin2,(DrKl+0)*SizeOf(RLIN));
     with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
     // ========================================================================
+    sleep(500);
     MirCols.Swap;
     end;
 end;

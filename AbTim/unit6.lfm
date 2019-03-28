@@ -15,7 +15,7 @@ object Form6: TForm6
   FormStyle = fsStayOnTop
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 34
@@ -176,7 +176,7 @@ object Form6: TForm6
       Items.Strings = (
         'V'
       )
-      ItemHeight = 21
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox1Click
@@ -198,7 +198,7 @@ object Form6: TForm6
       Items.Strings = (
         'L'
       )
-      ItemHeight = 21
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox2Click
@@ -220,7 +220,7 @@ object Form6: TForm6
       Items.Strings = (
         'P'
       )
-      ItemHeight = 21
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox3Click
@@ -260,7 +260,7 @@ object Form6: TForm6
       Items.Strings = (
         'E'
       )
-      ItemHeight = 21
+      ItemHeight = 15
       ItemIndex = 0
       MultiSelect = True
       OnClick = CheckListBox4Click

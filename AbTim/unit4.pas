@@ -2,6 +2,7 @@ unit Unit4;{$mode objfpc}{$H+}interface uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   CheckLst, StdCtrls, Menus,UNit5,unit3,unit15, Types;
 type { TForm4 } TForm4 = class(TForm)
+    CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     ColorDialog1: TColorDialog;
@@ -180,9 +181,6 @@ begin
   left:=form3.Left+form3.width-width-30;
   top:=form3.top+form3.height-height-10;
 end;
-
-
-
 procedure TForm4.MenuItem10Click(Sender: TObject);
 begin
  MenuItem10.Checked:=not MenuItem10.Checked;
@@ -340,7 +338,6 @@ procedure TForm4.MenuItem42Click(Sender: TObject);
 begin
   form15.visible:=not form15.visible;
 end;
-
 procedure TForm4.MenuItem44Click(Sender: TObject);
 begin
   // Загрузить обьект из файла
@@ -350,7 +347,6 @@ begin
   G_Change:=true;
   end;
 end;
-
 procedure TForm4.MenuItem46Click(Sender: TObject);
 begin
   // Сохранить обьект в Файл
@@ -359,7 +355,6 @@ begin
      I_SaveSelects(G_FileName);
   end;
 end;
-
 procedure TForm4.MenuItem47Click(Sender: TObject);
 begin
  MenuItem6.Checked:=false;
@@ -373,7 +368,6 @@ begin
  MenuItem31.Checked:=true;
  MenuItem16.Checked:=true;
 end;
-
 procedure TForm4.MenuItem48Click(Sender: TObject);
 begin
  MenuItem6.Checked:=false;
@@ -387,7 +381,6 @@ begin
  MenuItem31.Checked:=true;
  MenuItem16.Checked:=true;
 end;
-
 procedure TForm4.MenuItem49Click(Sender: TObject);
 begin
  MenuItem6.Checked:=true;
@@ -401,23 +394,19 @@ begin
  MenuItem31.Checked:=false;
  MenuItem16.Checked:=false;
 end;
-
 procedure TForm4.Edit1Change(Sender: TObject);
 begin
   I_SetX(Act,Edit1);
 end;
-
 procedure TForm4.Edit10DblClick(Sender: TObject);
 begin
   if edit10.TExt='0' then edit10.TExt:='-1' else edit10.TExt:='0';
   I_SETM(Act,edit10);// Маршрутный примитив
 end;
-
 procedure TForm4.CheckBox2Change(Sender: TObject);
 begin
 
 end;
-
 procedure TForm4.Edit11DblClick(Sender: TObject);
 begin
   if edit11.TExt='0' then edit11.TExt:='-1' else edit11.TExt:='0';
@@ -428,15 +417,40 @@ begin
 end;
 procedure TForm4.Edit1MouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
+var
+  Z:real;
 begin
+
+   if (Sender=Edit4) or (Sender=Edit5) or (Sender=Edit6)
+   then begin
+
+
+   if isFloat(TEdit(Sender).text) then begin
+   Z:=inFloat(TEdit(Sender).Text)-0.1;
+   TEdit(Sender).text:= InString(Z);
+   end;
+
+
+   end
+   else begin
    if isFloat(TEdit(Sender).text) then
    TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)-GStep);
+   end;
+
+
 end;
 procedure TForm4.Edit1MouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
-   if isFloat(TEdit(Sender).text) then
-   TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
+      if (Sender=Edit4) or (Sender=Edit5) or (Sender=Edit6)
+      then begin
+      if isFloat(TEdit(Sender).text) then
+      TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+0.1);
+      end
+      else begin
+      if isFloat(TEdit(Sender).text) then
+      TEdit(Sender).text:= InString(inFloat(TEdit(Sender).Text)+GStep);
+      end;
 end;
 procedure TForm4.Edit2Change(Sender: TObject);
 begin
@@ -477,12 +491,10 @@ procedure TForm4.Edit9Change(Sender: TObject);
 begin
  I_SetN(Act,Edit9);
 end;
-
 procedure TForm4.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
  form3.close;
 end;
-
 procedure TForm4.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 

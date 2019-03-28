@@ -35,6 +35,7 @@ object Form12: TForm12
       Width = 102
       Align = alTop
       Alignment = taCenter
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end

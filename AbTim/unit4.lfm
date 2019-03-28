@@ -290,6 +290,14 @@ object Form4: TForm4
       Caption = 'Привязать к персонажу'
       TabOrder = 1
     end
+    object CheckBox1: TCheckBox
+      Left = 360
+      Height = 19
+      Top = 5
+      Width = 83
+      Caption = 'CheckBox1'
+      TabOrder = 2
+    end
   end
   object Splitter8: TSplitter
     Left = 551

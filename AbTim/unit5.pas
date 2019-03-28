@@ -12,6 +12,15 @@ type
     CheckListBox3: TCheckListBox;
     MenuItem1: TMenuItem;
     MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
+    MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
+    MenuItem16: TMenuItem;
+    MenuItem17: TMenuItem;
+    MenuItem18: TMenuItem;
+    MenuItem19: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -38,6 +47,12 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
+    procedure MenuItem11Click(Sender: TObject);
+    procedure MenuItem12Click(Sender: TObject);
+    procedure MenuItem14Click(Sender: TObject);
+    procedure MenuItem15Click(Sender: TObject);
+    procedure MenuItem17Click(Sender: TObject);
+    procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
@@ -215,5 +230,77 @@ begin
   I_RefSpiScrs(CheckListBox3);
   end;
 end;
+
+procedure TForm5.MenuItem11Click(Sender: TObject);
+begin
+
+  if CheckListBox1.itemindex<CheckListBox1.items.count then
+  if CheckListBox1.itemindex>0 then begin
+  // Переменстить обьект Вниз
+  I_OBJ_VNI(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+  I_RefSpiObjs(CheckListBox1);
+  end;
+
+end;
+
+procedure TForm5.MenuItem12Click(Sender: TObject);
+begin
+
+  if CheckListBox1.itemindex<CheckListBox1.items.count then
+  if CheckListBox1.itemindex>0 then begin
+  // Переменстить обьект вверх
+  I_OBJ_VVE(CheckListBox1.items.objects[CheckListBox1.itemindex]);
+  I_RefSpiObjs(CheckListBox1);
+  end;
+
+
+end;
+
+procedure TForm5.MenuItem14Click(Sender: TObject);
+begin
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then begin
+  // Переместить Анимацию вверх
+  I_ANI_VVE(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+  I_RefSpiAnis(CheckListBox2);
+  end;
+end;
+
+procedure TForm5.MenuItem15Click(Sender: TObject);
+begin
+
+  if CheckListBox2.itemindex<CheckListBox2.items.count then
+  if CheckListBox2.itemindex>0 then begin
+  // Переместить Анимацию Вниз
+  I_ANI_VNI(CheckListBox2.items.objects[CheckListBox2.itemindex]);
+  I_RefSpiAnis(CheckListBox2);
+  end;
+
+end;
+
+procedure TForm5.MenuItem17Click(Sender: TObject);
+begin
+
+  if CheckListBox3.itemindex<CheckListBox3.items.count then
+  if CheckListBox3.itemindex>0 then begin
+  // Переместить скрипт  вверх
+  I_SCR_VVE(CheckListBox3.items.objects[CheckListBox3.itemindex]);
+  I_RefSpiScrs(CheckListBox3);
+  end;
+
+end;
+
+procedure TForm5.MenuItem18Click(Sender: TObject);
+begin
+
+  if CheckListBox3.itemindex<CheckListBox3.items.count then
+  if CheckListBox3.itemindex>0 then begin
+  // Переместить скрипт  вниз
+  I_SCR_VNI(CheckListBox3.items.objects[CheckListBox3.itemindex]);
+  I_RefSpiScrs(CheckListBox3);
+  end;
+
+end;
+
 end.
 
