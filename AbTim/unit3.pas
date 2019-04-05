@@ -13,7 +13,6 @@ type { TForm3 }  TForm3 = class(TForm)
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure OpenGLControl1Click(Sender: TObject);
     procedure OpenGLControl1DblClick(Sender: TObject);
     procedure OpenGLControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -392,7 +391,7 @@ Rx:=(b.x-a.x);// Растояне по X
 Ry:=(b.y-a.y);// Растояне по Y
 Rz:=(b.z-a.z);// Растояне по Z
 Ras:=abs(Rx)+abs(Ry)+abs(Rz);// Растояние между точками
-if Ras<1 then REz:=A else begin
+if Ras<3 then REz:=SerRCS8(A,B) else begin
 REz.x:=1/Ras*RX*iSpe+a.x;
 REz.y:=1/Ras*RY*iSpe+a.y;
 REz.z:=1/Ras*RZ*iSpe+a.z;
@@ -527,6 +526,7 @@ var Rez:RCol;
 begin
  StrToRCol:=Rez;
 end;
+
 {%EndRegion}
 var   {Базовые переменные     ===========================}{%Region /FOLD }
 
@@ -1445,25 +1445,38 @@ procedure   TELE.E_SECR;// Вычисление Экранны координа�
 var f:Longint;
 begin
 ECR:=SerRCS8(ECR,REA);
+ECO:=SerRCOL(COL,ECO);
 for f:=1 to KolE do with ELES[f] do E_SECR;
-for f:=1 to KolV do with VERS[f] do ECR:=SerRCS8(ECR,REA);
+for f:=1 to KolV do with VERS[f] do begin
+ECR:=SerRCS8(ECR,REA);
+ECO:=SerRCOL(COL,ECO);
+end;
 end;
 procedure   TELE.E_SWAP;// Вычисление Экранны координат
 var f:Longint;
 begin
+
 for f:=1 to KolE do with ELES[f] do E_SWAP;
 for f:=1 to KolV do begin
-MirVers.ECOO2[VERS[f].NOM]:=
-SerRCS8(MirVers.ECOO2[VERS[f].NOM],VERS[f].ECR);
-MirVers.ECOO1[VERS[f].NOM]:=MirVers.ECOO2[VERS[f].NOM];
+
+MirVers.ECOO1[VERS[f].NOM]:=VERS[f].ECR;
+MirVers.ECOO2[VERS[f].NOM]:=MirVers.ECOO1[VERS[f].NOM];
+
+MirVers.ECOL1[VERS[f].NOM]:=VERS[f].ECO;
+MirVers.ECOL2[VERS[f].NOM]:=MirVers.ECOL1[VERS[f].NOM];
+
 end;
 end;
 procedure   TELE.E_INIC;// Вычисление Экранны координат
 var f:Longint;
 begin
 ECR:=REA;
+ECO:=COL;
 for f:=1 to KolE do with ELES[f] do E_INIC;
-for f:=1 to KolV do with VERS[f] do ECR:=REA;
+for f:=1 to KolV do with VERS[f] do begin
+ECR:=REA;
+ECO:=COL;
+end;
 end;
 Procedure   TELE.E_Gaba;// Вычислене габаритов
 var F:Longint;
@@ -1601,7 +1614,6 @@ TYPE TOBJ=CLASS(TELE)
   OPER:RBOL;// Если это управляемый персонаж
   OGTI:RSTR;// ТИп обьекта
   MTP :TVER;// Маршрутная точка через котрую нужно пройти
-  //OGRA:RBOL;// Являеться ли обьект гравитационным
   KolP:RLON;// Количество плоскостей
   KolL:RLON;// Количество Линий
   KolD:RLON;// Количество Зависимых обьектов
@@ -1655,8 +1667,14 @@ procedure   TOBJ.O_SECR;// Вычисление Экранных координ�
 var f:Longint;
 begin
 inherited E_SECR;
-for f:=1 to KolP do with PLOS[F] do ECR:=SerRCS3(ECR,REA);
-for f:=1 to KolL do with LINS[F] do ECR:=SerRCS3(ECR,REA);
+for f:=1 to KolP do with PLOS[F] do begin
+ECR:=SerRCS3(ECR,REA);
+ECO:=SerRCOL(COL,ECO);
+end;
+for f:=1 to KolL do with LINS[F] do begin
+ECR:=SerRCS3(ECR,REA);
+ECO:=SerRCOL(COL,ECO);
+end;
 end;
 procedure   TOBJ.O_SWAP;// Вычисление Экранных координат
 var f:Longint;
@@ -3707,21 +3725,26 @@ begin
 
 if (iPlo.MCL=2) or (iPlo.MCL=3) then begin
 
-MirCols.ECOO2[iPlo.NOMS[1]]:=
-SerRCS8(MirCols.ECOO2[iPlo.NOMS[1]],iPlo.VERS[1].ECR);
-MirCols.ECOO2[iPlo.NOMS[2]]:=
-SerRCS8(MirCols.ECOO2[iPlo.NOMS[2]],iPlo.VERS[2].ECR);
-MirCols.ECOO2[iPlo.NOMS[3]]:=
-SerRCS8(MirCols.ECOO2[iPlo.NOMS[3]],iPlo.VERS[3].ECR);
-MirCols.ECOO2[iPlo.NOMS[4]]:=
-SerRCS8(MirCols.ECOO2[iPlo.NOMS[4]],iPlo.VERS[4].ECR);
+MirCols.ECOO1[iPlo.NOMS[1]]:=iPlo.VERS[1].ECR;
+MirCols.ECOO1[iPlo.NOMS[2]]:=iPlo.VERS[2].ECR;
+MirCols.ECOO1[iPlo.NOMS[3]]:=iPlo.VERS[3].ECR;
+MirCols.ECOO1[iPlo.NOMS[4]]:=iPlo.VERS[4].ECR;
+
+MirCols.ECOL1[iPlo.NOMS[1]]:=iPlo.VERS[1].ECO;
+MirCols.ECOL1[iPlo.NOMS[2]]:=iPlo.VERS[2].ECO;
+MirCols.ECOL1[iPlo.NOMS[3]]:=iPlo.VERS[3].ECO;
+MirCols.ECOL1[iPlo.NOMS[4]]:=iPlo.VERS[4].ECO;
 
 
-MirCols.ECOO1[iPlo.NOMS[1]]:=MirCols.ECOO2[iPlo.NOMS[1]];
-MirCols.ECOO1[iPlo.NOMS[2]]:=MirCols.ECOO2[iPlo.NOMS[2]];
-MirCols.ECOO1[iPlo.NOMS[3]]:=MirCols.ECOO2[iPlo.NOMS[3]];
-MirCols.ECOO1[iPlo.NOMS[4]]:=MirCols.ECOO2[iPlo.NOMS[4]];
+MirCols.ECOO2[iPlo.NOMS[1]]:=MirCols.ECOO1[iPlo.NOMS[1]];
+MirCols.ECOO2[iPlo.NOMS[2]]:=MirCols.ECOO1[iPlo.NOMS[2]];
+MirCols.ECOO2[iPlo.NOMS[3]]:=MirCols.ECOO1[iPlo.NOMS[3]];
+MirCols.ECOO2[iPlo.NOMS[4]]:=MirCols.ECOO1[iPlo.NOMS[4]];
 
+MirCols.ECOL2[iPlo.NOMS[1]]:=MirCols.ECOL1[iPlo.NOMS[1]];
+MirCols.ECOL2[iPlo.NOMS[2]]:=MirCols.ECOL1[iPlo.NOMS[2]];
+MirCols.ECOL2[iPlo.NOMS[3]]:=MirCols.ECOL1[iPlo.NOMS[3]];
+MirCols.ECOL2[iPlo.NOMS[4]]:=MirCols.ECOL1[iPlo.NOMS[4]];
 
 end;
 
@@ -7191,13 +7214,14 @@ if form4.CheckBox3.Checked then begin
    if lPer.NAM='_USER' then  PER:=lPer;
    if RasRcs2(lPer.OMOV,lPer.loc)>1 Then begin
 
-
-
    if RasRcs2(lPer.OCEL,lPer.loc)>3 Then
    lPer.ELES[1].EUGL.y:=
    GRAD((lPer.OMOV.x-lPer.loc.x),(lPer.OMOV.z-lPer.loc.z))+(pi/2);
 
    lPer.loc:=MovRCS3(lPer.loc,lPer.OMOV,5);
+   lPer.O_MATH;
+   lPer.O_SECR;
+   lPer.O_SWAP;
    OBIOBJ(lPer);
    LPER.LOC.Y:=LPER.YYY;
    lPer.CHE:=100;
@@ -7586,6 +7610,7 @@ begin
       begin
         CHE:=CHE-1;
         O_MATH;
+        O_SECR;
         O_SWAP;
         sleep(1);
       end else begin
@@ -7625,17 +7650,17 @@ begin
   while (not Terminated) and (Clos=false) do
     begin
     // ========================================================================
-    with MirVers do for f:=1 to KOlV do
+    //with MirVers do for f:=1 to KOlV do
     //if   NOT Tobj(Vers[f].OBJ).OPER then
-    if   Tobj(Vers[f].OBJ).CHE=0 then
-    if   Vers[f].OBJ.VIS then
-    if   Vers[f].ELE.VIS then
-    if       Vers[f].VIS then
-    if   not Vers[f].DEL then
-    with Vers[f] do begin
-    ECOO1[f]:=ECR;sleep(1);
-    ECOL1[f]:=Col;
-    end;
+    //if   Tobj(Vers[f].OBJ).CHE=0 then
+    //if   Vers[f].OBJ.VIS then
+    //if   Vers[f].ELE.VIS then
+    //if       Vers[f].VIS then
+    //if   not Vers[f].DEL then
+    //with Vers[f] do begin
+    //ECOO1[f]:=ECR;sleep(1);
+    //ECOL1[f]:=Col;
+    //end;
     // ========================================================================
     lDrKp:=0;
     with MirPlos do for f:=1 to KolP do
@@ -7670,13 +7695,13 @@ begin
     end;
     MirLins.DrKl:=lDrKl;
     // ========================================================================
+    MirCols.Swap;
     with MirVers do Move(ECoo1,ECoo2,(KolV+1)*SizeOf(RCS3));
     with MirVers do Move(ECol1,ECol2,(KolV+1)*SizeOf(RCOL));
     with MirLins do Move(ELin1,ELin2,(DrKl+0)*SizeOf(RLIN));
     with MirPlos do Move(EPlo1,EPlo2,(DrKP+0)*SizeOf(RPLO));
     // ========================================================================
     sleep(500);
-    MirCols.Swap;
     end;
 end;
 
@@ -7765,7 +7790,11 @@ if GlDraw then begin
   timer2.Enabled:=false;
   Tr:=GetTickCount;
   //----------------------------------------------------------------------------
-  Cap2:=SerRcs8(cap2,cap3);
+  if not form4.CheckBox1.Checked then Cap2:=SerRCS8(cap2,cap3)
+  else
+  if PER<>NIL
+  THEN Cap2:=PER.ECR //MovRCS3(cap2,PER.ECR,5)
+  ELSE Cap2:=SerRCS8(cap2,cap3);
   CaU2.X:=((CaU3.X-CaU2.X)/16)+CaU2.X;
   CaU2.Z:=((CaU3.Z-CaU2.Z)/16)+CaU2.Z;
   RasN:=((Ras3-RasN)/16)+RasN;
@@ -7868,11 +7897,6 @@ end;
 
 
 
-procedure TForm3.OpenGLControl1Click(Sender: TObject);
-begin
-
-end;
-
 procedure TForm3.OpenGLControl1DblClick(Sender: TObject);
 begin
  DBUT:=true;
@@ -7930,17 +7954,6 @@ end;
 
 {%EndRegion}
 end.
-
-
-// 1. За чаем 5 мин .......
-// 2. Созадние удаление примитивов
-// 3. Функции сорхранения загрузки примитивов и сцены
-// 4. For
-
-
-
-
-
 
 
 

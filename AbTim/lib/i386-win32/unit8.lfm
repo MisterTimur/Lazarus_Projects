@@ -1,0 +1,165 @@
+object Form8: TForm8
+  Left = 315
+  Height = 173
+  Top = 109
+  Width = 128
+  BorderStyle = bsSizeToolWin
+  Caption = 'Form8'
+  ClientHeight = 173
+  ClientWidth = 128
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -13
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
+  LCLVersion = '2.0.0.4'
+  object Panel1: TPanel
+    Left = 0
+    Height = 34
+    Top = 0
+    Width = 128
+    Align = alTop
+    Caption = 'Panel1'
+    PopupMenu = PopupMenu1
+    TabOrder = 0
+    OnClick = Panel1Click
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 139
+    Top = 34
+    Width = 128
+    Align = alClient
+    ClientHeight = 139
+    ClientWidth = 128
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit1Change
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+    object Edit2: TEdit
+      Left = 1
+      Height = 23
+      Top = 24
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 1
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 1
+      Height = 23
+      Top = 47
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit3Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 2
+      Text = 'Edit3'
+    end
+    object Edit4: TEdit
+      Left = 1
+      Height = 23
+      Top = 70
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit4Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 3
+      Text = 'Edit4'
+    end
+    object Edit5: TEdit
+      Left = 1
+      Height = 23
+      Top = 93
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit5Change
+      OnDblClick = Edit5DblClick
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 23
+      Top = 116
+      Width = 126
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit6Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 5
+      Text = 'Edit6'
+    end
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 88
+    top = 8
+  end
+  object PopupMenu1: TPopupMenu
+    left = 88
+    top = 40
+    object MenuItem1: TMenuItem
+      Caption = 'Новую'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Отразить по X'
+      OnClick = MenuItem2Click
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Отразить по Y'
+      OnClick = MenuItem3Click
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Отразить по Z'
+      OnClick = MenuItem4Click
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'Вверх'
+      OnClick = MenuItem5Click
+    end
+  end
+end

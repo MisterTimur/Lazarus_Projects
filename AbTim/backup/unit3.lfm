@@ -1,0 +1,51 @@
+object Form3: TForm3
+  Left = 87
+  Height = 400
+  Top = 213
+  Width = 700
+  Caption = 'AbTim'
+  ClientHeight = 400
+  ClientWidth = 700
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  OnKeyUp = FormKeyUp
+  Position = poScreenCenter
+  LCLVersion = '2.0.0.4'
+  object OpenGLControl1: TOpenGLControl
+    Left = 0
+    Height = 400
+    Top = 0
+    Width = 700
+    Align = alClient
+    OnDblClick = OpenGLControl1DblClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
+    OnMouseDown = OpenGLControl1MouseDown
+    OnMouseMove = OpenGLControl1MouseMove
+    OnMouseUp = OpenGLControl1MouseUp
+    OnMouseWheel = OpenGLControl1MouseWheel
+    OnPaint = OpenGLControl1Paint
+    OnResize = OpenGLControl1Resize
+  end
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    left = 16
+    top = 14
+  end
+  object Timer2: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = Timer2Timer
+    left = 54
+    top = 14
+  end
+  object Timer3: TTimer
+    Enabled = False
+    OnTimer = Timer3Timer
+    left = 93
+    top = 14
+  end
+end

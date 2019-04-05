@@ -1,0 +1,266 @@
+object Form7: TForm7
+  Left = 293
+  Height = 239
+  Top = 114
+  Width = 320
+  BorderStyle = bsSizeToolWin
+  Caption = 'Form7'
+  ClientHeight = 239
+  ClientWidth = 320
+  Font.CharSet = RUSSIAN_CHARSET
+  Font.Height = -13
+  Font.Name = 'Consolas'
+  Font.Pitch = fpFixed
+  Font.Quality = fqDraft
+  FormStyle = fsStayOnTop
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.0.0.4'
+  object Panel1: TPanel
+    Left = 0
+    Height = 32
+    Top = 0
+    Width = 320
+    Align = alTop
+    Caption = 'Элемент.'
+    TabOrder = 0
+    OnClick = Panel1Click
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 207
+    Top = 32
+    Width = 96
+    Align = alLeft
+    Caption = 'Panel2'
+    ClientHeight = 207
+    ClientWidth = 96
+    TabOrder = 1
+    object Edit1: TEdit
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit1Change
+      TabOrder = 0
+      Text = 'Edit1'
+    end
+    object Edit2: TEdit
+      Left = 1
+      Height = 23
+      Top = 24
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit2Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 1
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 1
+      Height = 23
+      Top = 47
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit3Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 2
+      Text = 'Edit3'
+    end
+    object Edit4: TEdit
+      Left = 1
+      Height = 23
+      Top = 70
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit4Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 3
+      Text = 'Edit4'
+    end
+    object Edit5: TEdit
+      Left = 1
+      Height = 23
+      Top = 93
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit5Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 4
+      Text = 'Edit5'
+    end
+    object Edit6: TEdit
+      Left = 1
+      Height = 23
+      Top = 116
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit6Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 5
+      Text = 'Edit6'
+    end
+    object Edit7: TEdit
+      Left = 1
+      Height = 23
+      Top = 139
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit7Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 6
+      Text = 'Edit7'
+    end
+    object Edit8: TEdit
+      Left = 1
+      Height = 23
+      Top = 162
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit8Change
+      OnDblClick = Edit8DblClick
+      TabOrder = 7
+      Text = 'Edit8'
+    end
+    object Edit9: TEdit
+      Left = 1
+      Height = 23
+      Top = 185
+      Width = 94
+      Align = alTop
+      Alignment = taCenter
+      OnChange = Edit9Change
+      OnMouseWheelDown = Edit2MouseWheelDown
+      OnMouseWheelUp = Edit2MouseWheelUp
+      TabOrder = 8
+      Text = 'Edit9'
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 96
+    Height = 207
+    Top = 32
+    Width = 5
+  end
+  object Panel3: TPanel
+    Left = 101
+    Height = 207
+    Top = 32
+    Width = 219
+    Align = alClient
+    Caption = 'Panel3'
+    ClientHeight = 207
+    ClientWidth = 219
+    TabOrder = 3
+    object CheckListBox1: TCheckListBox
+      Left = 1
+      Height = 205
+      Top = 1
+      Width = 100
+      Align = alLeft
+      Items.Strings = (
+        'V'
+      )
+      ItemHeight = 15
+      ItemIndex = 0
+      MultiSelect = True
+      OnDblClick = CheckListBox1DblClick
+      PopupMenu = PopupMenu1
+      TabOrder = 0
+      Data = {
+        0100000000
+      }
+    end
+    object Splitter2: TSplitter
+      Left = 101
+      Height = 205
+      Top = 1
+      Width = 5
+    end
+    object CheckListBox2: TCheckListBox
+      Left = 106
+      Height = 205
+      Top = 1
+      Width = 112
+      Align = alClient
+      Items.Strings = (
+        'E'
+      )
+      ItemHeight = 15
+      ItemIndex = 0
+      MultiSelect = True
+      OnDblClick = CheckListBox2DblClick
+      PopupMenu = PopupMenu2
+      TabOrder = 2
+      Data = {
+        0100000000
+      }
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    left = 117
+    top = 67
+    object MenuItem1: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem2Click
+    end
+  end
+  object PopupMenu2: TPopupMenu
+    left = 216
+    top = 64
+    object MenuItem3: TMenuItem
+      Caption = 'Добавить.'
+      OnClick = MenuItem3Click
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Удалить.'
+      OnClick = MenuItem4Click
+    end
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 8
+    top = 8
+  end
+end
